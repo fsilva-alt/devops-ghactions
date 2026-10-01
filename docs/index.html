@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#121016">
+  <meta name="description" content="Introdução ao GitHub Actions em português: 7 exercícios, 3 horas e prática obrigatória no GitHub Codespaces. Do primeiro workflow ao deploy no Pages.">
+  <title>GitHub Actions · Do primeiro workflow ao deploy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip" href="#conteudo">Pular para o conteúdo</a>
+  <header class="topbar">
+    <a class="brand" href="#home" aria-label="GitHub Actions, início"><span class="brand-icon" aria-hidden="true">⌘</span><span>devops<span class="brand-slash"> / </span><strong>actions</strong></span></a>
+    <nav aria-label="Navegação principal">
+      <a href="https://github.com/fsilva-alt/devops-ghactions#antes-da-aula">Preparação <span aria-hidden="true">↗</span></a>
+      <a href="https://github.com/fsilva-alt/devops-ghactions">Repositório <span aria-hidden="true">↗</span></a>
+      <span class="language">PT-BR</span>
+    </nav>
+  </header>
+
+  <main id="conteudo">
+    <div id="home">
+      <section class="hero" aria-labelledby="titulo">
+        <div>
+          <p class="eyebrow"><span class="status-dot"></span> INTRODUÇÃO AO GITHUB ACTIONS</p>
+          <h1 id="titulo">Do primeiro workflow<br>à primeira <em>publicação.</em></h1>
+          <p class="hero-description">Transforme um push em testes, um build e um site no ar. Aprenda os fundamentos da automação, um passo de cada vez.</p>
+          <div class="hero-actions">
+            <a class="button primary" href="#intro">Começar a jornada <span aria-hidden="true">→</span></a>
+            <span class="small-note">Seu laboratório é o Codespaces.</span>
+          </div>
+          <div class="stats" aria-label="Informações do curso">
+            <div><strong>07</strong><span>exercícios guiados</span></div>
+            <div><strong>03<span class="unit">h</span></strong><span>de teoria + prática</span></div>
+            <div><strong>01</strong><span>site publicado por você</span></div>
+          </div>
+        </div>
+        <div class="preview" aria-label="Ilustração do fluxo de integração e publicação">
+          <div class="preview-bar"><span><i></i><i></i><i></i></span><span>.github/workflows/ci.yml</span><span>YAML</span></div>
+          <div class="preview-code"><span class="line-number">01</span><span><b>name:</b> Meu primeiro CI</span><span class="line-number">02</span><span><b>on:</b> [push]</span><span class="line-number">03</span><span>&nbsp;</span><span class="line-number">04</span><span><b>jobs:</b></span><span class="line-number">05</span><span>  <b>testar:</b></span><span class="line-number">06</span><span>    <b>runs-on:</b> ubuntu-latest</span><span class="line-number">07</span><span>    <b>steps:</b></span><span class="line-number">08</span><span>      - <b>uses:</b> actions/checkout@v5</span><span class="line-number">09</span><span>      - <b>run:</b> python3 -m unittest -v</span></div>
+          <div class="preview-flow"><span>✓ Testar</span><b>→</b><span>✓ Gerar</span><b>→</b><span class="last">✓ Publicar</span></div>
+          <div class="preview-caption"><span class="status-dot"></span> Um commit. Um processo repetível.</div>
+        </div>
+      </section>
+
+      <aside class="environment"><span class="environment-icon" aria-hidden="true">&gt;_</span><div><strong>No navegador, do início ao fim.</strong><p>Você edita no <b>GitHub Codespaces</b>, acompanha os runners no <b>Actions</b> e abre o resultado no <b>Pages</b>. O código do projeto já está pronto.</p></div><a href="#intro">Entenda o ambiente <span aria-hidden="true">→</span></a></aside>
+
+      <section class="curriculum" aria-labelledby="trilha-title">
+        <div class="section-heading"><div><p class="eyebrow">SUA TRILHA DE APRENDIZAGEM</p><h2 id="trilha-title">Pequenos passos. Automação de verdade.</h2></div><span class="level">Nível introdutório</span></div>
+        <div id="exercicios" class="exercise-grid">
+          <a class="exercise-card" href="#exercicio-01"><div class="card-top"><span class="card-number">01</span><span class="card-time">15 min</span></div><div><h3>Primeiro workflow</h3><p>Escreva uma automação, aperte o play e descubra onde cada etapa acontece.</p></div><div class="card-bottom"><span>workflow · job · step</span><b aria-hidden="true">↗</b></div></a>
+          <a class="exercise-card" href="#exercicio-02"><div class="card-top"><span class="card-number">02</span><span class="card-time">25 min</span></div><div><h3>Testes no push</h3><p>Prepare o ambiente e deixe o GitHub executar os testes a cada mudança.</p></div><div class="card-bottom"><span>push · uses · run</span><b aria-hidden="true">↗</b></div></a>
+          <a class="exercise-card" href="#exercicio-03"><div class="card-top"><span class="card-number">03</span><span class="card-time">25 min</span></div><div><h3>Checks no pull request</h3><p>Veja um teste falhar, encontre a causa e corrija antes de integrar a mudança.</p></div><div class="card-bottom"><span>pull_request · logs · correção</span><b aria-hidden="true">↗</b></div></a>
+          <a class="exercise-card" href="#exercicio-04"><div class="card-top"><span class="card-number">04</span><span class="card-time">20 min</span></div><div><h3>Variáveis e contextos</h3><p>Personalize uma execução e descubra de onde vêm seus valores.</p></div><div class="card-bottom"><span>env · inputs · vars · secrets</span><b aria-hidden="true">↗</b></div></a>
+          <a class="exercise-card" href="#exercicio-05"><div class="card-top"><span class="card-number">05</span><span class="card-time">20 min</span></div><div><h3>Jobs e dependências</h3><p>Conecte os testes ao build e observe o que acontece quando algo falha.</p></div><div class="card-bottom"><span>needs · runner · build</span><b aria-hidden="true">↗</b></div></a>
+          <a class="exercise-card" href="#exercicio-06"><div class="card-top"><span class="card-number">06</span><span class="card-time">20 min</span></div><div><h3>Artefatos do build</h3><p>Guarde o resultado da execução e baixe seu primeiro pacote de site.</p></div><div class="card-bottom"><span>upload-artifact · download</span><b aria-hidden="true">↗</b></div></a>
+          <a class="exercise-card featured" href="#exercicio-07"><div class="card-top"><span class="card-number">07</span><span class="card-time">30 min</span></div><div><h3>Deploy no Pages</h3><p>Junte os fundamentos em uma publicação guiada. Seu cardápio, agora com endereço público.</p></div><div class="card-bottom"><span>testar → gerar → publicar</span><b aria-hidden="true">↗</b></div></a>
+        </div>
+      </section>
+
+      <section class="closing"><div><p class="eyebrow">O QUE VOCÊ LEVA DO CURSO</p><h2>Entenda o caminho<br>do código até o site.</h2></div><p>Leia workflows com confiança, descubra por que uma execução falhou e acompanhe sua primeira publicação. Cada exercício tem um objetivo, um exemplo e um resultado para conferir.</p><a href="https://github.com/fsilva-alt/devops-ghactions/blob/main/docs/ementa.md">Ver a ementa completa <span aria-hidden="true">↗</span></a></section>
+    </div>
+
+    <div id="deck">
+      <section id="intro" class="lesson" aria-labelledby="intro-title" tabindex="-1">
+        <div class="deck-top"><a href="#home" class="back">← Todos os exercícios</a><span>Antes de começar</span></div>
+        <p class="eyebrow">SEU AMBIENTE DE APRENDIZAGEM</p>
+        <h2 id="intro-title">Um Codespace. Sete descobertas.</h2>
+        <div class="slide-columns">
+          <div class="slide-stack">
+            <p class="lead">Automatizar é transformar uma sequência de passos em um processo que você pode repetir e conferir.</p>
+            <div class="box"><h3>O projeto já está pronto</h3><p>Um cardápio em Python, três testes e um gerador de HTML. Você vai aprender a descrever o processo em YAML. Precisa conhecer commit, branch e push; os comandos de publicação estão nos enunciados.</p></div>
+            <div class="box"><h3>Preparação obrigatória</h3><p>Crie o Codespace a partir do repositório do curso. Aguarde a preparação, execute <code>sh install.sh</code>, faça o login e abra um terminal novo.</p></div>
+            <a class="button primary" href="https://github.com/fsilva-alt/devops-ghactions#antes-da-aula">Abrir a preparação completa ↗</a>
+          </div>
+          <div class="slide-stack">
+            <div class="flow"><span>Codespace</span><b aria-hidden="true">→</b><span>GitHub</span><b aria-hidden="true">→</b><span>Runner</span><b aria-hidden="true">→</b><span>Pages</span></div>
+            <div class="box"><h3>Onde cada coisa acontece</h3><p><strong>Codespace:</strong> seu editor e terminal no navegador, obrigatório nos 7 exercícios.</p><p><strong>GitHub:</strong> recebe o push e cria uma execução a partir do evento.</p><p><strong>Runner:</strong> executa o job em outra máquina.</p><p><strong>Pages:</strong> hospeda o site em uma URL pública.</p></div>
+            <div class="callout">CI verifica as mudanças. Build gera os arquivos finais. Deploy publica o resultado.</div>
+          </div>
+        </div>
+        <details class="box lesson-details"><summary>Como acompanhar a prática</summary><ol class="task-list"><li>Leia o enunciado e entre na pasta <code>~/labs-actions/NN-nome</code>.</li><li>Edite e salve o workflow. Rode <code>check.sh NN</code> e ajuste o YAML.</li><li>Faça commit e publique um repositório por exercício, de <code>actions-01</code> a <code>actions-07</code>.</li><li>Abra Actions e confira a entrega pedida. Todos os laboratórios são feitos no mesmo Codespace.</li></ol><p>O check local analisa alguns requisitos do YAML. A execução na aba Actions mostra o resultado real.</p></details>
+        <nav class="deck-bottom" aria-label="Navegação da introdução"><a class="button" href="#home">← Índice</a><a class="button primary" href="#exercicio-01">Primeiro exercício →</a></nav>
+      </section>
+      <section id="exercicio-01" class="lesson" aria-labelledby="titulo-01" tabindex="-1">
+        <div class="deck-top"><a href="#home" class="back">← Todos os exercícios</a><span>01 / 07 · 15 minutos</span></div>
+        <p class="eyebrow">WORKFLOW · JOB · STEP</p>
+        <h2 id="titulo-01">Primeiro workflow</h2>
+        <div class="slide-columns">
+          <div class="slide-stack">
+            <p class="lead">Um evento dá início a tudo. Escreva uma automação, execute manualmente e encontre a mensagem nos logs.</p>
+            <div class="box"><h3>As partes da automação</h3><p><strong>Workflow:</strong> arquivo YAML que descreve o processo.</p><p><strong>Evento:</strong> o que inicia a execução; aqui, <code>workflow_dispatch</code>, um clique manual.</p><p><strong>Job:</strong> grupo de etapas que executa em um runner.</p><p><strong>Runner:</strong> máquina que executa o job.</p><p><strong>Step:</strong> cada etapa da lista <code>steps</code>.</p></div>
+            <div class="callout">YAML usa espaços para a indentação. O traço inicia um item da lista. Salve o arquivo em <code>.github/workflows/ci.yml</code>.</div>
+          </div>
+          <pre><code>name: Boas-vindas
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  boas-vindas:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cumprimentar a turma
+        run: echo "Olá, GitHub Actions!"</code></pre>
+        </div>
+        <div class="lesson-practice slide-columns">
+          <div class="slide-stack"><h3>Pratique no Codespaces</h3><pre><code>cd ~/labs-actions/01-primeiro-workflow
+code .github/workflows/ci.yml
+check.sh 01</code></pre><ol class="task-list"><li>Crie e salve o arquivo com o exemplo acima.</li><li>Confira com o check, faça commit e publique em <code>actions-01</code>.</li><li>Abra Actions → Boas-vindas → Run workflow. Selecione <code>main</code>.</li><li>Abra o job e a etapa para localizar a saudação no log.</li></ol><a href="https://github.com/fsilva-alt/devops-ghactions/blob/main/exercises/01-primeiro-workflow/README.md">Abrir enunciado e comandos completos ↗</a></div>
+          <div class="slide-stack"><div class="box"><h3>Sua entrega</h3><p>Link da execução manual verde e a mensagem <code>Olá, GitHub Actions!</code> no log.</p></div><details class="box"><summary>O echo executou no Codespace ou em um runner?</summary><p>Em um runner do Actions. O Codespace foi usado para escrever e publicar o workflow.</p></details><div class="callout">Se não houver execução após o push, está correto: neste exercício o único evento é manual. O botão aparece quando o workflow está na branch padrão.</div><a href="https://docs.github.com/pt/actions/get-started/understand-github-actions">Consultar a documentação oficial ↗</a></div>
+        </div>
+        <nav class="deck-bottom" aria-label="Navegação do exercício 01"><a class="button" href="#intro">← Introdução</a><a class="button primary" href="#exercicio-02">Testes no push →</a></nav>
+      </section>
+      <section id="exercicio-02" class="lesson" aria-labelledby="titulo-02" tabindex="-1">
+        <div class="deck-top"><a href="#home" class="back">← Todos os exercícios</a><span>02 / 07 · 25 minutos</span></div>
+        <p class="eyebrow">PUSH · USES · RUN</p>
+        <h2 id="titulo-02">Testes no push</h2>
+        <div class="slide-columns">
+          <div class="slide-stack"><p class="lead">O mesmo teste, a cada push. Prepare o ambiente e deixe o GitHub verificar suas mudanças.</p><div class="box"><h3>Integração contínua</h3><p><strong>CI</strong> significa integração contínua: verificar mudanças automaticamente.</p><p><code>uses</code> chama uma action pronta, com versão explícita.</p><p><code>with</code> configura as entradas dessa action.</p><p><code>run</code> executa um comando no runner.</p></div><div class="callout">Checkout vem primeiro porque o runner precisa receber os arquivos do projeto. As etapas de um job executam em sequência.</div></div>
+          <pre><code>name: CI
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  testar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements.txt
+      - run: python -m unittest -v</code></pre>
+        </div>
+        <div class="lesson-practice slide-columns">
+          <div class="slide-stack"><h3>Pratique no Codespaces</h3><pre><code>cd ~/labs-actions/02-testes-no-push
+python3 -m unittest -v
+code .github/workflows/ci.yml
+check.sh 02</code></pre><ol class="task-list"><li>Execute os três testes prontos e procure <code>OK</code>.</li><li>Substitua a saudação pelo workflow acima.</li><li>Confira, faça commit e publique em <code>actions-02</code>.</li><li>Edite o título do cardápio, faça novo commit e push. Acompanhe outra execução.</li></ol><a href="https://github.com/fsilva-alt/devops-ghactions/blob/main/exercises/02-testes-no-push/README.md">Abrir enunciado e comandos completos ↗</a></div>
+          <div class="slide-stack"><div class="box"><h3>Sua entrega</h3><p>Uma execução verde disparada por <code>push</code>, com três testes aprovados. Localize o hash do commit na página da execução.</p></div><details class="box"><summary>Instalar no Codespace também instala no runner?</summary><p>Não. São máquinas separadas. O workflow precisa preparar seu próprio ambiente: código, Python e dependências.</p></details><div class="callout">Use <code>'3.12'</code> entre aspas: é uma versão, não um número decimal.</div><a href="https://docs.github.com/pt/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows">Consultar os eventos disponíveis ↗</a></div>
+        </div>
+        <nav class="deck-bottom" aria-label="Navegação do exercício 02"><a class="button" href="#exercicio-01">← Primeiro workflow</a><a class="button primary" href="#exercicio-03">Checks no PR →</a></nav>
+      </section>
+      <section id="exercicio-03" class="lesson" aria-labelledby="titulo-03" tabindex="-1">
+        <div class="deck-top"><a href="#home" class="back">← Todos os exercícios</a><span>03 / 07 · 25 minutos</span></div>
+        <p class="eyebrow">PULL_REQUEST · LOGS · CORREÇÃO</p>
+        <h2 id="titulo-03">Checks no pull request</h2>
+        <div class="slide-columns">
+          <div class="slide-stack"><p class="lead">Uma falha é informação útil. Descubra a causa antes de integrar a mudança.</p><div class="box"><h3>Verificar uma proposta</h3><p><code>pull_request</code> executa os testes quando um PR é aberto ou atualizado. O filtro <code>branches</code> indica o <strong>destino</strong> do PR.</p><p>Abra a etapa que falhou. Compare o valor esperado com o recebido. O teste de três unidades espera 1500 centavos, mas a soma incorreta retorna 503.</p></div><div class="callout">Cada execução corresponde a uma revisão do código. Reexecutar um commit quebrado não aplica a correção que ainda está só no Codespace.</div></div>
+          <div class="slide-stack"><pre><code># Substitua apenas o bloco on:
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:</code></pre><pre><code># Falha proposital em app.py:
+return preco_centavos + quantidade
+
+# Correção:
+return preco_centavos * quantidade</code></pre></div>
+        </div>
+        <div class="lesson-practice slide-columns">
+          <div class="slide-stack"><h3>Pratique no Codespaces</h3><pre><code>cd ~/labs-actions/03-checks-no-pull-request
+code .github/workflows/ci.yml
+check.sh 03</code></pre><ol class="task-list"><li>Acrescente o evento e publique a main em <code>actions-03</code>.</li><li>Crie a branch <code>teste-do-ci</code>. Troque a multiplicação por soma em <code>app.py</code>.</li><li>Faça commit, push e abra o PR para main. Leia o erro em Checks → testar → Testar.</li><li>Corrija a multiplicação. Faça novo commit e push na mesma branch e confira o novo check.</li></ol><a href="https://github.com/fsilva-alt/devops-ghactions/blob/main/exercises/03-checks-no-pull-request/README.md">Abrir enunciado e comandos completos ↗</a></div>
+          <div class="slide-stack"><div class="box"><h3>Sua entrega</h3><p>Link do PR e das execuções vermelha e verde. Explique qual linha causava o erro. O PR pode ficar aberto para avaliação.</p></div><details class="box"><summary>Um check vermelho sempre impede o merge?</summary><p>Só quando regras do repositório exigem aquele check. Aqui aprendemos a observar e interpretar o resultado.</p></details><a href="https://docs.github.com/pt/actions/monitoring-and-troubleshooting-workflows/monitoring-workflows/using-workflow-run-logs">Consultar o guia de logs ↗</a></div>
+        </div>
+        <nav class="deck-bottom" aria-label="Navegação do exercício 03"><a class="button" href="#exercicio-02">← Testes no push</a><a class="button primary" href="#exercicio-04">Variáveis e contextos →</a></nav>
+      </section>
+      <!-- Próximas aulas -->
+    </div>
+  </main>
+  <footer><span>GitHub Actions <span class="brand-slash">/</span> Aprender fazendo.</span><div><a href="https://github.com/fsilva-alt/devops-ghactions/blob/main/docs/guia-do-professor.md">Guia do professor</a><a href="https://docs.github.com/pt/actions">Documentação oficial ↗</a></div></footer>
+</body>
+</html>

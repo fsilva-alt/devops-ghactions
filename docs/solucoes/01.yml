@@ -1,0 +1,14 @@
+name: Boas-vindas
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  boas-vindas:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cumprimentar a turma
+        run: echo "Olá, GitHub Actions!"

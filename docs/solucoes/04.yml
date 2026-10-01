@@ -1,0 +1,34 @@
+name: Variáveis e contextos
+
+on:
+  workflow_dispatch:
+    inputs:
+      mensagem:
+        description: Mensagem para a turma
+        required: true
+        type: string
+        default: Olá, turma!
+
+permissions:
+  contents: read
+
+env:
+  CURSO: GitHub Actions
+
+jobs:
+  apresentar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mostrar contexto
+        env:
+          MENSAGEM: ${{ inputs.mensagem }}
+          AUTOR: ${{ github.actor }}
+          TURMA: ${{ vars.TURMA }}
+        run: |
+          printf 'Curso: %s\nAutor: %s\nTurma: %s\nMensagem: %s\n' "$CURSO" "$AUTOR" "$TURMA" "$MENSAGEM"
+      - name: Verificar segredo sem exibir o valor
+        env:
+          TOKEN_DEMO: ${{ secrets.CURSO_TOKEN }}
+        run: |
+          test -n "$TOKEN_DEMO" || { echo "Cadastre CURSO_TOKEN em Settings > Secrets and variables > Actions"; exit 1; }
+          echo "Segredo disponível para esta etapa."
