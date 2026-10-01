@@ -14,4 +14,4 @@ python build.py
 ```
 
 O build gera `dist/index.html`. Os preços em `app.py` são expressos em centavos.
-Os enunciados ficam no repositório do curso, em `exercises/`.
+Os exercícios ficam no [site do curso](https://fsilva-alt.github.io/devops-ghactions/).

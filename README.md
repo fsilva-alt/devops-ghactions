@@ -57,13 +57,13 @@ Os tempos incluem explicação, demonstração, prática e conferência.
 
 | # | Exercício | Conceito novo | Tempo |
 |---|---|---|---:|
-| [01](exercises/01-primeiro-workflow/README.md) | Primeiro workflow | YAML, evento manual, job, runner e step | 15 min |
-| [02](exercises/02-testes-no-push/README.md) | Testes no push | `push`, `checkout`, `setup-python`, `run` × `uses` | 25 min |
-| [03](exercises/03-checks-no-pull-request/README.md) | Checks no pull request | `pull_request`, logs, falhar e corrigir | 25 min |
-| [04](exercises/04-variaveis-e-contextos/README.md) | Variáveis e contextos | `env`, `inputs`, `github`, `vars`, `secrets` | 20 min |
-| [05](exercises/05-jobs-e-dependencias/README.md) | Jobs e dependências | `needs`, isolamento entre runners, build | 20 min |
-| [06](exercises/06-artefatos-do-build/README.md) | Artefatos do build | Salvar e baixar arquivos de uma execução | 20 min |
-| [07](exercises/07-deploy-no-pages/README.md) | Deploy no Pages | Publicação guiada, `permissions`, `environment` | 30 min |
+| [01](https://fsilva-alt.github.io/devops-ghactions/#exercicio-01) | Primeiro workflow | YAML, evento manual, job, runner e step | 15 min |
+| [02](https://fsilva-alt.github.io/devops-ghactions/#exercicio-02) | Testes no push | `push`, `checkout`, `setup-python`, `run` × `uses` | 25 min |
+| [03](https://fsilva-alt.github.io/devops-ghactions/#exercicio-03) | Checks no pull request | `pull_request`, logs, falhar e corrigir | 25 min |
+| [04](https://fsilva-alt.github.io/devops-ghactions/#exercicio-04) | Variáveis e contextos | `env`, `inputs`, `github`, `vars`, `secrets` | 20 min |
+| [05](https://fsilva-alt.github.io/devops-ghactions/#exercicio-05) | Jobs e dependências | `needs`, isolamento entre runners, build | 20 min |
+| [06](https://fsilva-alt.github.io/devops-ghactions/#exercicio-06) | Artefatos do build | Salvar e baixar arquivos de uma execução | 20 min |
+| [07](https://fsilva-alt.github.io/devops-ghactions/#exercicio-07) | Deploy no Pages | Publicação guiada, `permissions`, `environment` | 30 min |
 
 Prática e explicações: **155 minutos**. Abertura: 10; intervalo: 10; encerramento: 5. Total: **180 minutos**.
 
@@ -74,7 +74,7 @@ Cada exercício tem seu próprio repositório local em `~/labs-actions/NN-nome` 
 | Local | Conteúdo |
 |---|---|
 | `$CURSO_DIR` | Repositório do curso aberto no Codespace, normalmente `/workspaces/devops-ghactions` |
-| `$CURSO_DIR/exercises/` | Os 7 enunciados |
+| [Site do curso](https://fsilva-alt.github.io/devops-ghactions/) | Os 7 módulos com exercícios |
 | `~/labs-actions/NN-nome/` | Arquivos que você modifica e publica |
 | `.github/workflows/ci.yml`, dentro de cada lab | Workflow do exercício |
 | `$CURSO_DIR/docs/solucoes/` | Workflows completos para consulta depois da tentativa |
@@ -87,7 +87,7 @@ O instalador define `CURSO_DIR`, `LABS_DIR` e o `PATH` nos novos terminais bash/
 | `check.sh NN` | Analisa o YAML e alguns requisitos do exercício, sem acessar o GitHub |
 | `reset.sh NN` | **Apaga o trabalho local desse laboratório** e recria o estado inicial |
 
-Dentro de uma pasta de laboratório, `check.sh` e `reset.sh` descobrem o número automaticamente. Exemplo para ler um enunciado: `code "$CURSO_DIR/exercises/02-testes-no-push/README.md"`.
+Dentro de uma pasta de laboratório, `check.sh` e `reset.sh` descobrem o número automaticamente. Abra o módulo correspondente no [site do curso](https://fsilva-alt.github.io/devops-ghactions/) para acompanhar o exercício.
 
 **Um check local aprovado não comprova a execução na nuvem.** Conclua também a entrega indicada em cada enunciado: execução, logs, PR, artefato ou site publicado. O verificador não é um validador completo da linguagem do Actions.
 
@@ -131,6 +131,8 @@ Compartilhe os links pedidos nos 7 exercícios. Guarde a URL do site do exercíc
 ## Desenvolvimento do material
 
 Os geradores ficam em `scripts/labs.sh`, o verificador em `scripts/checks.py`, e o projeto em `templates/projeto/`. Os YAMLs do [gabarito](docs/gabarito.md) também são usados como pontos de partida e nos testes.
+
+A apresentação está em `docs/index.html`, com estilos em `docs/style.css`. Abra o HTML diretamente no navegador para revisar as aulas; a navegação e as perguntas expansíveis funcionam sem JavaScript. Para conferir apenas seu conteúdo e links, execute `python3 tests/apresentacao.py`.
 
 ```bash
 bash tests/rodar.sh          # testes em ambiente temporário, sem conta GitHub

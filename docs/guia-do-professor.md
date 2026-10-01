@@ -24,6 +24,7 @@ Uma instalação feita no Codespace não instala pacotes no runner. Um arquivo c
 
 ## Condução
 
+- A apresentação usa HTML/CSS e funciona sem JavaScript. Abra `docs/index.html` ou o site publicado, escolha um exercício no índice e use os links ao final de cada aula. Clique nas perguntas para expandir as respostas; pelo teclado, use Tab e Enter. Cada aula tem um endereço direto, como `#exercicio-04`.
 - Comece definindo CI, build e deploy em linguagem simples. Mostre um exemplo, depois nomeie suas partes.
 - Digite o primeiro YAML ao vivo. Explique dois espaços por nível, `-` para itens da lista e `|` para várias linhas. Os nomes das chaves permanecem em inglês porque fazem parte da linguagem.
 - Em cada bloco, leia o estado inicial com a turma. Os laboratórios são independentes; ninguém precisa copiar o resultado anterior. Cada um publica `actions-01` a `actions-07` na própria conta, sempre a partir do mesmo Codespace.
@@ -78,6 +79,7 @@ Uma instalação feita no Codespace não instala pacotes no runner. Um arquivo c
 | `scripts/checks.py` | Requisitos didáticos do YAML, com mensagens em português |
 | `templates/projeto/` | Aplicação, três testes e build do site |
 | `docs/solucoes/` | YAMLs completos, também usados pelos geradores e testes |
+| `docs/index.html` e `docs/style.css` | Apresentação estática, navegação por âncoras e tema violeta |
 | `tests/` | Instalação isolada, casos negativos, soluções e consistência do material |
 
 `setup.sh` preserva pastas existentes. `reset.sh NN` recria apenas uma pasta com o marcador `.git/curso-actions/exercicio`; não apaga repositórios no GitHub. O login salvo é reutilizado, mas um login antigo pode exigir ampliação do escopo `workflow`, conforme o README.

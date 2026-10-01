@@ -53,7 +53,7 @@ fi
 
 printf '\n✅ Curso de GitHub Actions instalado com sucesso!\n'
 printf 'Abra um terminal novo para carregar os comandos e o login salvo.\n'
-printf 'Comece pelo exercício 01 em %s/exercises/01-primeiro-workflow/README.md\n' "$CURSO_DIR"
+printf 'Comece pelo exercício 01 em https://fsilva-alt.github.io/devops-ghactions/#exercicio-01\n'
 printf 'Verificação local: check.sh 01 (é esperado reprovar antes de criar o workflow).\n'
 if [ "$CURSO_AUTH_GITHUB" = 0 ]; then
   printf 'Preparação concluída sem login. Antes da aula, rode sh install.sh para autenticar.\n'

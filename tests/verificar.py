@@ -74,24 +74,15 @@ for numero in range(1, 8):
     check(numero, True)
     print(f"✅ {numero:02d}: início reprovado, solução aprovada e erros detectados.")
 
-enunciados = sorted((CURSO / "exercises").glob("*/README.md"))
-assert len(enunciados) == 7
-assert [p.parent.name[:2] for p in enunciados] == [f"{n:02d}" for n in range(1, 8)]
-for arquivo in [CURSO / "README.md", *CURSO.glob("docs/*.md"), *enunciados]:
+for arquivo in [CURSO / "README.md", *CURSO.glob("docs/*.md")]:
     texto = arquivo.read_text(encoding="utf-8")
     for link in re.findall(r"\]\(([^)]+)\)", texto):
         if link.startswith(("https://", "http://", "#")):
             continue
         destino = unquote(link.split("#")[0])
         assert (arquivo.parent / destino).exists(), f"Link quebrado: {arquivo}: {link}"
-for arquivo in enunciados:
-    assert "Codespaces" in arquivo.read_text(encoding="utf-8")
 config = json.loads((CURSO / ".devcontainer/devcontainer.json").read_text())
 assert "install.sh" in config["postCreateCommand"]
 assert len(list((CURSO / "docs/solucoes").glob("*.yml"))) == 7
-slides = (CURSO / "docs/curso.js").read_text(encoding="utf-8")
-assert re.findall(r"\{id:'(0[1-7])', slug:", slides) == [f"{n:02d}" for n in range(1, 8)]
-for enunciado in enunciados:
-    assert enunciado.parent.name[3:] in slides
-assert sum(map(int, re.findall(r"time:(\d+)", slides))) == 155
-print("✅ Exatamente 7 exercícios, 155 minutos de blocos, links locais e configuração do Codespace.")
+subprocess.run([sys.executable, str(CURSO / "tests/apresentacao.py")], check=True)
+print("✅ Exatamente 7 exercícios no site, links locais e configuração do Codespace.")
