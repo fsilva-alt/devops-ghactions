@@ -5,7 +5,7 @@
 | Nível | Introdutório; nenhuma experiência prévia em CI/CD |
 | Duração | 3 horas, com 7 exercícios |
 | Formato | Aula ao vivo com demonstração e prática individual |
-| Ambiente obrigatório | GitHub Codespaces, criado a partir do repositório do curso |
+| Ambiente obrigatório | GitHub Codespaces com o modelo Blank; material preparado pelo instalador remoto |
 | Execução dos workflows | Runners Linux hospedados pelo GitHub Actions |
 | Pré-requisitos | Conta GitHub, acesso ao Codespaces, noções de terminal, commit, branch e push |
 | Projeto | Cardápio em Python, com testes e gerador de site já fornecidos |

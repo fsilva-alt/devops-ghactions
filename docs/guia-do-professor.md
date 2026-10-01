@@ -5,7 +5,7 @@ Curso introdutório em pt-BR, com **7 exercícios e 180 minutos**. Use a [ementa
 ## Preparação
 
 1. Publique este material em `fsilva-alt/devops-ghactions`, branch `main`, antes de distribuir os links. Se usar outro endereço, ajuste os links no README e na apresentação. Para hospedar os slides, configure Pages para a pasta `/docs` da `main`.
-2. Crie um Codespace novo desse repositório. Aguarde o `postCreateCommand`, rode `sh install.sh` para autenticar e abra um terminal novo. Verifique os 7 labs em `~/labs-actions` e o escopo `workflow` do login.
+2. Crie um Codespace com o modelo **Blank** e execute `sh -c "$(curl -fsSL https://raw.githubusercontent.com/fsilva-alt/devops-ghactions/main/install.sh)"`. Conclua a autenticação e abra um terminal novo. Verifique o material em `~/devops-ghactions`, os 7 laboratórios em `~/labs`, o atalho `labs` no explorador e o escopo `workflow` do login.
 3. Teste os 7 exercícios com uma conta de aluno, incluindo criação dos repositórios públicos, falha/correção no PR e configuração do Pages. Execute `bash tests/rodar.sh`; ela verifica a parte local, mas não substitui essa passagem no GitHub.
 4. Peça a preparação do README com um dia de antecedência. Confirme acesso e franquia de Codespaces: ele é o ambiente obrigatório. Se o acesso estiver bloqueado, resolva a permissão com a conta ou organização antes da aula.
 5. Combine o local de entrega dos links e a atuação dos monitores. Para cerca de 100 pessoas, use como referência um monitor para cada 25.
@@ -51,7 +51,7 @@ Uma instalação feita no Codespace não instala pacotes no runner. Um arquivo c
 | Sintoma | Como resolver |
 |---|---|
 | `check.sh: command not found` | Abrir terminal novo ou carregar `source ~/.bashrc`; também funciona `bash "$CURSO_DIR/scripts/check.sh" NN` |
-| Preparação automática falhou | Ler o log de criação do Codespace e executar `sh install.sh` na raiz do curso para retomar |
+| Instalador falhou | Ler a mensagem no terminal, corrigir a causa e executar novamente o comando de instalação do README |
 | `Author identity unknown` | Configurar `git config --global user.name` e `user.email` com dados do aluno |
 | Login informa token de ambiente | `unset GH_TOKEN GITHUB_TOKEN` antes de autenticar; abrir terminal novo após a instalação |
 | Push recusado por falta de `workflow` | `gh auth refresh --hostname github.com --scopes workflow`, depois `gh auth setup-git` e repetir push |
@@ -72,12 +72,13 @@ Uma instalação feita no Codespace não instala pacotes no runner. Um arquivo c
 
 | Arquivo | Responsabilidade |
 |---|---|
-| `.devcontainer/devcontainer.json` | Ambiente obrigatório do aluno |
-| `install.sh` | Dependência do verificador, geração dos labs, PATH e login |
+| `.devcontainer/devcontainer.json` | Ambiente opcional para manutenção do repositório |
+| `install.sh` | Download e atualização do curso, dependência do verificador, geração dos labs, atalho, PATH e login |
 | `scripts/lib.sh` | Nomes e números 01–07; caminhos e requisito de Codespaces |
 | `scripts/labs.sh` | Copia o projeto e o ponto de partida de cada exercício |
 | `scripts/checks.py` | Requisitos didáticos do YAML, com mensagens em português |
 | `templates/projeto/` | Aplicação, três testes e build do site |
+| `docs/guia-do-aluno.md` | Uso do ambiente e resolução de problemas comuns |
 | `docs/solucoes/` | YAMLs completos, também usados pelos geradores e testes |
 | `docs/index.html` e `docs/style.css` | Apresentação estática, navegação por âncoras e tema violeta |
 | `tests/` | Instalação isolada, casos negativos, soluções e consistência do material |

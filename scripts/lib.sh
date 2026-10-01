@@ -4,7 +4,7 @@ set -euo pipefail
 
 SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CURSO_DIR="$(cd "$SCRIPTS_DIR/.." && pwd)"
-LABS_DIR="${LABS_DIR:-$HOME/labs-actions}"
+LABS_DIR="${LABS_DIR:-$HOME/labs}"
 LAB_NOMES=("" "primeiro-workflow" "testes-no-push" "checks-no-pull-request"
   "variaveis-e-contextos" "jobs-e-dependencias" "artefatos-do-build" "deploy-no-pages")
 
@@ -14,7 +14,7 @@ erro() { printf '❌ %s\n' "$*" >&2; }
 
 exigir_codespaces() {
   if [[ "${CODESPACES:-}" != true && "${CURSO_MODO_TESTE:-0}" != 1 ]]; then
-    erro "Este curso usa obrigatoriamente o GitHub Codespaces. Abra Code > Codespaces no repositório do curso."
+    erro "Este curso usa obrigatoriamente o GitHub Codespaces. Crie um Codespace com o modelo Blank e siga a preparação do README."
     exit 2
   fi
 }
@@ -30,10 +30,12 @@ lab_nome() { printf '%s' "${LAB_NOMES[$((10#$1))]}"; }
 lab_dir() { printf '%s/%s-%s' "$LABS_DIR" "$1" "$(lab_nome "$1")"; }
 
 resolver_lab() {
-  local entrada="${1:-}" rel nn
+  local entrada="${1:-}" rel nn pasta labs
   if [[ -z "$entrada" ]]; then
-    rel="${PWD#"$LABS_DIR"/}"
-    [[ "$rel" != "$PWD" ]] || { erro "Informe o exercício: check.sh 01 (de 01 a 07)."; return 1; }
+    pasta="$(pwd -P)"
+    labs="$(cd "$LABS_DIR" && pwd -P)"
+    rel="${pasta#"$labs"/}"
+    [[ "$rel" != "$pasta" ]] || { erro "Informe o exercício: check.sh 01 (de 01 a 07)."; return 1; }
     entrada="${rel%%/*}"
   fi
   nn="$(normalizar_num "$entrada")" || { erro "Exercício inválido: '$entrada'. Use 01 a 07."; return 1; }

@@ -1,10 +1,10 @@
 {
-  "name": "Curso de GitHub Actions",
+  "name": "Desenvolvimento do curso de GitHub Actions",
   "image": "mcr.microsoft.com/devcontainers/python:1-3.12-bookworm",
   "features": {
     "ghcr.io/devcontainers/features/github-cli:1": {}
   },
-  "postCreateCommand": "CURSO_AUTH_GITHUB=0 sh install.sh",
+  "postCreateCommand": "python3 -m venv .venv && .venv/bin/python -m pip install -r scripts/requirements.txt",
   "customizations": {
     "vscode": {
       "extensions": ["github.vscode-github-actions", "ms-python.python"]

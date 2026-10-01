@@ -82,7 +82,7 @@ for arquivo in [CURSO / "README.md", *CURSO.glob("docs/*.md")]:
         destino = unquote(link.split("#")[0])
         assert (arquivo.parent / destino).exists(), f"Link quebrado: {arquivo}: {link}"
 config = json.loads((CURSO / ".devcontainer/devcontainer.json").read_text())
-assert "install.sh" in config["postCreateCommand"]
+assert "scripts/requirements.txt" in config["postCreateCommand"]
 assert len(list((CURSO / "docs/solucoes").glob("*.yml"))) == 7
 subprocess.run([sys.executable, str(CURSO / "tests/apresentacao.py")], check=True)
 print("✅ Exatamente 7 exercícios no site, links locais e configuração do Codespace.")

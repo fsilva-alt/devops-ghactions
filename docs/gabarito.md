@@ -4,13 +4,13 @@ Consulte após tentar. Os arquivos em `solucoes/` são os workflows completos e 
 
 | Exercício | Laboratório | Solução |
 |---|---|---|
-| 01 | `~/labs-actions/01-primeiro-workflow` | [01.yml](solucoes/01.yml) |
-| 02 | `~/labs-actions/02-testes-no-push` | [02.yml](solucoes/02.yml) |
-| 03 | `~/labs-actions/03-checks-no-pull-request` | [03.yml](solucoes/03.yml) |
-| 04 | `~/labs-actions/04-variaveis-e-contextos` | [04.yml](solucoes/04.yml) |
-| 05 | `~/labs-actions/05-jobs-e-dependencias` | [05.yml](solucoes/05.yml) |
-| 06 | `~/labs-actions/06-artefatos-do-build` | [06.yml](solucoes/06.yml) |
-| 07 | `~/labs-actions/07-deploy-no-pages` | [07.yml](solucoes/07.yml) |
+| 01 | `~/labs/01-primeiro-workflow` | [01.yml](solucoes/01.yml) |
+| 02 | `~/labs/02-testes-no-push` | [02.yml](solucoes/02.yml) |
+| 03 | `~/labs/03-checks-no-pull-request` | [03.yml](solucoes/03.yml) |
+| 04 | `~/labs/04-variaveis-e-contextos` | [04.yml](solucoes/04.yml) |
+| 05 | `~/labs/05-jobs-e-dependencias` | [05.yml](solucoes/05.yml) |
+| 06 | `~/labs/06-artefatos-do-build` | [06.yml](solucoes/06.yml) |
+| 07 | `~/labs/07-deploy-no-pages` | [07.yml](solucoes/07.yml) |
 
 Exemplo, **dentro do laboratório 02**:
 

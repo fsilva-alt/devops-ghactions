@@ -1,10 +1,10 @@
-# GitHub Actions: primeiros passos no Codespaces
+# Curso de GitHub Actions no GitHub Codespaces
 
 Curso **introdutório, em pt-BR, com exatamente 7 exercícios e 3 horas de aula**. Você vai automatizar testes e publicar um pequeno site de cardápio. O código Python já está pronto: o foco é entender e escrever workflows.
 
 **O GitHub Codespaces é obrigatório nos 7 exercícios.** É nele que você edita os arquivos e executa comandos. Os workflows rodam em outras máquinas: os runners do GitHub Actions.
 
-**Comece por [Antes da aula](#antes-da-aula).** Professor e monitores: [guia de condução](docs/guia-do-professor.md). Consulte também a [ementa](docs/ementa.md), a [apresentação navegável](https://fsilva-alt.github.io/devops-ghactions/) e o [gabarito comentado](docs/gabarito.md).
+Comece por [Antes da aula](#antes-da-aula) e depois siga a [Sequência da aula](#sequência-da-aula). O [guia do aluno](docs/guia-do-aluno.md) explica como acompanhar os exercícios e resolver problemas comuns. Consulte também a [ementa](docs/ementa.md), a [apresentação](https://fsilva-alt.github.io/devops-ghactions/), o [gabarito](docs/gabarito.md) e o [guia do professor](docs/guia-do-professor.md).
 
 ## O que você vai aprender
 
@@ -23,16 +23,21 @@ Conta pessoal no GitHub com acesso ao Codespaces, navegador e conexão à intern
 
 Faça a preparação pelo menos um dia antes.
 
-1. Abra [o repositório do curso](https://github.com/fsilva-alt/devops-ghactions) e selecione **Code → Codespaces → Create codespace on main**. Use o Codespace desse repositório para toda a aula. O arquivo `.devcontainer/devcontainer.json` instala Python, GitHub CLI e as extensões do editor; a preparação automática cria os laboratórios sem pedir login.
-2. Aguarde a criação e a preparação terminarem. Em **Terminal → New Terminal**, na raiz do curso, execute:
+1. Entre na sua conta no [GitHub](https://github.com).
+2. Crie um Codespace em branco: em [github.com/codespaces](https://github.com/codespaces), escolha o modelo **Blank**. Use esse mesmo Codespace durante toda a aula.
+3. No VS Code que abrir no navegador, acesse **Terminal → New Terminal**. Cole o comando abaixo e pressione Enter:
 
    ```bash
-   sh install.sh
+   sh -c "$(curl -fsSL https://raw.githubusercontent.com/fsilva-alt/devops-ghactions/main/install.sh)"
    ```
 
-   Autorize o GitHub CLI com a conta que usará na aula. O instalador pede o escopo `workflow`, necessário para enviar arquivos de workflows. Se não abrir uma janela, siga o código exibido em [github.com/login/device](https://github.com/login/device). Um login salvo válido é reutilizado.
+   O instalador baixa o material para `~/devops-ghactions`, instala o verificador de YAML e prepara os 7 laboratórios em `~/labs`. Também cria um atalho `labs` na pasta em que foi executado, para acessar os exercícios pelo explorador do VS Code, e disponibiliza os comandos `check.sh`, `reset.sh` e `setup.sh`. O símbolo `~` representa sua pasta pessoal no Codespace.
 
-3. Abra **um terminal novo**. Confira:
+   Autorize o GitHub CLI com a conta que usará na aula. O instalador pede o escopo `workflow`, necessário para enviar arquivos de workflows. Se não abrir uma janela, siga o código exibido em [github.com/login/device](https://github.com/login/device). Um login salvo válido é reutilizado. Aguarde a mensagem **Curso de GitHub Actions instalado com sucesso!**.
+
+   Se o login for interrompido, execute o instalador novamente. Os laboratórios serão preservados. A autenticação segue o mesmo procedimento do curso de Git: login pelo navegador, reutilização das credenciais salvas e configuração do Git com `gh auth setup-git`.
+
+4. Abra **um terminal novo**, ou execute `source ~/.bashrc` no bash / `source ~/.zshrc` no zsh, para carregar os comandos e a autenticação. Execute os comandos abaixo, um por vez:
 
    ```bash
    echo "$CODESPACES"
@@ -49,9 +54,9 @@ Faça a preparação pelo menos um dia antes.
    git config --global user.email "seu-email-da-conta-github"
    ```
 
-4. Pare o Codespace em [github.com/codespaces](https://github.com/codespaces): **⋯ → Stop codespace**. Reabra o mesmo ambiente no dia da aula. Codespaces e Actions têm franquias e cobrança separadas; confira sua disponibilidade de Codespaces antes do evento. A prática usa repositórios públicos e runners Linux padrão.
+5. Pare o Codespace em [github.com/codespaces](https://github.com/codespaces): **⋯ → Stop codespace**. Reabra o mesmo ambiente no dia da aula. Codespaces e Actions têm franquias e cobrança separadas; confira sua disponibilidade de Codespaces antes do evento. A prática usa repositórios públicos e runners Linux padrão.
 
-## Os 7 exercícios
+## Sequência da aula
 
 Os tempos incluem explicação, demonstração, prática e conferência.
 
@@ -67,15 +72,26 @@ Os tempos incluem explicação, demonstração, prática e conferência.
 
 Prática e explicações: **155 minutos**. Abertura: 10; intervalo: 10; encerramento: 5. Total: **180 minutos**.
 
-## Como os laboratórios funcionam
+## Como o ambiente funciona
 
-Cada exercício tem seu próprio repositório local em `~/labs-actions/NN-nome` e um ponto de partida pronto. Assim você consegue acompanhar o próximo mesmo que não tenha terminado o anterior. Todos usam o mesmo projeto de cardápio. O exercício 04 é uma demonstração isolada de configuração; os seguintes retomam o projeto de testes e build.
+### Primeiros passos no terminal e no editor
+
+- **Executar um comando:** copie a linha para o terminal e pressione Enter. Aguarde o término antes de executar a próxima.
+- **Editar um arquivo:** use `code nome-do-arquivo` na pasta do laboratório. Blocos de YAML vão no arquivo indicado, não no terminal. Salve com **Ctrl+S**, ou **Cmd+S** no Mac.
+- **Mudar de pasta:** use `cd caminho`. `pwd` mostra a pasta atual, e `ls` lista os arquivos.
+- **Usar os exemplos:** substitua `NN` pelo número do exercício. Por exemplo, `check.sh NN` vira `check.sh 02` no exercício 02.
+
+### Onde ficam os arquivos
+
+Cada exercício tem seu próprio repositório local em `~/labs/NN-nome` e um ponto de partida pronto. Assim você consegue acompanhar o próximo mesmo que não tenha terminado o anterior. Todos usam o mesmo projeto de cardápio. O exercício 04 é uma demonstração isolada de configuração; os seguintes retomam o projeto de testes e build.
 
 | Local | Conteúdo |
 |---|---|
-| `$CURSO_DIR` | Repositório do curso aberto no Codespace, normalmente `/workspaces/devops-ghactions` |
-| [Site do curso](https://fsilva-alt.github.io/devops-ghactions/) | Os 7 módulos com exercícios |
-| `~/labs-actions/NN-nome/` | Arquivos que você modifica e publica |
+| `~/devops-ghactions/` (`$CURSO_DIR`) | Material do curso: slides, scripts e documentos |
+| [Site do curso](https://fsilva-alt.github.io/devops-ghactions/) | Slides HTML com os enunciados dos 7 exercícios |
+| `~/devops-ghactions/docs/index.html` | Cópia local dos slides |
+| `~/labs/NN-nome/` | Arquivos que você modifica e publica |
+| `labs`, no explorador do VS Code | Atalho para `~/labs`, criado pelo instalador |
 | `.github/workflows/ci.yml`, dentro de cada lab | Workflow do exercício |
 | `$CURSO_DIR/docs/solucoes/` | Workflows completos para consulta depois da tentativa |
 
@@ -87,13 +103,15 @@ O instalador define `CURSO_DIR`, `LABS_DIR` e o `PATH` nos novos terminais bash/
 | `check.sh NN` | Analisa o YAML e alguns requisitos do exercício, sem acessar o GitHub |
 | `reset.sh NN` | **Apaga o trabalho local desse laboratório** e recria o estado inicial |
 
-Dentro de uma pasta de laboratório, `check.sh` e `reset.sh` descobrem o número automaticamente. Abra o módulo correspondente no [site do curso](https://fsilva-alt.github.io/devops-ghactions/) para acompanhar o exercício.
+Dentro de uma pasta de laboratório, `check.sh` e `reset.sh` descobrem o número automaticamente, inclusive pelo atalho `labs`. Após um reset, entre novamente na pasta com o `cd` do enunciado. Os enunciados ficam nos [slides HTML](https://fsilva-alt.github.io/devops-ghactions/); selecione o exercício no índice.
+
+Você pode executar o instalador novamente: ele atualiza o material do curso e cria apenas os laboratórios ausentes. Para atualizar o ponto de partida de um laboratório existente, guarde o trabalho que deseja manter e use `reset.sh NN`. Os caminhos podem ser personalizados com `CURSO_DIR` e `LABS_DIR`; `CURSO_REPO` e `CURSO_RAMO` permitem usar outra origem ou branch do material.
 
 **Um check local aprovado não comprova a execução na nuvem.** Conclua também a entrega indicada em cada enunciado: execução, logs, PR, artefato ou site publicado. O verificador não é um validador completo da linguagem do Actions.
 
 ### Publicar cada laboratório
 
-Cada exercício usa um repositório público separado, `actions-01` a `actions-07`, na sua conta. Não crie outro Codespace: continue no ambiente do curso. Na pasta do laboratório, depois de salvar e verificar o workflow:
+Cada exercício usa um repositório público separado, `actions-01` a `actions-07`, na sua conta. Não crie outro Codespace: continue no Codespace Blank preparado antes da aula. Na pasta do laboratório, depois de salvar e verificar o workflow:
 
 ```bash
 git add .github/workflows
@@ -132,6 +150,10 @@ Compartilhe os links pedidos nos 7 exercícios. Guarde a URL do site do exercíc
 
 Os geradores ficam em `scripts/labs.sh`, o verificador em `scripts/checks.py`, e o projeto em `templates/projeto/`. Os YAMLs do [gabarito](docs/gabarito.md) também são usados como pontos de partida e nos testes.
 
+A configuração em `.devcontainer/` é destinada à manutenção deste repositório. O aluno usa o modelo Blank e o instalador remoto, sem precisar clonar o curso manualmente.
+
+Em testes locais, `CURSO_AUTH_GITHUB=0` pula a autenticação, dispensa o `gh` e não habilita a remoção dos tokens nos terminais. Na instalação normal, o GitHub CLI é obrigatório e o primeiro login precisa de um terminal interativo. Fora do Codespaces, as variáveis de autenticação são mantidas.
+
 A apresentação está em `docs/index.html`, com estilos em `docs/style.css`. Abra o HTML diretamente no navegador para revisar as aulas; a navegação e as perguntas expansíveis funcionam sem JavaScript. Para conferir apenas seu conteúdo e links, execute `python3 tests/apresentacao.py`.
 
 ```bash
@@ -139,7 +161,7 @@ bash tests/rodar.sh          # testes em ambiente temporário, sem conta GitHub
 bash tests/rodar.sh --docker # mesma suíte em Ubuntu limpo, exige Docker
 ```
 
-A suíte confere instalação, preservação dos labs, YAMLs iniciais e resolvidos, erros comuns, links locais, os 7 enunciados, testes do projeto e build. `CURSO_MODO_TESTE=1` libera os scripts fora do Codespaces apenas para manutenção automatizada; a experiência do aluno continua obrigatoriamente no Codespaces. O modo de teste usa `CURSO_AUTH_GITHUB=0` e não cria repositórios nem publica sites.
+A suíte confere instalação via `curl` e `sh -c` em um workspace vazio, atualização do material, preservação dos labs e dos arquivos do workspace, atalho `labs`, autenticação simulada, YAMLs iniciais e resolvidos, erros comuns, links locais, os 7 enunciados, testes do projeto e build. `CURSO_MODO_TESTE=1` libera os scripts fora do Codespaces apenas para manutenção automatizada; a experiência do aluno continua obrigatoriamente no Codespaces. O modo de teste usa uma origem Git local e não cria repositórios no GitHub nem publica sites.
 
 ## Licença
 
