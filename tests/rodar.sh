@@ -8,5 +8,6 @@ case "${1:-}" in
     docker build -q -t curso-actions-testes -f "$RAIZ/tests/Dockerfile" "$RAIZ/tests"
     docker run --rm -v "$RAIZ:/curso:ro" curso-actions-testes bash /curso/tests/solucoes.sh
     ;;
-  *) printf 'Uso: bash tests/rodar.sh [--docker]\n' >&2; exit 2 ;;
+  --act) exec bash "$RAIZ/tests/act.sh" ;;
+  *) printf 'Uso: bash tests/rodar.sh [--docker | --act]\n' >&2; exit 2 ;;
 esac

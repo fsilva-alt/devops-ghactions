@@ -3,17 +3,17 @@ name: Variáveis e contextos
 on:
   workflow_dispatch:
     inputs:
-      mensagem:
-        description: Mensagem para a turma
+      receita:
+        description: Receita do dia
         required: true
         type: string
-        default: Olá, turma!
+        default: Brigadeiro
 
 permissions:
   contents: read
 
 env:
-  CURSO: GitHub Actions
+  COZINHA: Cozinha do Curso
 
 jobs:
   apresentar:
@@ -21,11 +21,11 @@ jobs:
     steps:
       - name: Mostrar contexto
         env:
-          MENSAGEM: ${{ inputs.mensagem }}
+          RECEITA: ${{ inputs.receita }}
           AUTOR: ${{ github.actor }}
           TURMA: ${{ vars.TURMA }}
         run: |
-          printf 'Curso: %s\nAutor: %s\nTurma: %s\nMensagem: %s\n' "$CURSO" "$AUTOR" "$TURMA" "$MENSAGEM"
+          printf 'Cozinha: %s\nReceita do dia: %s\nPedido por: %s\nTurma: %s\n' "$COZINHA" "$RECEITA" "$AUTOR" "$TURMA"
       - name: Verificar segredo sem exibir o valor
         env:
           TOKEN_DEMO: ${{ secrets.CURSO_TOKEN }}

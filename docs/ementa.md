@@ -1,52 +1,88 @@
-# Ementa — Introdução ao GitHub Actions
+# Ementa — Curso de GitHub Actions no GitHub Codespaces
 
 | Item | Definição |
 |---|---|
-| Nível | Introdutório; nenhuma experiência prévia em CI/CD |
+| Formato | Aula ao vivo, com exercícios no Codespace de cada participante |
 | Duração | 3 horas, com 7 exercícios |
-| Formato | Aula ao vivo com demonstração e prática individual |
-| Ambiente obrigatório | GitHub Codespaces com o modelo Blank; material preparado pelo instalador remoto |
-| Execução dos workflows | Runners Linux hospedados pelo GitHub Actions |
-| Pré-requisitos | Conta GitHub, acesso ao Codespaces, noções de terminal, commit, branch e push |
-| Projeto | Cardápio em Python, com testes e gerador de site já fornecidos |
+| Público | Iniciantes em CI/CD; não é preciso saber programar |
+| Pré-requisitos | Conta GitHub pessoal com acesso ao Codespaces e noções de terminal, commit, branch e push |
+| Preparação | Seguir a seção “Antes da aula” do README: criar um Codespace em branco, executar o instalador e conferir o ambiente com `check.sh 00` |
+| Execução dos workflows | Runners Linux hospedados pelo GitHub; simulação local com o act antes de cada publicação |
+| Projeto | Livro de receitas em Markdown, com um programa Python, três testes e um gerador de site já prontos |
 
-## Objetivos
+## Objetivos de aprendizagem
 
-Ao final, a pessoa consegue ler um workflow pequeno, reconhecer seus eventos, jobs e etapas, automatizar testes, investigar logs, parametrizar uma execução, ordenar jobs, recuperar um artefato e acompanhar um deploy guiado no GitHub Pages.
+Ao longo dos exercícios, você aprende a:
 
-**CI (integração contínua)**: verificar mudanças automaticamente antes de integrá-las. **Build**: produzir arquivos prontos para distribuição. **Deploy**: disponibilizar esses arquivos para quem vai usar o sistema. O curso conecta esses três passos com exemplos pequenos.
+- explicar o que é o GitHub Actions, que problemas ele resolve e onde ele entra em um processo de CI/CD;
+- ler um workflow e reconhecer seus eventos, jobs, etapas, actions e runners;
+- executar testes automaticamente a cada push e em cada pull request;
+- ler os logs de uma execução, encontrar a causa de uma falha e corrigi-la com um novo commit;
+- configurar uma execução com variáveis, contextos, entradas manuais e um segredo;
+- ordenar jobs com `needs` e entender por que cada job prepara seu próprio ambiente;
+- guardar o resultado do build como artefato e publicar um site no GitHub Pages.
 
-## Cronograma de 180 minutos
+**CI (integração contínua):** verificar automaticamente cada mudança antes de integrá-la. **Build:** gerar os arquivos finais a partir do projeto. **Deploy:** disponibilizar esses arquivos no destino. Os exercícios percorrem esses três passos com o mesmo projeto.
 
-| Horário | Atividade | Evidência de aprendizagem |
+## Conteúdo por módulo
+
+| Módulo | Conteúdo |
+|---|---|
+| Introdução | Como acompanhar a aula; o que é o GitHub Actions; problemas que ele resolve; CI, entrega contínua e implantação contínua; uso em equipe com pull requests e regras de proteção; breve história; cuidados com custos, segredos, permissões e actions de terceiros; Codespace, runner, act e Pages |
+| Abertura | Exercício 00, antes da aula: Git, GitHub CLI com escopo `workflow`, Docker e act |
+| 1. Fundamentos | Estrutura de um workflow em YAML: `name`, `on`, `permissions`, `jobs`, `runs-on`, `steps`, `run`; evento manual `workflow_dispatch`; execuções, jobs e logs na aba Actions |
+| 2. Integração contínua | Evento `push` com filtro de branch; `uses`, `with` e `run`; `actions/checkout` e `actions/setup-python`; evento `pull_request`; checks; leitura de logs; falha e correção |
+| 3. Configuração | `env`, `inputs`, contexto `github`, `vars` e `secrets`; `${{ }}` e variáveis do shell; segredos mascarados nos logs |
+| 4. Entrega contínua | `needs` e jobs em paralelo; um runner por job; build do site; `actions/upload-artifact`; artefato, cache e deploy; GitHub Pages com `configure-pages`, `upload-pages-artifact` e `deploy-pages`; `permissions` por job; `environment`; condição para publicar só a `main` |
+
+O projeto é um livro de receitas. As receitas ficam em arquivos Markdown na pasta `receitas/`; `receitas.py` lista as receitas e calcula a quantidade de um ingrediente para várias receitas; `build.py` gera o site em `dist/index.html`. O código vem pronto, e os enunciados guiam cada alteração.
+
+## Cronograma
+
+| Horário | Bloco | Evidência de aprendizagem |
 |---|---|---|
-| 0:00–0:10 | Abertura: localizar Codespace, labs e aba Actions | Explicar onde edita e onde o workflow executa |
-| 0:10–0:25 | 01 — Primeiro workflow | Execução manual com mensagem nos logs |
-| 0:25–0:50 | 02 — Testes no push | Push dispara testes aprovados |
-| 0:50–1:15 | 03 — Checks no pull request | PR com falha identificada e corrigida |
+| 0:00–0:10 | Abertura e introdução | Explicar o que o Actions automatiza e onde cada parte executa |
+| 0:10–0:25 | **Exercício 01** · Primeiro workflow | Execução manual com a mensagem no log |
+| 0:25–0:50 | **Exercício 02** · Testes no push | Push dispara os três testes aprovados |
+| 0:50–1:15 | **Exercício 03** · Checks no pull request | PR com a falha identificada e corrigida |
 | 1:15–1:25 | Intervalo | |
-| 1:25–1:45 | 04 — Variáveis e contextos | Mensagem personalizada, autor e turma; segredo presente |
-| 1:45–2:05 | 05 — Jobs e dependências | Grafo testar → empacotar; build bloqueado por teste falho |
-| 2:05–2:25 | 06 — Artefatos do build | Arquivo `site.zip` baixado e `index.html` inspecionado |
-| 2:25–2:55 | 07 — Deploy no Pages | Site público e execução de deploy bem-sucedida |
-| 2:55–3:00 | Encerramento | Links de entrega e Codespace parado |
+| 1:25–1:45 | **Exercício 04** · Variáveis e contextos | Receita do dia, autor e turma no log; segredo verificado sem exibir o valor |
+| 1:45–2:05 | **Exercício 05** · Jobs e dependências | Grafo testar → empacotar; build pulado após a falha dos testes |
+| 2:05–2:25 | **Exercício 06** · Artefatos do build | Artefato `site` baixado, com a receita nova |
+| 2:25–2:55 | **Exercício 07** · Deploy no Pages | Site público e execução de deploy concluída |
+| 2:55–3:00 | Encerramento | Links das entregas e Codespace parado |
 
-As durações dos exercícios incluem explicação e prática. Use aproximadamente um terço de cada bloco para demonstrar e o restante para praticar e conferir. A preparação de login e ambiente acontece antes da aula, sem um exercício adicional.
+Os tempos dos exercícios incluem explicação, demonstração e prática. Use cerca de um terço de cada bloco para os slides de conceito e o restante para a tarefa e a conferência.
 
-## Conteúdo dos 7 exercícios
+### Distribuição do tempo
 
-1. **Primeiro workflow:** indentação YAML, `name`, `on`, `workflow_dispatch`, `jobs`, `runs-on`, `steps`, `run`; aba Actions.
-2. **Testes no push:** eventos, filtro de branch, `uses`, `with`, checkout, versão do Python, instalação e testes; saída de comandos.
-3. **Checks no pull request:** branch de trabalho, filtro da branch de destino, check associado a um commit, logs, correção da causa e nova execução.
-4. **Variáveis e contextos:** `env`, entrada manual, `${{ }}`, contexto `github`, variável de repositório e segredo fictício; passagem para o shell por variáveis de ambiente.
-5. **Jobs e dependências:** etapas sequenciais, jobs paralelos por padrão, `needs`, runner separado para cada job, geração do site.
-6. **Artefatos:** persistência de arquivos gerados, `upload-artifact`, caminho, nome, retenção e download pela interface.
-7. **Deploy guiado:** Pages como destino, teste antes de publicar, artefato específico do Pages, permissões do token, environment e condição para publicar somente a `main`.
+| Tipo de bloco | Minutos |
+|---|---:|
+| Exercícios 01 a 07, com explicações | 155 |
+| Abertura e introdução | 10 |
+| Intervalo | 10 |
+| Encerramento | 5 |
+| **Total** | **180** |
+
+## Os exercícios
+
+Cada exercício de 01 a 07 tem um laboratório em `~/labs/NN-nome/`, com o livro de receitas e o workflow de partida. Os laboratórios são independentes: é possível começar um exercício sem ter concluído o anterior.
+
+| # | Exercício | Tempo | Estado inicial | Tarefa | Verificação local | Entrega no GitHub |
+|---|---|---:|---|---|---|---|
+| 00 | O ambiente está pronto? | 5 | Codespace com o curso instalado | Conferir Git, `gh`, Docker e act | Ferramentas presentes; workflow mínimo executado em um container | — |
+| 01 | Primeiro workflow | 15 | `.github/workflows/` vazia | Workflow manual com uma saudação | YAML com `workflow_dispatch`; mensagem no log da simulação | Execução manual verde |
+| 02 | Testes no push | 25 | Workflow de boas-vindas | Checkout, Python, dependências e testes no `push` | Três testes aprovados na simulação | Execução verde disparada por push |
+| 03 | Checks no pull request | 25 | Workflow de testes no push | Acrescentar `pull_request`; provocar e corrigir uma falha | Testes aprovados em uma simulação de PR | PR com execução vermelha e verde |
+| 04 | Variáveis e contextos | 20 | Workflow de boas-vindas | Input `receita`, `env.COZINHA`, `vars.TURMA`, `secrets.CURSO_TOKEN` | Simulação com valores locais de demonstração | Execução manual com a receita escolhida |
+| 05 | Jobs e dependências | 20 | Workflow com push e PR | Job `empacotar` com `needs: testar` | Dois jobs verdes, na ordem do `needs` | Execução verde e outra com o build pulado |
+| 06 | Artefatos do build | 20 | Workflow com testar e empacotar | Upload de `dist/` como `site`; receita de limonada | Artefato da simulação com `index.html` | Artefato com a receita nova |
+| 07 | Deploy no Pages | 30 | Workflow com o artefato | Workflow guiado de publicação; título personalizado | Em um PR simulado, o deploy não roda | URL pública do livro de receitas |
 
 ## Avaliação
 
-Cada enunciado contém um check local e uma entrega na interface do GitHub. A conclusão exige ambos. No exercício 03, explique por que o teste falhou; no 05, por que o segundo job precisa preparar seu próprio ambiente; no 07, diferencie gerar, guardar e publicar um site.
+A conclusão de cada exercício exige a verificação local (`check.sh NN`) e a entrega no GitHub. No exercício 03, explique qual linha causava a falha; no 05, por que o segundo job prepara seu próprio ambiente; no 07, a diferença entre gerar, guardar e publicar um site.
 
-## Continuidade após o curso
+## Continuidade
 
-Com esses fundamentos consolidados, próximos temas são cache, matrizes de versões, workflows reutilizáveis e regras de proteção de branches. Consulte a [documentação oficial em português](https://docs.github.com/pt/actions).
+Próximos temas: cache de dependências, matrizes de versões, workflows reutilizáveis, regras de proteção de branches e environments com aprovação. Consulte a [documentação oficial em português](https://docs.github.com/pt/actions).

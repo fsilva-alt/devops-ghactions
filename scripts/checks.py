@@ -137,11 +137,11 @@ class Verificador:
             self.testes(pr=n == 3)
         elif n == 4:
             dispatch = mapa(mapa(self.w.get("on")).get("workflow_dispatch"))
-            mensagem = mapa(mapa(dispatch.get("inputs")).get("mensagem"))
-            self.exigir(mensagem.get("type") == "string", "Defina o input mensagem como type: string em workflow_dispatch.")
-            self.exigir(mapa(self.w.get("env")).get("CURSO") == "GitHub Actions", "Defina env: CURSO: GitHub Actions no workflow.")
+            receita = mapa(mapa(dispatch.get("inputs")).get("receita"))
+            self.exigir(receita.get("type") == "string", "Defina o input receita como type: string em workflow_dispatch.")
+            self.exigir(mapa(self.w.get("env")).get("COZINHA") == "Cozinha do Curso", "Defina env: COZINHA: Cozinha do Curso no workflow.")
             envs = [mapa(s.get("env")) for j in self.jobs for s in self.steps(j)]
-            for chave, referencia in [("MENSAGEM", "inputs.mensagem"), ("AUTOR", "github.actor"),
+            for chave, referencia in [("RECEITA", "inputs.receita"), ("AUTOR", "github.actor"),
                                       ("TURMA", "vars.TURMA"), ("TOKEN_DEMO", "secrets.CURSO_TOKEN")]:
                 self.exigir(any(expressao(e.get(chave)) == "${{" + referencia + "}}" for e in envs),
                             f"Passe {referencia} para {chave} usando env na etapa.")
@@ -189,22 +189,25 @@ class Verificador:
 
 def main():
     n = int(sys.argv[1])
-    arquivo = Path(sys.argv[2]) / ".github/workflows/ci.yml"
+    pasta = Path(sys.argv[2])
+    arquivo = pasta / ".github/workflows/ci.yml"
+    titulo = f"Exercício {n:02d} — {pasta.name.split('-', 1)[-1]}"
     try:
         workflow = yaml.load(arquivo.read_text(encoding="utf-8"), Loader=WorkflowLoader)
         if not isinstance(workflow, dict):
             raise ValueError("O workflow deve ser um mapa YAML, com name, on e jobs.")
         falhas = Verificador(workflow).verificar(n)
     except (OSError, ValueError, yaml.YAMLError) as exc:
-        print(f"❌ Não consegui ler {arquivo}: {exc}\n💡 Confira o nome do arquivo, a indentação e as chaves do YAML.")
+        print(f"❌ {titulo}: ainda não. Não consegui ler .github/workflows/ci.yml:\n\n • {exc}\n"
+              "   💡 Confira o nome do arquivo, a indentação e as chaves do YAML.\n")
         return 1
     if falhas:
-        print(f"❌ Exercício {n:02d}: ajuste os seguintes pontos:")
+        print(f"❌ {titulo}: ainda não. Encontrei {len(falhas)} ponto(s) para ajustar no YAML:")
         for dica in falhas:
-            print(f"  💡 {dica}")
+            print(f"\n • {dica}")
+        print()
         return 1
-    print(f"✅ Exercício {n:02d}: requisitos locais atendidos.")
-    print("Confira também a execução e a entrega pedida na aba Actions; esta análise é estática.")
+    print(f"✅ YAML do exercício {n:02d}: requisitos atendidos.")
     return 0
 
 

@@ -1,104 +1,568 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#121016">
-  <meta name="description" content="Introdução ao GitHub Actions em português: 7 exercícios, 3 horas e prática obrigatória no GitHub Codespaces. Testes, build e deploy no GitHub Pages.">
-  <title>Curso de Github Action</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GitHub Actions no Codespaces</title>
+<meta name="description" content="Aprenda GitHub Actions desde o primeiro workflow, com explicações em português e 7 exercícios no GitHub Codespaces: testes, build e publicação de um livro de receitas no GitHub Pages.">
+<meta name="theme-color" content="#0F120D">
+<script>
+/* Aplica o tema salvo antes de desenhar a página, para não piscar. */
+try { const t = localStorage.getItem('curso-actions-tema'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=DM+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Mesma estrutura visual dos cursos de Git e de Docker; a cor própria deste curso é o verde-limão. */
+:root{
+  --bg:#0F120D; --panel:#161A13; --panel-2:#1D2219; --ink:#EEF2E6; --ink-2:#C5CCB8; --muted:#8A9380;
+  --accent:#C3E84B; --accent-ink:#1A2400; --accent-soft:rgba(195,232,75,.12); --accent-hover:#D3F06E;
+  --line:#262C21; --line-2:#363E2F; --blue:#7DB4FF; --amber:#F2C14E; --red:#F07A7A; --green:#7FDDB0;
+  --code-bg:#0A0C08; --rail-bg:rgba(15,18,13,.92);
+  --display:"Sora","DM Sans","Segoe UI",Helvetica,Arial,sans-serif;
+  --body:"DM Sans","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:"IBM Plex Mono","JetBrains Mono",Menlo,Consolas,monospace;
+  --r:10px; --r-s:6px;
+  --gutter:clamp(20px,4vw,56px);
+  color-scheme:dark;
+}
+@media (prefers-color-scheme:light){
+  :root:not([data-theme="dark"]){
+    --bg:#F6F7F0; --panel:#FFFFFF; --panel-2:#EEF1E4; --ink:#1B2014; --ink-2:#3B4331; --muted:#646D58;
+    --accent:#4A7300; --accent-ink:#FFFFFF; --accent-soft:rgba(74,115,0,.10); --accent-hover:#3C5E00;
+    --line:#DDE2D0; --line-2:#C5CCB3; --blue:#1F5FBF; --amber:#8A5A00; --red:#B42318; --green:#17714A;
+    --code-bg:#F1F3EA; --rail-bg:rgba(246,247,240,.92);
+    color-scheme:light;
+  }
+}
+:root[data-theme="light"]{
+  --bg:#F6F7F0; --panel:#FFFFFF; --panel-2:#EEF1E4; --ink:#1B2014; --ink-2:#3B4331; --muted:#646D58;
+  --accent:#4A7300; --accent-ink:#FFFFFF; --accent-soft:rgba(74,115,0,.10); --accent-hover:#3C5E00;
+  --line:#DDE2D0; --line-2:#C5CCB3; --blue:#1F5FBF; --amber:#8A5A00; --red:#B42318; --green:#17714A;
+  --code-bg:#F1F3EA; --rail-bg:rgba(246,247,240,.92);
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:clamp(15px,1.12vw,18.5px);line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:var(--r-s)}
+code,pre,kbd{font-family:var(--mono)}
+code{background:var(--panel-2);border-radius:4px;padding:.08em .4em;font-size:.9em;color:var(--accent);white-space:nowrap}
+/* código longo (preparado em renderSlide) quebra só nos espaços em vez de vazar da caixa */
+code.wrap{white-space:normal;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+code.wrap span{white-space:nowrap}
+h1,h2,h3{font-family:var(--display);font-weight:600;letter-spacing:-.015em;line-height:1.15;margin:0;text-wrap:balance}
+p{margin:0}
+strong{font-weight:600;color:var(--ink)}
+::selection{background:var(--accent);color:var(--accent-ink)}
+.mono{font-family:var(--mono)}
+.hidden{display:none!important}
+
+/* ---------- Tema claro/escuro (canto superior direito de todas as páginas) ---------- */
+.tema{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line-2);border-radius:999px;background:var(--panel);color:var(--ink-2);font-family:var(--mono);font-size:.78em;padding:6px 12px;cursor:pointer;white-space:nowrap;transition:border-color .15s,color .15s}
+.tema:hover{border-color:var(--accent);color:var(--accent)}
+.tema svg{width:15px;height:15px;flex:none}
+@media (max-width:640px){.tema .rot{display:none}.tema{padding:6px 8px}}
+
+/* ---------- Home ---------- */
+#home{padding:var(--gutter);padding-block:clamp(20px,4vh,40px) clamp(32px,6vh,80px);max-width:1280px;margin:0 auto}
+.hometop{display:flex;justify-content:flex-end;align-items:center;gap:16px;margin-bottom:clamp(24px,5vh,56px);font-family:var(--mono);font-size:.76em;color:var(--muted)}
+.hometop a{color:var(--ink-2);text-decoration:none;border-bottom:1px solid var(--line-2)}
+.hometop a:hover{color:var(--accent);border-bottom-color:var(--accent)}
+.hometop b{color:var(--accent);font-weight:500}
+.hero{display:grid;grid-template-columns:1fr auto;gap:32px;align-items:end;padding-bottom:clamp(24px,4vh,40px);border-bottom:1px solid var(--line)}
+.hero h1{font-size:clamp(38px,5.5vw,72px);font-weight:700;line-height:1.02}
+.hero h1 span{display:block;color:var(--accent);font-weight:500}
+.hero .sub{color:var(--ink-2);max-width:58ch;margin-top:18px;font-size:1.05em}
+.hero .meta{display:flex;gap:28px;font-family:var(--mono);font-size:.78em;color:var(--muted);text-align:left}
+.hero .meta b{display:block;color:var(--ink);font-size:1.9em;font-family:var(--display);font-weight:600;line-height:1.1;margin-bottom:2px}
+@media (max-width:760px){.hero{grid-template-columns:1fr}}
+.legend{display:flex;flex-wrap:wrap;gap:10px 28px;margin:24px 0 20px;font-family:var(--mono);font-size:.78em;color:var(--muted);align-items:center}
+.legend .sw{display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--line-2);vertical-align:0;margin-right:8px}
+.legend .sw.el{background:var(--amber)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.tile{position:relative;display:grid;grid-template-rows:auto 1fr auto;gap:14px;border:1px solid var(--line);border-radius:var(--r);background:var(--panel);padding:20px;color:var(--ink);text-decoration:none;min-height:180px;transition:border-color .15s ease,background .15s ease}
+.tile:hover,.tile:focus-visible{border-color:var(--accent);background:var(--panel-2);outline:none}
+.tile .num{font-family:var(--mono);font-size:.82em;color:var(--accent);letter-spacing:.06em}
+.tile .row{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.tile .mod{font-family:var(--mono);font-size:.68em;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);text-align:right;line-height:1.4}
+.tile h3{font-size:clamp(18px,1.4vw,21px);font-weight:600;line-height:1.25}
+.tile .cmds{font-family:var(--mono);font-size:.76em;color:var(--muted);line-height:1.6}
+.tile .foot{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:12px;font-family:var(--mono);font-size:.72em;color:var(--muted)}
+.tile .optional{color:var(--amber)}
+.homefoot{margin-top:40px;display:flex;flex-wrap:wrap;gap:10px 32px;font-family:var(--mono);font-size:.76em;color:var(--muted);border-top:1px solid var(--line);padding-top:18px}
+.homefoot a{color:var(--ink-2)}
+kbd{display:inline-block;border:1px solid var(--line-2);border-radius:4px;padding:0 6px;font-size:.9em;color:var(--ink-2);line-height:1.6;margin:0 2px;background:var(--panel)}
+
+/* ---------- Deck ---------- */
+#deck{min-height:100vh;display:grid;grid-template-rows:auto 1fr auto;grid-template-columns:minmax(0,1fr)}
+.rail{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px var(--gutter);border-bottom:1px solid var(--line);background:var(--rail-bg);backdrop-filter:blur(8px);font-family:var(--mono);font-size:.78em;position:sticky;top:0;z-index:5}
+.rail.bottom{border-bottom:0;border-top:1px solid var(--line);position:sticky;bottom:0}
+.rail .crumb{color:var(--muted);text-align:center;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rail .crumb b{color:var(--ink-2);font-weight:500}
+.rail .right{display:flex;align-items:center;gap:12px}
+.rail .tema{font-size:1em}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line-2);border-radius:var(--r-s);background:transparent;color:var(--ink-2);font-family:var(--mono);font-size:1em;padding:8px 14px;cursor:pointer;text-decoration:none;transition:border-color .15s,color .15s,background .15s;white-space:nowrap}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.primary:hover{background:var(--accent-hover);color:var(--accent-ink)}
+.btn[disabled]{opacity:.3;pointer-events:none}
+.counter{font-variant-numeric:tabular-nums;color:var(--muted)}
+.dots{display:flex;gap:6px}
+.dots i{width:18px;height:3px;border-radius:2px;background:var(--line-2);display:block}
+.dots i.on{background:var(--accent)}
+.slide{padding:clamp(28px,5vh,56px) var(--gutter);max-width:1200px;margin:0 auto;width:100%;animation:in .25s ease}
+@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.slide,.tile,.btn,.tema{animation:none;transition:none}}
+.slide .eyebrow{font-family:var(--mono);font-size:.74em;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);margin-bottom:12px}
+.slide h2{font-size:clamp(26px,3.4vw,44px);margin-bottom:clamp(20px,3.5vh,36px);font-weight:600}
+.slide h3{font-size:clamp(15px,1.15vw,17px);font-weight:600;letter-spacing:0;margin-bottom:10px;color:var(--ink)}
+.lead{font-size:clamp(17px,1.45vw,22px);max-width:60ch;line-height:1.5;color:var(--ink-2);font-weight:400}
+.lead strong,.lead em{color:var(--ink)}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:clamp(16px,2vw,28px);align-items:start}
+.cols.w2{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.cols.s2{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}
+@media (max-width:820px){.cols.s2{grid-template-columns:1fr}}
+/* minmax(0,…) e min-width:0: uma linha longa de comando rola dentro do bloco em vez de alargar a coluna */
+.cols>*{min-width:0}
+.stack{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(14px,2vh,22px)}
+.box{border:1px solid var(--line);border-radius:var(--r);background:var(--panel);padding:clamp(16px,1.6vw,22px)}
+.box.lift{border-color:var(--line-2);background:var(--panel-2)}
+.box.soft{background:transparent}
+.box p{color:var(--ink-2)}
+.box p+p{margin-top:.6em}
+.callout{border-left:2px solid var(--accent);padding:4px 0 4px 16px;color:var(--ink-2)}
+.callout.warn{border-left-color:var(--amber)}
+.callout.warn strong{color:var(--amber)}
+.callout strong{color:var(--accent)}
+pre.cmd{margin:0;background:var(--code-bg);border:1px solid var(--line);border-radius:var(--r-s);padding:14px 16px;font-size:clamp(13px,1vw,15.5px);line-height:1.6;overflow-x:auto;color:var(--ink)}
+pre.cmd .p{color:var(--accent);user-select:none}
+pre.cmd .c{color:var(--muted)}
+pre.cmd .o{color:var(--muted)}
+pre.cmd .add{color:var(--green)}
+pre.cmd .del{color:var(--red)}
+pre.cmd .mk{color:var(--amber)}
+pre.cmd .k{color:var(--accent)}
+pre.cmd .x{color:var(--amber)}
+.file{font-family:var(--mono);font-size:.72em;color:var(--muted);letter-spacing:.04em;margin-bottom:6px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-family:var(--mono);font-size:.76em;border:1px solid var(--line-2);border-radius:999px;color:var(--ink-2);padding:4px 12px;background:transparent}
+.chip.amber{border-color:var(--amber);color:var(--amber)}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:14px;counter-reset:s}
+.steps li{display:grid;grid-template-columns:32px minmax(0,1fr);gap:12px;align-items:start;counter-increment:s}
+.steps li::before{content:counter(s);font-family:var(--mono);font-size:.8em;color:var(--accent);border:1px solid var(--line-2);border-radius:50%;width:24px;height:24px;display:grid;place-items:center;margin-top:3px}
+.steps li .t{margin-bottom:8px;color:var(--ink-2)}
+.steps li>div{color:var(--ink-2)}
+.steps pre.cmd{padding:10px 14px}
+table.kv{width:100%;border-collapse:collapse;font-size:.94em}
+table.kv th,table.kv td{text-align:left;padding:10px 10px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--ink-2)}
+table.kv tr:last-child td{border-bottom:0}
+table.kv th{font-family:var(--mono);font-weight:400;text-transform:uppercase;letter-spacing:.1em;font-size:.7em;color:var(--muted)}
+table.kv th:empty{padding:0;border:0}
+table.kv td:first-child{font-family:var(--mono);color:var(--accent);white-space:nowrap;font-size:.9em}
+.tw{overflow-x:auto}
+ul.links{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+ul.links li{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:baseline}
+ul.links li::before{content:"↗";color:var(--muted);font-family:var(--mono);font-size:.9em}
+ul.links a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line-2)}
+ul.links a:hover{color:var(--accent);border-bottom-color:var(--accent)}
+ul.links small{display:block;color:var(--muted);font-family:var(--mono);font-size:.76em;margin-top:2px}
+ul.plain{margin:0;padding-left:1.1em;display:grid;gap:6px;color:var(--ink-2)}
+.big{font-family:var(--mono);font-size:.8em;color:var(--accent);letter-spacing:.1em}
+.big::before{content:"Exercício "}
+details{border:1px solid var(--line-2);border-radius:var(--r);padding:12px 16px}
+details summary{cursor:pointer;font-family:var(--mono);color:var(--amber);letter-spacing:.04em;font-size:.8em}
+details[open] summary{margin-bottom:10px}
+
+/* Diagramas de fluxo: evento → workflow → jobs, e o grafo de uma execução */
+.flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:10px;justify-content:center}
+.flow .node{flex:1 1 150px;min-width:150px;border:1px solid var(--line-2);border-radius:var(--r);background:var(--panel);padding:14px;display:grid;gap:4px;align-content:center;text-align:center}
+.flow .node b{font-family:var(--display);font-weight:600;font-size:.98em;color:var(--ink)}
+.flow .node small{color:var(--muted);font-family:var(--mono);font-size:.72em;line-height:1.4}
+.flow .node.hi{border-color:var(--accent);background:var(--accent-soft)}
+.flow .node.blue{border-color:var(--blue)}
+.flow .node.dim{border-color:var(--line);color:var(--muted)}
+.flow .node.warn{border-color:var(--amber);border-style:dashed}
+.flow .node.ok{border-color:var(--green)}
+.flow .node.ok b::before{content:"✓ ";color:var(--green)}
+.flow .node.fail{border-color:var(--red)}
+.flow .node.fail b::before{content:"✗ ";color:var(--red)}
+.flow .node.skip{border-style:dashed;border-color:var(--line-2)}
+.flow .node.skip b{color:var(--muted)}
+.flow .node.skip b::before{content:"⊘ "}
+.flow .arr{flex:0 0 auto;display:grid;place-items:center;font-family:var(--mono);font-size:.72em;color:var(--muted);text-align:center;padding:0 6px;gap:2px}
+.flow .arr strong{color:var(--accent);font-weight:500}
+.flow .arr .a{font-size:1.6em;line-height:1;color:var(--accent)}
+.flow .arr.back .a{color:var(--amber)}
+@media (max-width:640px){.flow{flex-direction:column}.flow .arr .a{transform:rotate(90deg)}}
+/* a caixa "runner": um grupo de nós com borda tracejada e rótulo */
+.netbox{border:1px dashed var(--line-2);border-radius:var(--r);padding:26px 14px 14px;position:relative;margin-top:10px}
+.netbox::before{content:attr(data-label);position:absolute;top:-10px;left:14px;background:var(--bg);padding:0 8px;font-family:var(--mono);font-size:.72em;color:var(--accent);letter-spacing:.08em;text-transform:uppercase}
+
+/* Linha do tempo (introdução) */
+.timeline{list-style:none;margin:clamp(28px,5vh,48px) 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px}
+.timeline li{border-top:2px solid var(--line-2);padding-top:20px;min-width:0}
+.timeline .date{display:block;font-family:var(--mono);font-size:.8em;color:var(--muted);margin-bottom:20px}
+.timeline h3{font-size:clamp(20px,2vw,26px);margin-bottom:12px}
+.timeline p{color:var(--ink-2);max-width:32ch}
+.timeline .hi{border-color:var(--accent)}
+.timeline .hi .date{color:var(--accent)}
+@media (max-width:700px){.timeline{grid-template-columns:1fr;gap:24px}.timeline li{border-top:0;border-left:2px solid var(--line-2);padding:0 0 0 20px}.timeline .date{margin-bottom:8px}.timeline p{max-width:none}}
+@media (max-width:540px){.rail{padding-inline:12px;gap:8px}.rail .crumb{display:none}.btn{padding:8px 10px}.dots{display:none}}
+</style>
 </head>
 <body>
-  <a class="skip" href="#conteudo">Pular para o conteúdo</a>
-  <header class="topbar">
-    <a class="brand" href="#home" aria-label="GitHub Actions, início"><span class="brand-icon" aria-hidden="true">⌘</span><span>devops<span class="brand-slash"> / </span><strong>actions</strong></span></a>
-    <nav aria-label="Navegação principal">
-      <a href="https://github.com/fsilva-alt/devops-ghactions#antes-da-aula">Preparação <span aria-hidden="true">↗</span></a>
-      <a href="https://github.com/fsilva-alt/devops-ghactions">Repositório <span aria-hidden="true">↗</span></a>
-      <span class="language">PT-BR</span>
-    </nav>
-  </header>
+<noscript><p style="padding:24px">Os slides precisam de JavaScript. Os enunciados resumidos também estão no <a href="https://github.com/fsilva-alt/devops-ghactions#sequência-da-aula">README do curso</a>.</p></noscript>
+<main id="home"></main>
+<main id="deck" class="hidden">
+  <div class="rail">
+    <a class="btn" href="#/" id="btnHome">← Exercícios</a>
+    <div class="crumb" id="crumb"></div>
+    <div class="right"><div class="counter" id="counter"></div><button class="tema" type="button"></button></div>
+  </div>
+  <section class="slide" id="slide" aria-live="polite"></section>
+  <div class="rail bottom">
+    <button class="btn" id="btnPrev">← Anterior</button>
+    <div class="dots" id="dots"></div>
+    <button class="btn primary" id="btnNext">Próximo →</button>
+  </div>
+</main>
 
-  <main id="conteudo">
-    <div id="home">
-      <section class="hero" aria-labelledby="titulo">
-        <div>
-          <p class="eyebrow"><span class="status-dot"></span> INTRODUÇÃO AO GITHUB ACTIONS</p>
-          <h1 id="titulo">Curso de Github Action</h1>
-          <p class="hero-description">Aprenda os fundamentos da automação com Github Actions.</p>
-          <div class="hero-actions">
-            <a class="button primary" href="#intro">Iniciar o curso <span aria-hidden="true">→</span></a>
-            <span class="small-note">Prática no GitHub Codespaces.</span>
-          </div>
-          <div class="stats" aria-label="Informações do curso">
-            <div><strong>07</strong><span>exercícios guiados</span></div>
-            <div><strong>03<span class="unit">h</span></strong><span>de teoria + prática</span></div>
-            <div><strong>01</strong><span>site publicado no GitHub Pages</span></div>
-          </div>
+<script>
+/* ---------- helpers ---------- */
+const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+// Command block: lines starting with "$ " become prompt lines; "# " comment lines; "+ "/"- " diff lines; "> " output lines.
+function cmd(text){
+  const lines = text.replace(/^\n/,'').replace(/\n\s*$/,'').split('\n');
+  return '<pre class="cmd">' + lines.map(l=>{
+    if (l.startsWith('$ ')) return '<span class="p">$ </span>' + esc(l.slice(2));
+    if (/^\s*#/.test(l)) return '<span class="c">' + esc(l) + '</span>';
+    if (l.startsWith('+ ')) return '<span class="add">' + esc(l) + '</span>';
+    if (l.startsWith('- ')) return '<span class="del">' + esc(l) + '</span>';
+    if (l.startsWith('> ')) return '<span class="o">' + esc(l.slice(2)) + '</span>';
+    return esc(l);
+  }).join('\n') + '</pre>';
+}
+
+// Conteúdo de arquivo YAML: chaves em destaque, comentários apagados e ${{ }} em âmbar.
+// Vai no editor, não no terminal; o rótulo diz em qual arquivo.
+function yaml(text, arquivo='.github/workflows/ci.yml'){
+  const lines = text.replace(/^\n/,'').replace(/\n\s*$/,'').split('\n');
+  return (arquivo?`<div class="file">${esc(arquivo)}</div>`:'') + '<pre class="cmd">' + lines.map(l=>{
+    const m = l.match(/^(\s*)(#.*)$/);
+    if (m) return m[1] + '<span class="c">' + esc(m[2]) + '</span>';
+    return esc(l)
+      .replace(/^(\s*(?:-\s+)?)([A-Za-z_][\w.-]*)(:)(?=\s|$)/, '$1<span class="k">$2</span>$3')
+      .replace(/\$\{\{[^}]*\}\}/g, s => '<span class="x">' + s + '</span>');
+  }).join('\n') + '</pre>';
+}
+
+// Conteúdo de um arquivo comum (Markdown, Python), com o nome em cima.
+function arquivo(nome, text){
+  return `<div class="file">${esc(nome)}</div><pre class="cmd">${esc(text.replace(/^\n/,'').replace(/\n\s*$/,''))}</pre>`;
+}
+
+// Grafo de jobs de uma execução: [{t:'testar', s:'3 testes', st:'ok'|'fail'|'skip'|'hi'}]
+function jobs(lista, seta='needs'){
+  return '<div class="flow">' + lista.map((j,i)=>
+    (i?`<div class="arr"><span class="a">→</span>${seta}</div>`:'') +
+    `<div class="node ${j.st||''}"><b>${j.t}</b>${j.s?`<small>${j.s}</small>`:''}</div>`).join('') + '</div>';
+}
+
+function docs(items){
+  return '<p style="margin-bottom:14px;color:var(--muted)">Links para consultar depois. A documentação do GitHub tem versão em português.</p><ul class="links">' + items.map(i=>`<li><div><a href="${i.href}" target="_blank" rel="noopener">${i.t}</a>${i.s?`<small>${i.s}</small>`:''}</div></li>`).join('') + '</ul>';
+}
+function kv(rows, head=['Comando','Para quê']){
+  return `<div class="tw"><table class="kv"><thead><tr>${head.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>` +
+    rows.map(r=>`<tr>${r.map((c,i)=>`<td>${i===0?`<code>${esc(c)}</code>`:c}</td>`).join('')}</tr>`).join('') + '</tbody></table></div>';
+}
+function steps(items){ return '<ol class="steps">' + items.map(i=>`<li><div>${i}</div></li>`).join('') + '</ol>'; }
+function chips(list, cls=''){ return `<div class="chips">${list.map(c=>`<span class="chip ${cls}">${esc(c)}</span>`).join('')}</div>`; }
+
+// Standard cover slide for a exercício.
+function cover(d, objetivo, onde, extra=''){
+  const nn = String(d.n).padStart(2,'0');
+  return `<div class="cols s2"><div class="stack">
+    <div class="big">${nn}</div>
+    <p class="lead">${objetivo}</p>
+    ${chips(d.cmds)}
+    ${extra}
+  </div><div class="stack">
+    <div class="box lift"><h3>Onde fazer</h3>${onde}</div>
+    <div class="box soft"><h3>Para este exercício</h3>${kv([['⏱ tempo', `${d.time} min${d.antes?' · antes da aula':''}`],['módulo', d.mod],['verificação', `<code>check.sh ${nn}</code>`],['entrega', d.entrega]], ['',''])}</div>
+  </div></div>`;
+}
+const lab = (nn, nome) => `<p>No terminal do Codespace, na pasta do laboratório:</p>${cmd('$ cd ~/labs/' + nn + '-' + nome)}`;
+const qualquer = '<p>No terminal do Codespace, em <strong>qualquer pasta</strong>. Estes comandos conferem as ferramentas do Codespace e não dependem de arquivos da pasta atual.</p>';
+const verificacao = (nn, texto) => `<div class="box"><h3>Verificação</h3>${cmd('$ check.sh ' + nn)}<p style="margin-top:10px;color:var(--muted)">${texto}</p></div>`;
+const publicar = nn => cmd(`$ git add .github/workflows/ci.yml
+$ git commit -m "Configura workflow do exercício ${nn}"
+$ gh repo create actions-${nn} --public --source=. --remote=origin --push
+$ gh browse --actions`);
+</script>
+<script>
+/* ---------- doc links ---------- */
+const GA = 'https://docs.github.com/pt/actions/';
+const CLI = c => 'https://cli.github.com/manual/gh_' + c;
+const L = {
+  entender:  {t:'Entender o GitHub Actions', href:GA+'get-started/understand-github-actions', s:'eventos, workflows, jobs, actions e runners'},
+  inicio:    {t:'Início rápido do GitHub Actions', href:GA+'get-started/quickstart', s:'o primeiro workflow, passo a passo'},
+  ci:        {t:'Integração contínua', href:GA+'get-started/continuous-integration', s:'o que é CI e como o Actions ajuda'},
+  cd:        {t:'Implantação contínua', href:GA+'get-started/continuous-deployment', s:'o que é CD e como publicar com workflows'},
+  sintaxe:   {t:'Sintaxe de workflow', href:GA+'reference/workflows-and-actions/workflow-syntax', s:'on, jobs, runs-on, steps, needs, if, permissions'},
+  eventos:   {t:'Eventos que disparam workflows', href:GA+'reference/workflows-and-actions/events-that-trigger-workflows', s:'push, pull_request, workflow_dispatch, schedule…'},
+  manual:    {t:'Executar um workflow manualmente', href:GA+'how-tos/manage-workflow-runs/manually-run-a-workflow', s:'o botão Run workflow e o gh workflow run'},
+  logs:      {t:'Como ler os logs de uma execução', href:GA+'how-tos/monitor-workflows/use-workflow-run-logs'},
+  runners:   {t:'Runners hospedados pelo GitHub', href:GA+'concepts/runners/github-hosted-runners', s:'ubuntu-latest e as outras máquinas disponíveis'},
+  contextos: {t:'Contextos', href:GA+'reference/workflows-and-actions/contexts', s:'github, env, inputs, vars, secrets, steps'},
+  variaveis: {t:'Variáveis', href:GA+'reference/workflows-and-actions/variables', s:'env no YAML e vars do repositório'},
+  segredos:  {t:'Como usar segredos', href:GA+'how-tos/write-workflows/choose-what-workflows-do/use-secrets'},
+  jobs:      {t:'Como usar jobs em um workflow', href:GA+'how-tos/write-workflows/choose-what-workflows-do/use-jobs', s:'needs e jobs em paralelo'},
+  artefatos: {t:'Artefatos de workflow', href:GA+'concepts/workflows-and-actions/workflow-artifacts', s:'guardar e baixar arquivos de uma execução'},
+  pages:     {t:'Workflows personalizados com o GitHub Pages', href:'https://docs.github.com/pt/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages'},
+  ambientes: {t:'Implantações e environments', href:GA+'reference/workflows-and-actions/deployments-and-environments'},
+  token:     {t:'O GITHUB_TOKEN', href:GA+'concepts/security/github_token', s:'a credencial de cada execução e o bloco permissions'},
+  seguro:    {t:'Uso seguro do Actions', href:GA+'reference/security/secure-use', s:'segredos, permissões e actions de terceiros'},
+  custos:    {t:'Cobrança do GitHub Actions', href:'https://docs.github.com/pt/billing/concepts/product-billing/github-actions', s:'minutos incluídos e repositórios públicos'},
+  market:    {t:'GitHub Marketplace · Actions', href:'https://github.com/marketplace?type=actions', s:'actions prontas para usar com uses'},
+  checkout:  {t:'Action · actions/checkout', href:'https://github.com/actions/checkout'},
+  python:    {t:'Action · actions/setup-python', href:'https://github.com/actions/setup-python'},
+  upload:    {t:'Action · actions/upload-artifact', href:'https://github.com/actions/upload-artifact', s:'name, path, retention-days'},
+  cpages:    {t:'Action · actions/configure-pages', href:'https://github.com/actions/configure-pages'},
+  upages:    {t:'Action · actions/upload-pages-artifact', href:'https://github.com/actions/upload-pages-artifact'},
+  dpages:    {t:'Action · actions/deploy-pages', href:'https://github.com/actions/deploy-pages'},
+  g_create:  {t:'Comando · gh repo create', href:CLI('repo_create')},
+  g_browse:  {t:'Comando · gh browse', href:CLI('browse')},
+  g_auth:    {t:'Comando · gh auth status', href:CLI('auth_status')},
+  g_runs:    {t:'Comando · gh run list', href:CLI('run_list')},
+  g_view:    {t:'Comando · gh run view', href:CLI('run_view'), s:'--log, --log-failed'},
+  g_watch:   {t:'Comando · gh run watch', href:CLI('run_watch')},
+  g_down:    {t:'Comando · gh run download', href:CLI('run_download')},
+  g_wrun:    {t:'Comando · gh workflow run', href:CLI('workflow_run'), s:'-f para preencher os inputs'},
+  g_pr:      {t:'Comando · gh pr create', href:CLI('pr_create')},
+  g_checks:  {t:'Comando · gh pr checks', href:CLI('pr_checks')},
+  g_secret:  {t:'Comando · gh secret set', href:CLI('secret_set')},
+  g_var:     {t:'Comando · gh variable set', href:CLI('variable_set')},
+  act:       {t:'act · executar workflows localmente', href:'https://nektosact.com/', s:'o simulador usado pelo check.sh · em inglês'},
+  fowler:    {t:'Martin Fowler · Continuous Integration', href:'https://martinfowler.com/articles/continuousIntegration.html', s:'o artigo que popularizou a prática · em inglês'},
+  blog:      {t:'GitHub Blog · Actions passa a ter CI/CD', href:'https://github.blog/news-insights/product-news/github-actions-now-supports-ci-cd/', s:'o anúncio de 2019 · em inglês'},
+  codespaces:{t:'Visão geral do GitHub Codespaces', href:'https://docs.github.com/pt/codespaces/overview'},
+  repo:      {t:'Repositório do curso', href:'https://github.com/fsilva-alt/devops-ghactions', s:'gabarito, guia do aluno e scripts'},
+};
+
+/* ---------- INTRO ---------- */
+const INTRO = {
+  n:'intro', key:'intro', title:'Antes de começar', short:'Comece por aqui', mod:'Abertura', time:10, cmds:['o que é o GitHub Actions','que problemas resolve','CI/CD na prática'],
+  slides:[
+    {h:'Como acompanhar a aula', eyebrow:'Introdução · 1 de 8', body:`
+      <div class="stack">
+        <p class="lead">Você não precisa saber programar. O livro de receitas já vem pronto, com testes e um gerador de site. O curso trata da <strong>automação</strong> dessas tarefas no GitHub.</p>
+        <div class="cols">
+          <div class="box"><h3>Seu ambiente no navegador</h3><p>O <strong>Codespace</strong> é um computador Linux acessado pela internet. Nele, o <strong>VS Code</strong> é o editor de arquivos, e o <strong>terminal</strong> é a área onde você digita comandos.</p><p>Abra o terminal em <strong>Terminal → New Terminal</strong>. A preparação completa está no <a href="https://github.com/fsilva-alt/devops-ghactions#antes-da-aula" target="_blank" rel="noopener">README do curso</a>.</p></div>
+          <div class="box lift"><h3>Comando ou conteúdo de arquivo?</h3><p>Nos slides, <code>$</code> marca uma linha para executar no terminal. Copie o comando sem esse símbolo e pressione <kbd>Enter</kbd>. Execute uma linha por vez.</p><p>Blocos com o nome de um arquivo em cima, como <code>.github/workflows/ci.yml</code>, vão <strong>no editor</strong>. Salve com <kbd>Ctrl+S</kbd> ou <kbd>Cmd+S</kbd> no Mac. Linhas com <code>#</code> são comentários.</p></div>
+          <div class="box"><h3>Como fazer os exercícios</h3><p>Leia o objetivo, consulte os comandos e siga a tarefa na pasta indicada. Antes de publicar, execute <code>check.sh</code> com o número do exercício: ele confere o YAML e <strong>simula o workflow no Codespace</strong>, mostrando o que ajustar.</p><p>A entrega de cada exercício é a execução no GitHub: um link, um log, um artefato ou o site publicado. Você precisa conhecer o básico de commit, branch e push; os comandos completos estão nas tarefas.</p></div>
         </div>
-        <div class="preview" aria-label="Ilustração do fluxo de integração e publicação">
-          <div class="preview-bar"><span><i></i><i></i><i></i></span><span>.github/workflows/ci.yml</span><span>YAML</span></div>
-          <div class="preview-code"><span class="line-number">01</span><span><b>name:</b> Meu primeiro CI</span><span class="line-number">02</span><span><b>on:</b> [push]</span><span class="line-number">03</span><span>&nbsp;</span><span class="line-number">04</span><span><b>jobs:</b></span><span class="line-number">05</span><span>  <b>testar:</b></span><span class="line-number">06</span><span>    <b>runs-on:</b> ubuntu-latest</span><span class="line-number">07</span><span>    <b>steps:</b></span><span class="line-number">08</span><span>      - <b>uses:</b> actions/checkout@v5</span><span class="line-number">09</span><span>      - <b>run:</b> python3 -m unittest -v</span></div>
-          <div class="preview-flow"><span>✓ Testar</span><b>→</b><span>✓ Gerar</span><b>→</b><span class="last">✓ Publicar</span></div>
-          <div class="preview-caption"><span class="status-dot"></span> Automação de testes, build e publicação.</div>
+        <div class="box lift"><h3>Instale o material do curso</h3><p>Execute esta linha uma única vez no terminal do Codespace. O instalador prepara os laboratórios em <code>~/labs</code>, instala o simulador <code>act</code>, baixa a imagem que ele usa e faz o login do GitHub CLI.</p>${cmd('$ sh -c "$(curl -fsSL https://raw.githubusercontent.com/fsilva-alt/devops-ghactions/main/install.sh)"')}<p style="margin-top:10px">Espere aparecer <strong>Curso de GitHub Actions instalado com sucesso!</strong> e abra um terminal novo antes de continuar. Se você já instalou antes da aula, pule esta etapa.</p></div>
+        <div class="callout"><strong>Comandos para se localizar:</strong> <code>pwd</code> mostra a pasta atual; <code>ls</code> lista seu conteúdo; <code>cd caminho</code> entra em outra pasta. O símbolo <code>~</code> representa sua pasta pessoal. Para abrir um arquivo no editor, use <code>code nome-do-arquivo</code>.</div>
+      </div>`},
+    {h:'O que é o GitHub Actions?', eyebrow:'Introdução · 2 de 8', body:`
+      <div class="cols s2"><div class="stack">
+        <p class="lead">O <strong>GitHub Actions</strong> é o serviço de automação do GitHub. Você descreve, em um arquivo do próprio repositório, <strong>quais tarefas executar</strong> quando ocorre um evento: um push, um pull request, um clique ou um horário agendado.</p>
+        <div class="flow">
+          <div class="node"><b>evento</b><small>push, pull request, clique em Run workflow</small></div>
+          <div class="arr"><span class="a">→</span>dispara</div>
+          <div class="node hi"><b>workflow</b><small>o arquivo YAML em .github/workflows/</small></div>
+          <div class="arr"><span class="a">→</span>executa em</div>
+          <div class="node"><b>runner</b><small>uma máquina nova, criada para a execução</small></div>
         </div>
-      </section>
-
-      <aside class="environment"><span class="environment-icon" aria-hidden="true">&gt;_</span><div><strong>Ambiente de prática: GitHub Codespaces.</strong><p>Você edita no <b>GitHub Codespaces</b>, acompanha os runners no <b>Actions</b> e abre o resultado no <b>Pages</b>. O código do projeto já está pronto.</p></div><a href="#intro">Ver a preparação <span aria-hidden="true">→</span></a></aside>
-
-      <section class="curriculum" aria-labelledby="trilha-title">
-        <div class="section-heading"><div><p class="eyebrow">CONTEÚDO DO CURSO</p><h2 id="trilha-title">Módulos e exercícios</h2></div><span class="level">Nível introdutório</span></div>
-        <div id="exercicios" class="exercise-grid">
-          <a class="exercise-card" href="#exercicio-01"><div class="card-top"><span class="card-number">Módulo 01</span><span class="card-time">15 min</span></div><div><h3>Primeiro workflow</h3><p>Crie um workflow de execução manual e identifique seus jobs, etapas e runner.</p></div><div class="card-bottom"><span>workflow · job · step</span><b aria-hidden="true">↗</b></div></a>
-          <a class="exercise-card" href="#exercicio-02"><div class="card-top"><span class="card-number">Módulo 02</span><span class="card-time">25 min</span></div><div><h3>Testes no push</h3><p>Configure o ambiente do runner e a execução automática dos testes a cada push.</p></div><div class="card-bottom"><span>push · uses · run</span><b aria-hidden="true">↗</b></div></a>
-          <a class="exercise-card" href="#exercicio-03"><div class="card-top"><span class="card-number">Módulo 03</span><span class="card-time">25 min</span></div><div><h3>Checks no pull request</h3><p>Veja um teste falhar, encontre a causa e corrija antes de integrar a mudança.</p></div><div class="card-bottom"><span>pull_request · logs · correção</span><b aria-hidden="true">↗</b></div></a>
-          <a class="exercise-card" href="#exercicio-04"><div class="card-top"><span class="card-number">Módulo 04</span><span class="card-time">20 min</span></div><div><h3>Variáveis e contextos</h3><p>Use variáveis, entradas e segredos para configurar uma execução.</p></div><div class="card-bottom"><span>env · inputs · vars · secrets</span><b aria-hidden="true">↗</b></div></a>
-          <a class="exercise-card" href="#exercicio-05"><div class="card-top"><span class="card-number">Módulo 05</span><span class="card-time">20 min</span></div><div><h3>Jobs e dependências</h3><p>Configure o build para executar somente após a aprovação dos testes.</p></div><div class="card-bottom"><span>needs · runner · build</span><b aria-hidden="true">↗</b></div></a>
-          <a class="exercise-card" href="#exercicio-06"><div class="card-top"><span class="card-number">Módulo 06</span><span class="card-time">20 min</span></div><div><h3>Artefatos do build</h3><p>Armazene os arquivos gerados pelo build e baixe o artefato da execução.</p></div><div class="card-bottom"><span>upload-artifact · download</span><b aria-hidden="true">↗</b></div></a>
-          <a class="exercise-card featured" href="#exercicio-07"><div class="card-top"><span class="card-number">Módulo 07</span><span class="card-time">30 min</span></div><div><h3>Deploy no Pages</h3><p>Publique o cardápio em uma URL pública no GitHub Pages com o workflow fornecido.</p></div><div class="card-bottom"><span>testar → gerar → publicar</span><b aria-hidden="true">↗</b></div></a>
+      </div><div class="stack">
+        <div class="box lift"><h3>As peças de um workflow</h3>${kv([
+          ['evento','o que inicia a execução; aparece em <code>on</code>'],
+          ['workflow','o processo completo, descrito em um arquivo YAML'],
+          ['job','um grupo de etapas que roda em um runner'],
+          ['step','uma etapa: um comando (<code>run</code>) ou uma action (<code>uses</code>)'],
+          ['action','um passo pronto e reutilizável, como baixar o código ou instalar o Python'],
+          ['runner','a máquina que executa o job; o GitHub fornece Linux, Windows e macOS'],
+        ], ['',''])}</div>
+        <div class="callout"><strong>O workflow fica no repositório.</strong> Como qualquer arquivo, ele é versionado: cada mudança na automação é um commit e pode ser revisada em um pull request.</div>
+      </div></div>`},
+    {h:'Que problemas ele resolve?', eyebrow:'Introdução · 3 de 8', body:`
+      <div class="stack">
+        <p class="lead">Quando testes, build e publicação são feitos à mão, o resultado depende de alguém executar todos os passos, na ordem certa, a cada mudança. Com o Actions, esses passos ficam descritos em um workflow, que é <strong>executado automaticamente</strong> e registrado a cada vez.</p>
+        <div class="cols w2">
+          <div class="box"><h3>Testes esquecidos</h3><p>O workflow roda os testes a cada push e em cada pull request. Todos os commits passam pela mesma verificação.</p></div>
+          <div class="box"><h3>Diferenças entre máquinas</h3><p>Cada execução começa em um runner limpo e instala só o que o workflow pede. Uma dependência que existe apenas no computador de alguém faz a execução falhar, e o erro fica registrado no log.</p></div>
+          <div class="box lift"><h3>Erros encontrados depois do merge</h3><p>O resultado aparece no pull request como um <strong>check</strong> verde ou vermelho, antes da mudança entrar na main. Quem revisa vê o resultado dos testes junto com o código.</p></div>
+          <div class="box"><h3>Publicação dependente de uma pessoa</h3><p>O passo a passo da publicação fica escrito no YAML. Qualquer pessoa da equipe consegue ler, revisar e repetir, e cada publicação registra quem, quando e qual commit.</p></div>
+          <div class="box"><h3>Publicação da versão errada</h3><p>O site é gerado a partir do commit que passou nos testes, sempre pelo mesmo processo. Não há cópia de arquivos feita à mão.</p></div>
+          <div class="box"><h3>Tarefas repetitivas</h3><p>Além de CI/CD, um workflow pode rodar em horários marcados ou reagir a issues e releases: gerar relatórios, organizar etiquetas, atualizar dependências.</p></div>
         </div>
-      </section>
-
-      <section class="closing"><div><p class="eyebrow">EMENTA</p><h2>Objetivos do curso</h2></div><p>Ler e escrever workflows, investigar falhas nos logs e configurar testes, build e publicação no GitHub Pages. Cada exercício tem um objetivo, um exemplo e um resultado para conferir.</p><a href="https://github.com/fsilva-alt/devops-ghactions/blob/main/docs/ementa.md">Ver a ementa completa <span aria-hidden="true">↗</span></a></section>
-    </div>
-
-    <div id="deck">
-      <section id="intro" class="lesson" aria-labelledby="intro-title" tabindex="-1">
-        <div class="deck-top"><a href="#home" class="back">← Todos os exercícios</a><span>Antes de começar</span></div>
-        <p class="eyebrow">PREPARAÇÃO</p>
-        <h2 id="intro-title">Ambiente de prática</h2>
-        <div class="slide-columns">
-          <div class="slide-stack">
-            <p class="lead">Automatizar é transformar uma sequência de passos em um processo que você pode repetir e conferir.</p>
-            <div class="box"><h3>O projeto já está pronto</h3><p>Um cardápio em Python, três testes e um gerador de HTML. Você vai aprender a descrever o processo em YAML. Precisa conhecer commit, branch e push; os comandos de publicação estão nos enunciados.</p></div>
-            <div class="box"><h3>Preparação com install.sh</h3><ol class="task-list"><li>Em <a href="https://github.com/codespaces">github.com/codespaces</a>, crie um Codespace com o modelo <strong>Blank</strong>.</li><li>Abra <strong>Terminal → New Terminal</strong>, execute o comando abaixo e conclua o login do GitHub.</li><li>Aguarde a confirmação da instalação. Abra um <strong>terminal novo</strong> e execute <code>check.sh 01</code>. É esperado pedir o workflow que você ainda vai criar.</li></ol></div>
-            <pre><code>sh -c "$(curl -fsSL https://raw.githubusercontent.com/fsilva-alt/devops-ghactions/main/install.sh)"</code></pre>
-            <p class="small-note">O material fica em <code>~/devops-ghactions</code> e os laboratórios em <code>~/labs</code>. O atalho <code>labs</code> permite acessar os arquivos pelo explorador do editor.</p>
-            <a class="button primary" href="https://github.com/fsilva-alt/devops-ghactions#antes-da-aula">Abrir a preparação completa ↗</a>
-          </div>
-          <div class="slide-stack">
-            <div class="flow"><span>Codespace</span><b aria-hidden="true">→</b><span>GitHub</span><b aria-hidden="true">→</b><span>Runner</span><b aria-hidden="true">→</b><span>Pages</span></div>
-            <div class="box"><h3>Componentes do ambiente</h3><p><strong>Codespace:</strong> seu editor e terminal no navegador, obrigatório nos 7 exercícios.</p><p><strong>GitHub:</strong> recebe o push e cria uma execução a partir do evento.</p><p><strong>Runner:</strong> executa o job em outra máquina.</p><p><strong>Pages:</strong> hospeda o site em uma URL pública.</p></div>
-            <div class="callout">CI verifica as mudanças. Build gera os arquivos finais. Deploy publica o resultado.</div>
-          </div>
+      </div>`},
+    {h:'O Actions em um processo de CI/CD', eyebrow:'Introdução · 4 de 8', body:`
+      <div class="stack">
+        <div class="flow">
+          <div class="node"><b>commit + push</b><small>uma mudança pequena</small></div>
+          <div class="arr"><span class="a">→</span>CI</div>
+          <div class="node hi"><b>testar</b><small>verifica cada mudança</small></div>
+          <div class="arr"><span class="a">→</span>build</div>
+          <div class="node hi"><b>empacotar</b><small>gera o resultado final</small></div>
+          <div class="arr"><span class="a">→</span>CD</div>
+          <div class="node hi"><b>publicar</b><small>entrega aos usuários</small></div>
         </div>
-        <details class="box lesson-details"><summary>Como acompanhar a prática</summary><ol class="task-list"><li>Selecione o exercício no índice dos slides, leia o enunciado e entre na pasta <code>~/labs/NN-nome</code>.</li><li>Edite e salve o workflow. Rode <code>check.sh NN</code> e ajuste o YAML.</li><li>Faça commit e publique um repositório por exercício, de <code>actions-01</code> a <code>actions-07</code>.</li><li>Abra Actions e confira a entrega pedida. Todos os laboratórios são feitos no mesmo Codespace.</li></ol><p>O check local analisa alguns requisitos do YAML. A execução na aba Actions mostra o resultado real. Consulte o <a href="guia-do-aluno.md">guia do aluno</a> para orientações sobre o ambiente.</p></details>
-        <nav class="deck-bottom" aria-label="Navegação da introdução"><a class="button" href="#home">← Índice</a><a class="button primary" href="#exercicio-01">Primeiro exercício →</a></nav>
-      </section>
-      <section id="exercicio-01" class="lesson" aria-labelledby="titulo-01" tabindex="-1">
-        <div class="deck-top"><a href="#home" class="back">← Todos os exercícios</a><span>01 / 07 · 15 minutos</span></div>
-        <p class="eyebrow">WORKFLOW · JOB · STEP</p>
-        <h2 id="titulo-01">Primeiro workflow</h2>
-        <div class="slide-columns">
-          <div class="slide-stack">
-            <p class="lead">Crie um workflow com execução manual e confira a mensagem nos logs.</p>
-            <div class="box"><h3>As partes da automação</h3><p><strong>Workflow:</strong> arquivo YAML que descreve o processo.</p><p><strong>Evento:</strong> o que inicia a execução; aqui, <code>workflow_dispatch</code>, um clique manual.</p><p><strong>Job:</strong> grupo de etapas que executa em um runner.</p><p><strong>Runner:</strong> máquina que executa o job.</p><p><strong>Step:</strong> cada etapa da lista <code>steps</code>.</p></div>
-            <div class="callout">YAML usa espaços para a indentação. O traço inicia um item da lista. Salve o arquivo em <code>.github/workflows/ci.yml</code>.</div>
+        <div class="cols">
+          <div class="box lift"><h3>CI · integração contínua</h3><p>Integrar mudanças pequenas com frequência e verificar <strong>cada uma automaticamente</strong>: baixar o código, instalar as dependências e rodar os testes. Um erro aparece poucos minutos depois do push, enquanto a mudança ainda é recente.</p></div>
+          <div class="box"><h3>CD · entrega e implantação contínuas</h3><p>Na <strong>entrega contínua</strong>, cada versão aprovada vira um pacote pronto para publicar. Na <strong>implantação contínua</strong>, a publicação também é automática. O site deste curso segue o segundo caminho.</p></div>
+          <div class="box"><h3>O papel do Actions</h3><p>CI/CD é um conjunto de <strong>práticas</strong> de desenvolvimento. O Actions é a <strong>ferramenta</strong> que executa os passos descritos no workflow; a qualidade do resultado depende dos testes e do tamanho das mudanças.</p></div>
+        </div>
+        ${kv([
+          ['02 · 03','CI: testes a cada push e checks nos pull requests'],
+          ['04','configuração: variáveis, contextos e segredos'],
+          ['05 · 06','build: jobs em sequência e artefato com o site'],
+          ['07','CD: o site publicado no GitHub Pages a cada mudança na main'],
+        ], ['Exercício','Parte do caminho'])}
+      </div>`},
+    {h:'Como ele é usado na prática?', eyebrow:'Introdução · 5 de 8', body:`
+      <div class="cols s2"><div class="stack">
+        <p class="lead">Em uma equipe, os workflows seguem o fluxo de trabalho com Git: os testes rodam nos <strong>pull requests</strong>, e a publicação acontece quando a mudança chega à <strong>main</strong>.</p>
+        ${jobs([
+          {t:'branch',s:'você trabalha em uma cópia da main'},
+          {t:'pull request',s:'o Actions roda os testes: check',st:'hi'},
+          {t:'revisão',s:'alguém lê o código e o check'},
+          {t:'merge na main',s:'o Actions gera e publica',st:'hi'},
+        ], '')}
+        <div class="callout"><strong>Regra de proteção:</strong> o repositório pode exigir checks verdes antes do merge. Assim, a main recebe apenas mudanças que passaram na verificação. No curso, os checks são observados, não obrigatórios.</div>
+      </div><div class="stack">
+        <div class="box lift"><h3>No pull request: verificar</h3><p>Testes e verificações rápidas em cada atualização do PR. O resultado aparece na aba <strong>Checks</strong> e na lista de commits.</p></div>
+        <div class="box"><h3>Na main: entregar</h3><p>Depois do merge, o workflow gera o resultado e publica. Um <strong>environment</strong> identifica o destino, como produção, e pode exigir aprovação.</p></div>
+        <div class="box"><h3>Actions prontas</h3><p>Passos comuns, como baixar o código ou instalar o Python, já existem como <strong>actions</strong> prontas no Marketplace. O workflow só as chama com <code>uses</code>, com uma versão fixa.</p></div>
+      </div></div>`},
+    {h:'De onde veio o GitHub Actions?', eyebrow:'Introdução · 6 de 8', body:`
+      <p class="lead">A integração contínua é anterior ao GitHub Actions. Ele trouxe a automação para <strong>dentro do repositório</strong>, ao lado do código, dos pull requests e das issues.</p>
+      <ol class="timeline" aria-label="Três marcos da história da integração contínua e do GitHub Actions">
+        <li><span class="date">Anos 2000</span><h3>Integração contínua</h3><p>Martin Fowler descreve a integração contínua. Servidores de build passam a testar cada mudança, em máquinas separadas.</p></li>
+        <li><span class="date">Outubro de 2018</span><h3>Nasce o Actions</h3><p>O GitHub apresenta o Actions: automações configuradas no repositório, disparadas pelos eventos do GitHub.</p></li>
+        <li class="hi"><span class="date">Novembro de 2019</span><h3>Lançamento com CI/CD</h3><p>O Actions é lançado com workflows em YAML, runners hospedados pelo GitHub e uso gratuito em repositórios públicos.</p></li>
+      </ol>`},
+    {h:'O que ainda precisa de cuidado?', eyebrow:'Introdução · 7 de 8', body:`
+      <div class="cols w2">
+        <div class="box"><h3>Minutos e custos</h3><p>Repositórios públicos usam os runners padrão sem custo. Em repositórios privados, há uma franquia de minutos por mês. O Codespace tem uma franquia separada.</p></div>
+        <div class="box"><h3>Segredos</h3><p>Senhas e tokens nunca vão no YAML, que qualquer pessoa com acesso ao repositório consegue ler. Eles são cadastrados como <strong>secrets</strong> e chegam só às etapas que os pedem. O exercício 4 mostra como.</p></div>
+        <div class="box"><h3>Permissões</h3><p>Cada execução recebe uma credencial temporária, o <code>GITHUB_TOKEN</code>. O bloco <code>permissions</code> limita o que ela pode fazer. Nos exercícios, o workflow começa com permissão apenas de leitura.</p></div>
+        <div class="box"><h3>Actions de terceiros</h3><p>Uma action é código de outra pessoa executando no seu workflow. Prefira as oficiais ou verificadas e fixe a versão depois do <code>@</code>.</p></div>
+        <div class="box"><h3>Limites dos testes</h3><p>O workflow só verifica o que os testes cobrem. Um teste fraco passa mesmo com o programa errado; automatizar não substitui escrever bons testes.</p></div>
+        <div class="box"><h3>Limites da simulação local</h3><p>O <code>check.sh</code> usa o <strong>act</strong> para rodar os jobs em containers Docker no Codespace. Ele não publica no Pages nem lê seus segredos: a entrega é sempre a execução no GitHub.</p></div>
+      </div>`},
+    {h:'Codespaces, Actions, act e Pages', eyebrow:'Introdução · 8 de 8', body:`
+      <div class="cols s2">
+        <div class="stack">
+          <div class="flow">
+            <div class="node"><b>Codespace</b><small>você edita, testa e simula com o act</small></div>
+            <div class="arr"><span class="a">→</span>git push</div>
+            <div class="node hi"><b>GitHub Actions</b><small>cria a execução e um runner para cada job</small></div>
+            <div class="arr"><span class="a">→</span>deploy</div>
+            <div class="node"><b>GitHub Pages</b><small>o site em uma URL pública</small></div>
           </div>
-          <pre><code>name: Boas-vindas
+          ${kv([
+            ['Codespace','O computador da aula. Nele ficam os laboratórios e rodam os comandos <code>check.sh</code>, <code>git</code> e <code>gh</code>.'],
+            ['runner','A máquina criada pelo GitHub para cada job. Começa vazia e é descartada no fim da execução.'],
+            ['act','Um programa que lê o mesmo YAML e executa os jobs em containers Docker no Codespace. Serve para ver erros antes do push.'],
+            ['GitHub Pages','A hospedagem de sites do GitHub. No exercício 7, o próprio workflow publica o livro de receitas.'],
+          ], ['',''])}
+        </div>
+        <div class="stack">
+          <div class="callout"><strong>Para acompanhar:</strong> tenha sua conta no GitHub e o Codespace preparado conforme o README. Cada exercício é publicado em um repositório público seu, de <code>actions-01</code> a <code>actions-07</code>.</div>
+          <div class="callout"><strong>Para ver a execução:</strong> a aba <strong>Actions</strong> do repositório lista as execuções. O comando <code>gh browse --actions</code> abre essa aba no navegador.</div>
+          <div class="box soft"><h3>Para ler depois</h3>${docs([L.entender, L.ci, L.cd, L.fowler, L.blog, L.act])}</div>
+        </div>
+      </div>`},
+  ]
+};
+
+/* ---------- EXERCÍCIOS ---------- */
+const D = [];
+
+/* 0 */
+D.push({n:0, key:'00', title:'O ambiente está pronto?', mod:'Abertura · antes da aula', time:5, antes:true, cmds:['git config','gh auth status','docker version','act --version'],
+  entrega:'<code>check.sh 00</code> concluído',
+  slides:[
+    {h:'O ambiente está pronto?', body: cover({n:0,time:5,antes:true,mod:'Abertura · feito antes da aula, logo depois do instalador',cmds:['git config user.name','gh auth status','docker version','act --version','check.sh 00'],entrega:'<code>check.sh 00</code> concluído'},
+      'Antes da aula, confira se o Codespace tem tudo: o Git com sua identidade, o GitHub CLI com permissão para enviar workflows, o Docker funcionando e o <strong>act</strong>, que simula os workflows. Fazer esta etapa com antecedência dá tempo de pedir ajuda.',
+      qualquer)},
+    {h:'Duas máquinas e um simulador', eyebrow:'Conceito', body:`
+      <div class="cols s2"><div class="stack">
+        <div class="flow">
+          <div class="node"><b>Codespace</b><small>onde você escreve o workflow</small></div>
+          <div class="arr"><span class="a">→</span>git push</div>
+          <div class="node hi"><b>GitHub</b><small>recebe o push e cria a execução</small></div>
+          <div class="arr"><span class="a">→</span>para cada job</div>
+          <div class="node"><b>runner</b><small>máquina nova, que roda as etapas</small></div>
+        </div>
+        <div class="netbox" data-label="no Codespace · check.sh">
+          ${jobs([
+            {t:'act',s:'lê .github/workflows/ci.yml'},
+            {t:'container Docker',s:'imagem parecida com ubuntu-latest',st:'hi'},
+            {t:'etapas',s:'os mesmos comandos do runner'},
+          ], 'cria')}
+        </div>
+      </div><div class="stack">
+        <div class="box lift"><h3>Por que simular?</h3><p>Uma execução no GitHub leva alguns minutos e só começa depois do push. O <code>check.sh</code> usa o act para criar, no próprio Codespace, um <strong>container</strong> para cada job e rodar as etapas. Um erro de digitação aparece em segundos.</p><p>A imagem do runner local tem cerca de 2 GB; o instalador a baixa uma vez.</p></div>
+        <div class="callout"><strong>O que o act não faz:</strong> não cria execuções no GitHub, não publica no Pages e não lê os segredos cadastrados no repositório. O <code>check.sh</code> usa valores de demonstração no lugar deles.</div>
+      </div></div>`},
+    {h:'Comandos e documentação', eyebrow:'Referência', body:`
+      <div class="cols s2">
+        ${kv([
+          ['git config user.name','mostra o nome que vai nos seus commits; vazio significa não configurado'],
+          ['gh auth status --hostname github.com','mostra a conta conectada e os escopos do login'],
+          ['gh auth refresh --hostname github.com --scopes workflow','acrescenta o escopo workflow, necessário para enviar arquivos .github/workflows'],
+          ['docker version','mostra as seções Client e Server: o comando e o serviço do Docker'],
+          ['act --version','mostra a versão do simulador instalada pelo curso'],
+          ['act -l','lista os jobs e eventos dos workflows da pasta atual'],
+          ['setup.sh','cria os laboratórios ausentes e baixa o act e a imagem do runner local'],
+        ])}
+        <div class="box soft"><h3>Documentação</h3>${docs([L.g_auth, L.codespaces, L.act, L.repo])}</div>
+      </div>`},
+    {h:'O exercício', eyebrow:'Tarefa · 5 min', body:`
+      <div class="cols s2"><div class="stack">${steps([
+        `<div class="t">Confira sua identidade no Git. Se algum valor vier vazio, configure com seus dados:</div>${cmd('$ git config user.name\n$ git config user.email\n$ git config --global user.name "Seu nome"')}`,
+        `<div class="t">Confira o login do GitHub CLI. Procure sua conta e o escopo <code>'workflow'</code> em <em>Token scopes</em>:</div>${cmd('$ gh auth status --hostname github.com')}`,
+        `<div class="t">Confira o Docker. Devem aparecer as seções <strong>Client</strong> e <strong>Server</strong>:</div>${cmd('$ docker version')}`,
+        `<div class="t">Confira o act, instalado pelo curso:</div>${cmd('$ act --version')}`,
+        `<div class="t">Rode a verificação. Ela executa um workflow mínimo em um container e procura a mensagem <strong>Olá do runner local!</strong>:</div>${cmd('$ check.sh 00')}`,
+      ])}</div><div class="stack">
+        ${verificacao('00', 'Confere Git, login do <code>gh</code> com o escopo workflow, os 7 laboratórios, o Docker, o act e a imagem do runner local. Faltou algo? Execute <code>setup.sh</code> e repita.')}
+        <div class="callout warn"><strong>Depois, pare o Codespace</strong> para não gastar a franquia. Em github.com/codespaces, clique em ⋯ e escolha <em>Stop codespace</em>. No dia da aula, basta abrir de novo; o act, a imagem e os laboratórios continuam lá.</div>
+        <div class="box soft"><h3>Missão extra · opcional</h3>${cmd('$ cd ~/labs/02-testes-no-push\n$ act -l')}<p style="margin-top:8px;color:var(--muted)">O act lista o job <code>boas-vindas</code> e o evento <code>workflow_dispatch</code> do workflow inicial desse laboratório. No exercício 2, você troca esse workflow pelo de testes.</p></div>
+      </div></div>`},
+  ]});
+
+/* 1 */
+D.push({n:1, key:'01', title:'Primeiro workflow', mod:'Módulo 1 · Fundamentos', time:15, cmds:['workflow_dispatch','runs-on','steps','run'],
+  entrega:'link da execução manual verde',
+  slides:[
+    {h:'Primeiro workflow', body: cover({n:1,time:15,mod:'Módulo 1 · Fundamentos',cmds:['on: workflow_dispatch','runs-on: ubuntu-latest','steps · run','gh repo create','Run workflow'],entrega:'link da execução manual verde'},
+      'Escrever o primeiro workflow, executá-lo com um clique na aba <strong>Actions</strong> e encontrar, no log do runner, a mensagem que ele mostrou.',
+      lab('01','primeiro-workflow') + '<p style="margin-top:10px;color:var(--muted)">A pasta tem o livro de receitas pronto e a pasta <code>.github/workflows/</code> vazia. É nela que o GitHub procura os workflows.</p>')},
+    {h:'Evento, workflow, job e step', eyebrow:'Conceito', body:`
+      <div class="stack">
+        ${jobs([
+          {t:'workflow_dispatch',s:'o evento: um clique em Run workflow'},
+          {t:'workflow Boas-vindas',s:'o arquivo ci.yml',st:'hi'},
+          {t:'job boas-vindas',s:'roda em um runner ubuntu-latest'},
+          {t:'step',s:'echo "Olá, GitHub Actions!"'},
+        ], '')}
+        <div class="cols">
+          <div class="box lift"><h3>O evento inicia a execução</h3><p><code>workflow_dispatch</code> é o evento manual: aparece como o botão <strong>Run workflow</strong> na aba Actions. Os próximos exercícios usam <code>push</code> e <code>pull_request</code>, que disparam o workflow automaticamente.</p></div>
+          <div class="box"><h3>Jobs rodam em runners</h3><p>Cada job recebe uma máquina nova. <code>runs-on: ubuntu-latest</code> pede um Linux hospedado pelo GitHub, com ferramentas comuns já instaladas.</p></div>
+          <div class="box"><h3>Steps rodam em ordem</h3><p>As etapas de um job executam uma depois da outra, na mesma máquina. Se uma falha, as seguintes não rodam e o job fica vermelho.</p></div>
+        </div>
+        <div class="callout"><strong>O echo não roda no Codespace.</strong> No Codespace você escreve e publica o arquivo. Quem executa o comando é o runner, em outra máquina; o resultado aparece no log da execução.</div>
+      </div>`},
+    {h:'Como ler o YAML', eyebrow:'Conceito', body:`
+      <div class="cols s2"><div class="stack">
+        ${yaml(`name: Boas-vindas
 
 on:
   workflow_dispatch:
@@ -111,23 +575,88 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cumprimentar a turma
-        run: echo "Olá, GitHub Actions!"</code></pre>
+        run: echo "Olá, GitHub Actions!"`)}
+      </div><div class="stack">
+        <div class="box lift"><h3>Linha a linha</h3>${kv([
+          ['name','o nome que aparece na aba Actions'],
+          ['on','os eventos que iniciam o workflow'],
+          ['permissions','o que a credencial da execução pode fazer: aqui, só ler o repositório'],
+          ['jobs','os jobs; <code>boas-vindas</code> é o nome deste'],
+          ['runs-on','o tipo de runner do job'],
+          ['steps','a lista de etapas; cada uma começa com um traço'],
+          ['run','o comando executado no runner'],
+        ], ['Chave','O que define'])}</div>
+        <div class="callout"><strong>A indentação faz parte do YAML.</strong> Ela mostra o que pertence a quê: <code>runs-on</code> pertence ao job, que pertence a <code>jobs</code>. Use espaços, nunca tabulação.</div>
+      </div></div>`},
+    {h:'Execuções, jobs e logs', eyebrow:'Conceito', body:`
+      <div class="stack">
+        ${jobs([
+          {t:'aba Actions',s:'todos os workflows do repositório'},
+          {t:'execução',s:'cada vez que o workflow rodou · run',st:'hi'},
+          {t:'job',s:'boas-vindas, com status e duração'},
+          {t:'step',s:'Cumprimentar a turma'},
+          {t:'log',s:'a saída do comando, linha a linha'},
+        ], '')}
+        <div class="cols">
+          <div class="box lift"><h3>Cada clique é uma execução</h3><p>Uma <strong>execução</strong> (run) registra o evento, o commit, quem a iniciou, a duração e o resultado de cada job. O link dela é a sua entrega neste exercício.</p></div>
+          <div class="box"><h3>O botão Run workflow</h3><p>Aparece quando o workflow com <code>workflow_dispatch</code> está na <strong>branch padrão</strong>, a <code>main</code>. Por isso o primeiro push vem antes do clique.</p></div>
+          <div class="box"><h3>Verde, vermelho, amarelo</h3><p>✓ verde: terminou sem erro. ✗ vermelho: alguma etapa falhou. ● amarelo: ainda em execução ou na fila, esperando um runner.</p></div>
         </div>
-        <div class="lesson-practice slide-columns">
-          <div class="slide-stack"><h3>Pratique no Codespaces</h3><pre><code>cd ~/labs/01-primeiro-workflow
-code .github/workflows/ci.yml
-check.sh 01</code></pre><ol class="task-list"><li>Crie e salve o arquivo com o exemplo acima.</li><li>Confira com o check, faça commit e publique em <code>actions-01</code>.</li><li>Abra Actions → Boas-vindas → Run workflow. Selecione <code>main</code>.</li><li>Abra o job e a etapa para localizar a saudação no log.</li></ol></div>
-          <div class="slide-stack"><div class="box"><h3>Sua entrega</h3><p>Link da execução manual verde e a mensagem <code>Olá, GitHub Actions!</code> no log.</p></div><details class="box"><summary>O echo executou no Codespace ou em um runner?</summary><p>Em um runner do Actions. O Codespace foi usado para escrever e publicar o workflow.</p></details><div class="callout">Se não houver execução após o push, está correto: neste exercício o único evento é manual. O botão aparece quando o workflow está na branch padrão.</div><a href="https://docs.github.com/pt/actions/get-started/understand-github-actions">Consultar a documentação oficial ↗</a></div>
-        </div>
-        <nav class="deck-bottom" aria-label="Navegação do exercício 01"><a class="button" href="#intro">← Introdução</a><a class="button primary" href="#exercicio-02">Testes no push →</a></nav>
-      </section>
-      <section id="exercicio-02" class="lesson" aria-labelledby="titulo-02" tabindex="-1">
-        <div class="deck-top"><a href="#home" class="back">← Todos os exercícios</a><span>02 / 07 · 25 minutos</span></div>
-        <p class="eyebrow">PUSH · USES · RUN</p>
-        <h2 id="titulo-02">Testes no push</h2>
-        <div class="slide-columns">
-          <div class="slide-stack"><p class="lead">Configure o ambiente do runner para executar os testes a cada push.</p><div class="box"><h3>Integração contínua</h3><p><strong>CI</strong> significa integração contínua: verificar mudanças automaticamente.</p><p><code>uses</code> chama uma action pronta, com versão explícita.</p><p><code>with</code> configura as entradas dessa action.</p><p><code>run</code> executa um comando no runner.</p></div><div class="callout">Checkout vem primeiro porque o runner precisa receber os arquivos do projeto. As etapas de um job executam em sequência.</div></div>
-          <pre><code>name: CI
+      </div>`},
+    {h:'Comandos e documentação', eyebrow:'Referência', body:`
+      <div class="cols s2">
+        ${kv([
+          ['code .github/workflows/ci.yml','abre (ou cria, ao salvar) o arquivo do workflow no editor'],
+          ['check.sh 01','confere o YAML e simula o job com o act'],
+          ['git add <arquivo>','prepara o arquivo para o próximo commit'],
+          ['git commit -m "<mensagem>"','registra a versão com uma mensagem'],
+          ['gh repo create <nome> --public --source=. --remote=origin --push','cria o repositório no GitHub e envia o commit; uma vez por laboratório'],
+          ['gh browse --actions','abre a aba Actions do repositório no navegador'],
+          ['gh run list','lista as execuções no terminal'],
+        ])}
+        <div class="box soft"><h3>Documentação</h3>${docs([L.entender, L.inicio, L.sintaxe, L.manual, L.logs, L.g_create])}</div>
+      </div>`},
+    {h:'O exercício', eyebrow:'Tarefa · 15 min', body:`
+      <div class="cols s2"><div class="stack">${steps([
+        `<div class="t">Entre no laboratório e abra o arquivo do workflow. Ele ainda não existe; o editor cria o arquivo ao salvar:</div>${cmd('$ cd ~/labs/01-primeiro-workflow\n$ code .github/workflows/ci.yml')}`,
+        `<div class="t">Copie o YAML do slide <strong>Como ler o YAML</strong> para o editor e salve com <kbd>Ctrl+S</kbd>.</div>`,
+        `<div class="t">Confira e simule. Procure <strong>Olá, GitHub Actions!</strong> na saída do job:</div>${cmd('$ check.sh 01')}`,
+        `<div class="t">Faça o commit e publique em um repositório novo:</div>${publicar('01')}`,
+        `<div class="t">Na aba Actions, clique em <strong>Boas-vindas → Run workflow</strong>, deixe a branch <code>main</code> e confirme. Abra a execução, o job <code>boas-vindas</code> e a etapa <strong>Cumprimentar a turma</strong>. Guarde o link da execução.</div>`,
+      ])}</div><div class="stack">
+        ${verificacao('01', 'Aprova com o evento manual, <code>permissions</code> de leitura e a etapa da saudação, e quando a simulação mostra a mensagem no log.')}
+        <div class="callout"><strong>Sem execução depois do push:</strong> o resultado está correto, porque o único evento deste workflow é o manual. A execução começa no clique em Run workflow.</div>
+        <div class="box soft"><h3>Missão extra</h3>${yaml(`      - name: Listar arquivos
+        run: ls -la`, 'acrescente no fim de steps')}<p style="margin-top:8px;color:var(--muted)">Rode <code>check.sh 01</code>: a lista sai vazia. O runner começa sem os arquivos do repositório; no exercício 2, <code>actions/checkout</code> resolve isso.</p></div>
+      </div></div>`},
+  ]});
+
+/* 2 */
+D.push({n:2, key:'02', title:'Testes no push', mod:'Módulo 2 · Integração contínua', time:25, cmds:['on: push','uses','with','run'],
+  entrega:'execução verde disparada por push',
+  slides:[
+    {h:'Testes no push', body: cover({n:2,time:25,mod:'Módulo 2 · Integração contínua',cmds:['on: push','actions/checkout','actions/setup-python','python -m unittest'],entrega:'execução verde disparada por push'},
+      'Fazer o runner baixar o código, instalar o Python e rodar os <strong>três testes</strong> do livro de receitas a cada push na main.',
+      lab('02','testes-no-push') + '<p style="margin-top:10px;color:var(--muted)">Ponto de partida: o workflow manual de boas-vindas. Este laboratório é independente do anterior.</p>')},
+    {h:'Integração contínua', eyebrow:'Conceito', body:`
+      <div class="cols s2"><div class="stack">
+        ${jobs([
+          {t:'git push',s:'um commit chega à main'},
+          {t:'evento push',s:'o GitHub cria a execução',st:'hi'},
+          {t:'job testar',s:'3 testes no runner',st:'ok'},
+        ], '')}
+        <p class="lead">Com <code>push</code>, o workflow roda <strong>automaticamente</strong> a cada commit enviado. O resultado fica ligado àquele commit: o hash na página da execução diz exatamente qual versão foi testada.</p>
+        ${yaml(`on:
+  push:
+    branches: [main]
+  workflow_dispatch:`, '')}
+      </div><div class="stack">
+        <div class="box lift"><h3>Os testes do livro</h3><p><code>receitas.py</code> calcula a quantidade de um ingrediente para várias receitas. Os testes conferem, por exemplo, que <strong>3 receitas</strong> de pão de queijo, com 500 g de polvilho cada, pedem <strong>1500 g</strong>.</p>${cmd('$ python3 -m unittest -v\n> Ran 3 tests in 0.001s\n> OK')}</div>
+        <div class="callout"><strong>branches: [main]</strong> filtra o evento: só pushes na main iniciam o workflow. Manter <code>workflow_dispatch</code> deixa o botão Run workflow disponível.</div>
+      </div></div>`},
+    {h:'Preparar o runner', eyebrow:'Conceito', body:`
+      <div class="cols s2"><div class="stack">
+        ${yaml(`name: CI
 
 on:
   push:
@@ -145,185 +674,552 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
-      - run: python -m pip install -r requirements.txt
-      - run: python -m unittest -v</code></pre>
-        </div>
-        <div class="lesson-practice slide-columns">
-          <div class="slide-stack"><h3>Pratique no Codespaces</h3><pre><code>cd ~/labs/02-testes-no-push
-python3 -m unittest -v
-code .github/workflows/ci.yml
-check.sh 02</code></pre><ol class="task-list"><li>Execute os três testes prontos e procure <code>OK</code>.</li><li>Substitua a saudação pelo workflow acima.</li><li>Confira, faça commit e publique em <code>actions-02</code>.</li><li>Edite o título do cardápio, faça novo commit e push. Acompanhe outra execução.</li></ol></div>
-          <div class="slide-stack"><div class="box"><h3>Sua entrega</h3><p>Uma execução verde disparada por <code>push</code>, com três testes aprovados. Localize o hash do commit na página da execução.</p></div><details class="box"><summary>Instalar no Codespace também instala no runner?</summary><p>Não. São máquinas separadas. O workflow precisa preparar seu próprio ambiente: código, Python e dependências.</p></details><div class="callout">Use <code>'3.12'</code> entre aspas: é uma versão, não um número decimal.</div><a href="https://docs.github.com/pt/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows">Consultar os eventos disponíveis ↗</a></div>
-        </div>
-        <nav class="deck-bottom" aria-label="Navegação do exercício 02"><a class="button" href="#exercicio-01">← Primeiro workflow</a><a class="button primary" href="#exercicio-03">Checks no PR →</a></nav>
-      </section>
-      <section id="exercicio-03" class="lesson" aria-labelledby="titulo-03" tabindex="-1">
-        <div class="deck-top"><a href="#home" class="back">← Todos os exercícios</a><span>03 / 07 · 25 minutos</span></div>
-        <p class="eyebrow">PULL_REQUEST · LOGS · CORREÇÃO</p>
-        <h2 id="titulo-03">Checks no pull request</h2>
-        <div class="slide-columns">
-          <div class="slide-stack"><p class="lead">Analise os logs de um teste com falha e corrija o código antes de integrar a mudança.</p><div class="box"><h3>Verificação de pull requests</h3><p><code>pull_request</code> executa os testes quando um PR é aberto ou atualizado. O filtro <code>branches</code> indica o <strong>destino</strong> do PR.</p><p>Abra a etapa que falhou. Compare o valor esperado com o recebido. O teste de três unidades espera 1500 centavos, mas a soma incorreta retorna 503.</p></div><div class="callout">Cada execução corresponde a uma revisão do código. Reexecutar um commit quebrado não aplica a correção que ainda está só no Codespace.</div></div>
-          <div class="slide-stack"><pre><code># Substitua apenas o bloco on:
-on:
+      - name: Instalar dependências
+        run: python -m pip install -r requirements.txt
+      - name: Testar
+        run: python -m unittest -v`)}
+      </div><div class="stack">
+        <div class="box lift"><h3>uses, with e run</h3>${kv([
+          ['uses','chama uma action pronta; depois do <code>@</code> vem a versão'],
+          ['with','as entradas da action, como a versão do Python'],
+          ['run','um comando do terminal, executado no runner'],
+        ], ['Chave','O que faz'])}</div>
+        <div class="box"><h3>O runner começa vazio</h3><p><code>actions/checkout</code> baixa os arquivos do repositório. <code>actions/setup-python</code> instala o Python pedido. Depois vêm as dependências e, por último, os testes, nessa ordem.</p></div>
+        <div class="callout"><strong>Instalar no Codespace não instala no runner.</strong> São máquinas diferentes. Escreva <code>'3.12'</code> entre aspas: sem elas, o YAML lê um número decimal.</div>
+      </div></div>`},
+    {h:'Comandos e documentação', eyebrow:'Referência', body:`
+      <div class="cols s2">
+        ${kv([
+          ['python3 receitas.py','lista as receitas no terminal do Codespace'],
+          ['python3 -m unittest -v','roda os três testes no Codespace'],
+          ['check.sh 02','confere o YAML e roda o job testar em um container'],
+          ['git diff','mostra o que mudou antes do git add'],
+          ['git push','envia novos commits; na main, dispara o workflow'],
+          ['gh run list','lista as execuções, com evento e resultado'],
+          ['gh run watch','acompanha a execução em andamento no terminal'],
+        ])}
+        <div class="box soft"><h3>Documentação</h3>${docs([L.ci, L.eventos, L.checkout, L.python, L.runners, L.g_runs])}</div>
+      </div>`},
+    {h:'O exercício', eyebrow:'Tarefa · 25 min', body:`
+      <div class="cols s2"><div class="stack">${steps([
+        `<div class="t">Entre no laboratório, veja as receitas e rode os testes no Codespace. Procure <code>OK</code>:</div>${cmd('$ cd ~/labs/02-testes-no-push\n$ python3 receitas.py\n$ python3 -m unittest -v')}`,
+        `<div class="t">Abra o workflow e <strong>substitua todo o conteúdo</strong> pelo YAML do slide <strong>Preparar o runner</strong>. Salve.</div>${cmd('$ code .github/workflows/ci.yml')}`,
+        `<div class="t">Simule. Os três testes rodam em um container, como no runner:</div>${cmd('$ check.sh 02')}`,
+        `<div class="t">Publique e abra a execução iniciada pelo <code>push</code>. No job <code>testar</code>, confira as etapas e os três testes:</div>${publicar('02')}`,
+        `<div class="t">Personalize o título do livro em <code>livro.md</code>, por exemplo <code># Livro de receitas da Ana</code>. Envie e confira uma nova execução, com o hash do novo commit:</div>${cmd('$ code livro.md\n$ git add livro.md\n$ git commit -m "Personaliza o título do livro"\n$ git push')}`,
+      ])}</div><div class="stack">
+        ${verificacao('02', 'Aprova com <code>push</code> na main, checkout antes do Python, dependências antes dos testes e os três testes aprovados na simulação.')}
+        <div class="callout"><strong>Simulação aprovada e execução com falha no GitHub:</strong> abra a etapa vermelha no log. Diferenças entre o runner local e o do GitHub são raras; a execução considerada na entrega é a do GitHub.</div>
+        <div class="box soft"><h3>Missão extra</h3>${yaml(`      - name: Listar receitas
+        run: python receitas.py`, 'acrescente no fim de steps')}<p style="margin-top:8px;color:var(--muted)">O log da execução passa a mostrar as receitas do livro, lidas da pasta <code>receitas/</code> pelo runner.</p></div>
+      </div></div>`},
+  ]});
+</script>
+<script>
+/* 3 */
+D.push({n:3, key:'03', title:'Checks no pull request', mod:'Módulo 2 · Integração contínua', time:25, cmds:['pull_request','logs','git switch -c','gh pr create'],
+  entrega:'PR com uma execução vermelha e uma verde',
+  slides:[
+    {h:'Checks no pull request', body: cover({n:3,time:25,mod:'Módulo 2 · Integração contínua',cmds:['on: pull_request','git switch -c','gh pr create','gh pr checks','logs'],entrega:'PR com uma execução vermelha e uma verde'},
+      'Fazer os testes rodarem em cada <strong>pull request</strong>, provocar uma falha de propósito, encontrar a causa no log e corrigir antes do merge.',
+      lab('03','checks-no-pull-request') + '<p style="margin-top:10px;color:var(--muted)">Ponto de partida: o workflow de testes no push, com o cálculo correto.</p>')},
+    {h:'Checks no pull request', eyebrow:'Conceito', body:`
+      <div class="cols s2"><div class="stack">
+        ${jobs([
+          {t:'branch teste-do-ci',s:'a mudança proposta'},
+          {t:'pull request → main',s:'evento pull_request',st:'hi'},
+          {t:'check testar',s:'resultado no PR',st:'fail'},
+        ], '')}
+        ${yaml(`on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
-  workflow_dispatch:</code></pre><pre><code># Falha proposital em app.py:
-return preco_centavos + quantidade
+  workflow_dispatch:`, 'substitua só o bloco on')}
+      </div><div class="stack">
+        <div class="box lift"><h3>O que é um check</h3><p>Cada job que roda por um pull request aparece no PR como um <strong>check</strong>: verde, vermelho ou em andamento. Quem revisa vê o resultado dos testes antes de aprovar o merge.</p></div>
+        <div class="box"><h3>branches indica o destino</h3><p>Em <code>pull_request</code>, o filtro <code>branches: [main]</code> vale para PRs que <strong>têm a main como destino</strong>. Cada push na branch do PR atualiza o PR e gera um novo check.</p></div>
+        <div class="callout"><strong>Um check vermelho impede o merge?</strong> Só quando uma regra do repositório exige aquele check. Neste exercício, o objetivo é ler e interpretar o resultado.</div>
+      </div></div>`},
+    {h:'Da falha à causa', eyebrow:'Conceito', body:`
+      <div class="cols s2"><div class="stack">
+        ${cmd(`# Falha proposital em receitas.py:
+- return gramas_por_receita * receitas
++ return gramas_por_receita + receitas`)}
+        ${cmd(`# No log da etapa Testar:
+> FAIL: test_tres_receitas_de_pao_de_queijo
+>     self.assertEqual(quantidade_para(500, 3), 1500)
+> AssertionError: 503 != 1500`)}
+        ${jobs([{t:'check vermelho',st:'fail'},{t:'corrigir + push',s:'novo commit na branch'},{t:'check verde',st:'ok'}], '')}
+      </div><div class="stack">
+        <div class="box lift"><h3>Como ler o erro</h3><p>Abra o job e a etapa que falhou. Procure o nome do teste, a linha indicada e os dois valores comparados: o teste esperava <strong>1500</strong> e recebeu <strong>503</strong>.</p><p>O teste está certo: 3 receitas de 500 g são 1500 g. O código somou em vez de multiplicar.</p></div>
+        <div class="callout"><strong>Reexecutar não corrige.</strong> Cada execução pertence a um commit. O botão <em>Re-run</em> repete o mesmo commit quebrado; a correção precisa de um novo commit e push.</div>
+        <div class="box"><h3>Guarde as duas evidências</h3><p>A execução antiga continua mostrando a falha, e a nova mostra a correção. Os dois links registram o problema e a solução.</p></div>
+      </div></div>`},
+    {h:'Comandos e documentação', eyebrow:'Referência', body:`
+      <div class="cols s2">
+        ${kv([
+          ['check.sh 03','confere o YAML e simula um pull_request para a main'],
+          ['git switch -c <branch>','cria uma branch e entra nela'],
+          ['git push -u origin <branch>','publica a branch e liga ao remoto'],
+          ['gh pr create --base main --fill','abre o PR para a main, com a mensagem do commit'],
+          ['gh pr view --web','abre o PR da branch atual no navegador'],
+          ['gh pr checks','mostra os checks do PR no terminal'],
+          ['gh run view --log-failed','mostra só o log das etapas que falharam'],
+        ])}
+        <div class="box soft"><h3>Documentação</h3>${docs([L.eventos, L.logs, L.g_pr, L.g_checks, L.g_view])}</div>
+      </div>`},
+    {h:'O exercício', eyebrow:'Tarefa · 25 min', body:`
+      <div class="cols s2"><div class="stack">${steps([
+        `<div class="t">Abra o workflow, acrescente <code>pull_request</code> ao bloco <code>on</code> e salve. Confira e publique a main:</div>${cmd('$ cd ~/labs/03-checks-no-pull-request\n$ code .github/workflows/ci.yml\n$ check.sh 03')}${publicar('03')}`,
+        `<div class="t">Crie a branch e provoque a falha: em <code>receitas.py</code>, troque <code>*</code> por <code>+</code> na conta e salve. O <code>check.sh</code> já mostra o erro; é esperado:</div>${cmd('$ git switch -c teste-do-ci\n$ code receitas.py\n$ check.sh 03')}`,
+        `<div class="t">Envie a falha mesmo assim e abra o PR:</div>${cmd('$ git add receitas.py\n$ git commit -m "Demonstra falha no cálculo"\n$ git push -u origin teste-do-ci\n$ gh pr create --base main --fill\n$ gh pr view --web')}`,
+        `<div class="t">Espere o check vermelho. Em <strong>Checks → testar → Testar</strong>, encontre <code>503 != 1500</code> e guarde o link da execução.</div>`,
+        `<div class="t">Volte a multiplicação, confira e envie a correção na mesma branch. O PR ganha um check verde:</div>${cmd('$ check.sh 03\n$ git add receitas.py\n$ git commit -m "Corrige o cálculo da quantidade"\n$ git push')}`,
+      ])}</div><div class="stack">
+        ${verificacao('03', 'Aprova com <code>push</code> e <code>pull_request</code> para a main e com os testes aprovados em uma simulação de PR. Com a falha proposital, reprova mostrando o mesmo erro do GitHub.')}
+        <div class="callout"><strong>Entrega:</strong> o link do PR e das execuções vermelha e verde, com uma frase explicando qual linha causava o erro. O PR pode ficar aberto.</div>
+        <div class="box soft"><h3>Missão extra</h3>${cmd('$ gh pr checks\n$ gh run view --log-failed')}<p style="margin-top:8px;color:var(--muted)">Os mesmos resultados, no terminal. No segundo comando, escolha a execução vermelha da lista.</p></div>
+      </div></div>`},
+  ]});
 
-# Correção:
-return preco_centavos * quantidade</code></pre></div>
-        </div>
-        <div class="lesson-practice slide-columns">
-          <div class="slide-stack"><h3>Pratique no Codespaces</h3><pre><code>cd ~/labs/03-checks-no-pull-request
-code .github/workflows/ci.yml
-check.sh 03</code></pre><ol class="task-list"><li>Acrescente o evento e publique a main em <code>actions-03</code>.</li><li>Crie a branch <code>teste-do-ci</code>. Troque a multiplicação por soma em <code>app.py</code>.</li><li>Faça commit, push e abra o PR para main. Leia o erro em Checks → testar → Testar.</li><li>Corrija a multiplicação. Faça novo commit e push na mesma branch e confira o novo check.</li></ol></div>
-          <div class="slide-stack"><div class="box"><h3>Sua entrega</h3><p>Link do PR e das execuções vermelha e verde. Explique qual linha causava o erro. O PR pode ficar aberto para avaliação.</p></div><details class="box"><summary>Um check vermelho sempre impede o merge?</summary><p>Só quando regras do repositório exigem aquele check. Aqui aprendemos a observar e interpretar o resultado.</p></details><a href="https://docs.github.com/pt/actions/monitoring-and-troubleshooting-workflows/monitoring-workflows/using-workflow-run-logs">Consultar o guia de logs ↗</a></div>
-        </div>
-        <nav class="deck-bottom" aria-label="Navegação do exercício 03"><a class="button" href="#exercicio-02">← Testes no push</a><a class="button primary" href="#exercicio-04">Variáveis e contextos →</a></nav>
-      </section>
-      <section id="exercicio-04" class="lesson" aria-labelledby="titulo-04" tabindex="-1">
-        <div class="deck-top"><a href="#home" class="back">← Todos os exercícios</a><span>04 / 07 · 20 minutos</span></div>
-        <p class="eyebrow">ENV · INPUTS · VARS · SECRETS</p>
-        <h2 id="titulo-04">Variáveis e contextos</h2>
-        <div class="slide-columns">
-          <div class="slide-stack">
-            <p class="lead">Configure uma execução manual com variáveis e contextos e identifique a origem dos valores usados.</p>
-            <div class="box"><h3>Origem dos valores</h3><p><code>env</code> define variáveis no YAML, como o nome do curso.</p><p><code>inputs</code> recebe a mensagem digitada em Run workflow.</p><p><code>github</code> traz informações da execução, como quem a iniciou.</p><p><code>vars</code> lê variáveis das configurações do repositório.</p><p><code>secrets</code> lê valores cadastrados como segredos.</p></div>
-            <div class="callout">O Actions avalia <code>${{ }}</code>; o shell lê <code>$VARIAVEL</code>. O exemplo passa a mensagem por <code>env</code> para tratá-la como texto, inclusive quando contém aspas.</div>
-          </div>
-          <div class="slide-stack">
-            <p class="small-note">Trechos de duas etapas. Use o exemplo completo indicado na prática.</p>
-            <pre><code># Na etapa Mostrar contexto:
-env:
-  MENSAGEM: ${{ inputs.mensagem }}
-  AUTOR: ${{ github.actor }}
-  TURMA: ${{ vars.TURMA }}
-run: |
-  printf '%s\n' "$MENSAGEM"
-  printf '%s\n' "$AUTOR" "$TURMA"
+/* 4 */
+D.push({n:4, key:'04', title:'Variáveis e contextos', mod:'Módulo 3 · Configuração', time:20, cmds:['env','inputs','github','vars','secrets'],
+  entrega:'execução manual com a sua receita do dia',
+  slides:[
+    {h:'Variáveis e contextos', body: cover({n:4,time:20,mod:'Módulo 3 · Configuração',cmds:['env','inputs','github.actor','vars','secrets','gh secret set'],entrega:'execução manual com a sua receita do dia'},
+      'Configurar uma execução com valores vindos de lugares diferentes: o YAML, o formulário do Run workflow, a própria execução e as configurações do repositório, incluindo um <strong>segredo</strong> que nunca aparece no log.',
+      lab('04','variaveis-e-contextos') + '<p style="margin-top:10px;color:var(--muted)">Uma demonstração isolada: o workflow apresenta a receita do dia da cozinha.</p>')},
+    {h:'De onde vêm os valores', eyebrow:'Conceito', body:`
+      <div class="cols s2"><div class="stack">
+        ${yaml(`on:
+  workflow_dispatch:
+    inputs:
+      receita:
+        description: Receita do dia
+        type: string
+        default: Brigadeiro
 
-# Em outra etapa, sem imprimir o segredo:
 env:
-  TOKEN_DEMO: ${{ secrets.CURSO_TOKEN }}
-run: test -n "$TOKEN_DEMO"</code></pre>
-            <div class="box"><h3>Um segredo de demonstração</h3><p>Cadastre <code>CURSO_TOKEN</code> com o valor fictício <code>somente-demonstracao</code>. O comando <code>test -n</code> verifica se o valor não está vazio, sem exibi-lo no log.</p></div>
-          </div>
+  COZINHA: Cozinha do Curso
+
+# Na etapa:
+    env:
+      RECEITA: \${{ inputs.receita }}
+      AUTOR: \${{ github.actor }}
+      TURMA: \${{ vars.TURMA }}
+    run: |
+      printf 'Cozinha: %s\\nReceita do dia: %s\\n' "$COZINHA" "$RECEITA"`, 'trechos do workflow')}
+      </div><div class="stack">
+        <div class="box lift"><h3>Cinco origens</h3>${kv([
+          ['env','definido no próprio YAML, como o nome da cozinha'],
+          ['inputs','digitado no formulário do Run workflow'],
+          ['github','informações da execução: quem iniciou, branch, commit'],
+          ['vars','variável cadastrada nas configurações do repositório'],
+          ['secrets','valor sensível cadastrado no repositório'],
+        ], ['Contexto','De onde vem'])}</div>
+        <div class="callout"><strong>Duas sintaxes:</strong> o Actions troca <code>\${{ … }}</code> pelo valor antes de rodar a etapa; o shell lê <code>$VARIAVEL</code> durante a execução. Passar o input por <code>env</code> faz o shell tratá-lo como texto, mesmo com aspas.</div>
+      </div></div>`},
+    {h:'Segredos sem vazamento', eyebrow:'Conceito', body:`
+      <div class="cols s2"><div class="stack">
+        ${yaml(`      - name: Verificar segredo sem exibir o valor
+        env:
+          TOKEN_DEMO: \${{ secrets.CURSO_TOKEN }}
+        run: |
+          test -n "$TOKEN_DEMO" || { echo "Cadastre CURSO_TOKEN"; exit 1; }
+          echo "Segredo disponível para esta etapa."`, 'última etapa do job')}
+        <div class="box"><h3>Vars ou secrets?</h3><p>Os dois são cadastrados em <strong>Settings → Secrets and variables → Actions</strong>. Use <code>vars</code> para configurações comuns, como o nome da turma, e <code>secrets</code> para senhas e tokens.</p></div>
+      </div><div class="stack">
+        <div class="box lift"><h3>O que protege um segredo</h3><p>Ele não fica no YAML nem no histórico do Git. Só chega às etapas que o pedem por <code>env</code>, e o GitHub troca seu valor por <code>***</code> se ele aparecer no log.</p><p><code>test -n</code> confere se o valor não está vazio, sem imprimi-lo.</p></div>
+        <div class="callout warn"><strong>Segredo ausente não dá erro:</strong> vira texto vazio. Por isso a etapa testa o valor e falha com uma dica. No curso, o segredo é fictício: <code>somente-demonstracao</code>.</div>
+      </div></div>`},
+    {h:'Comandos e documentação', eyebrow:'Referência', body:`
+      <div class="cols s2">
+        ${kv([
+          ['cp "$CURSO_DIR/docs/solucoes/04.yml" .github/workflows/ci.yml','copia o workflow completo do exercício'],
+          ['check.sh 04','confere o YAML e simula com TURMA e CURSO_TOKEN de demonstração'],
+          ['gh variable set TURMA --body "<turma>"','cadastra a variável do repositório'],
+          ['gh secret set CURSO_TOKEN --body "<valor>"','cadastra o segredo do repositório'],
+          ['gh workflow run "<workflow>" -f receita="<receita>"','inicia o workflow manual pelo terminal'],
+          ['gh run watch','acompanha a execução no terminal'],
+        ])}
+        <div class="box soft"><h3>Documentação</h3>${docs([L.contextos, L.variaveis, L.segredos, L.g_var, L.g_secret, L.g_wrun])}</div>
+      </div>`},
+    {h:'O exercício', eyebrow:'Tarefa · 20 min', body:`
+      <div class="cols s2"><div class="stack">${steps([
+        `<div class="t">Entre no laboratório e copie o workflow completo do exercício:</div>${cmd('$ cd ~/labs/04-variaveis-e-contextos\n$ cp "$CURSO_DIR/docs/solucoes/04.yml" .github/workflows/ci.yml\n$ code .github/workflows/ci.yml')}`,
+        `<div class="t">Troque o <code>default</code> de <code>receita</code> pela sua receita favorita e localize <code>env.COZINHA</code>. Salve e simule; o log mostra a cozinha, a receita e a turma local:</div>${cmd('$ check.sh 04')}`,
+        `<div class="t">Publique o laboratório:</div>${publicar('04')}`,
+        `<div class="t">Cadastre a variável e o segredo fictício no repositório. Os comandos usam o repositório da pasta atual:</div>${cmd('$ gh variable set TURMA --body "turma-de-actions"\n$ gh secret set CURSO_TOKEN --body "somente-demonstracao"')}`,
+        `<div class="t">Em <strong>Actions → Variáveis e contextos → Run workflow</strong>, digite uma receita e execute na <code>main</code>. No log, confira cozinha, receita, autor e turma, e a mensagem do segredo, sem o valor.</div>`,
+      ])}</div><div class="stack">
+        ${verificacao('04', 'Aprova com o input <code>receita</code>, <code>env.COZINHA</code> e as referências a <code>inputs</code>, <code>github</code>, <code>vars</code> e <code>secrets</code> passadas por <code>env</code>. A simulação usa valores locais de demonstração.')}
+        <div class="callout"><strong>A última etapa falhou no GitHub?</strong> Confira o nome <code>CURSO_TOKEN</code> e se ele foi cadastrado neste repositório, <code>actions-04</code>.</div>
+        <div class="box soft"><h3>Missão extra</h3>${cmd('$ gh workflow run "Variáveis e contextos" -f receita="Bolo de cenoura"\n$ gh run watch')}<p style="margin-top:8px;color:var(--muted)">O mesmo Run workflow, pelo terminal. <code>-f</code> preenche o input do formulário.</p></div>
+      </div></div>`},
+  ]});
+
+/* 5 */
+D.push({n:5, key:'05', title:'Jobs e dependências', mod:'Módulo 4 · Entrega contínua', time:20, cmds:['needs','jobs em paralelo','python build.py'],
+  entrega:'execução verde e uma com o build pulado',
+  slides:[
+    {h:'Jobs e dependências', body: cover({n:5,time:20,mod:'Módulo 4 · Entrega contínua',cmds:['needs: testar','python build.py','test -s','skipped'],entrega:'execução verde e uma com o build pulado'},
+      'Acrescentar um segundo job, que gera o site do livro de receitas, e fazê-lo <strong>esperar os testes</strong>: se eles falharem, o build não começa.',
+      lab('05','jobs-e-dependencias') + '<p style="margin-top:10px;color:var(--muted)">Ponto de partida: o workflow com testes no push e no pull request.</p>')},
+    {h:'Jobs em sequência', eyebrow:'Conceito', body:`
+      <div class="stack">
+        <div class="cols">
+          <div class="stack"><h3>Testes aprovados</h3>${jobs([{t:'testar',s:'3 testes',st:'ok'},{t:'empacotar',s:'gera o site',st:'ok'}])}</div>
+          <div class="stack"><h3>Testes reprovados</h3>${jobs([{t:'testar',s:'503 != 1500',st:'fail'},{t:'empacotar',s:'skipped · pulado',st:'skip'}])}</div>
         </div>
-        <div class="lesson-practice slide-columns">
-          <div class="slide-stack"><h3>Pratique no Codespaces</h3><pre><code>cd ~/labs/04-variaveis-e-contextos
-cp "$CURSO_DIR/docs/solucoes/04.yml" .github/workflows/ci.yml
-code .github/workflows/ci.yml
-# Personalize e salve antes de conferir:
-check.sh 04</code></pre><ol class="task-list"><li>Mude o <code>default</code> da entrada <code>mensagem</code> e localize <code>env.CURSO</code>.</li><li>Confira, faça commit e publique em <code>actions-04</code>.</li><li>Em Settings → Secrets and variables → Actions, crie a variável <code>TURMA</code> e o segredo fictício <code>CURSO_TOKEN</code>, nas respectivas abas.</li><li>Execute manualmente na main com uma mensagem sua. Leia os logs e a confirmação de presença do segredo.</li></ol></div>
-          <div class="slide-stack"><div class="box"><h3>Sua entrega</h3><p>Uma execução manual verde com mensagem personalizada, autor, turma e segredo verificado sem exibir seu valor.</p></div><details class="box"><summary>Qual a diferença entre vars e secrets?</summary><p>Ambos vêm das configurações do repositório. Use <code>vars</code> para configurações comuns e <code>secrets</code> para valores sensíveis. No curso, o segredo é fictício e só verificamos sua presença.</p></details><div class="callout">O check local confere as referências no YAML. Se a última etapa falhar no Actions, confira o nome do segredo e o repositório em que foi cadastrado: um segredo ausente resulta em valor vazio.</div><a href="https://docs.github.com/pt/actions/learn-github-actions/contexts">Consultar a documentação de contextos ↗</a></div>
+        <div class="cols">
+          <div class="box lift"><h3>needs cria a ordem</h3><p>Sem <code>needs</code>, os jobs de um workflow rodam <strong>ao mesmo tempo</strong>. Com <code>needs: testar</code>, o job <code>empacotar</code> espera e só começa se <code>testar</code> terminar com sucesso.</p></div>
+          <div class="box"><h3>Cada job, um runner novo</h3><p>Jobs não compartilham arquivos: o <code>empacotar</code> recebe outra máquina vazia. Por isso ele repete checkout, Python e dependências. <code>needs</code> define a ordem, mas não copia nada.</p></div>
+          <div class="box"><h3>Pulado não é falha</h3><p>Quando um job anterior falha, os dependentes aparecem como <strong>skipped</strong>. O grafo da execução mostra os dois estados lado a lado.</p></div>
         </div>
-        <nav class="deck-bottom" aria-label="Navegação do exercício 04"><a class="button" href="#exercicio-03">← Checks no PR</a><a class="button primary" href="#exercicio-05">Jobs e dependências →</a></nav>
-      </section>
-      <section id="exercicio-05" class="lesson" aria-labelledby="titulo-05" tabindex="-1">
-        <div class="deck-top"><a href="#home" class="back">← Todos os exercícios</a><span>05 / 07 · 20 minutos</span></div>
-        <p class="eyebrow">NEEDS · RUNNER · BUILD</p>
-        <h2 id="titulo-05">Jobs e dependências</h2>
-        <div class="slide-columns">
-          <div class="slide-stack">
-            <p class="lead">Defina a dependência entre os jobs de testes e build e verifique o comportamento quando um teste falha.</p>
-            <div class="flow"><span>testar</span><b aria-hidden="true">→</b><span>empacotar</span></div>
-            <div class="box"><h3>Dependências entre jobs</h3><p>Etapas de um job executam em sequência. Jobs sem dependências podem executar em paralelo.</p><p><code>needs: testar</code> faz <code>empacotar</code> aguardar os testes e prosseguir somente se eles passarem.</p><p><strong>Build:</strong> neste projeto, <code>python build.py</code> transforma <code>cardapio.md</code> em <code>dist/index.html</code>.</p></div>
-            <div class="callout">Cada job recebe seu próprio runner. Por isso, o build também precisa de checkout, Python e instalação das dependências.</div>
-          </div>
-          <div class="slide-stack"><p class="small-note">Acrescente dentro de jobs, no mesmo nível de testar, com dois espaços de indentação.</p><pre><code>empacotar:
-  needs: testar
-  runs-on: ubuntu-latest
-  steps:
-    - uses: actions/checkout@v5
-    - uses: actions/setup-python@v6
-      with:
-        python-version: '3.12'
-    - run: python -m pip install -r requirements.txt
-    - run: python build.py
-    - name: Conferir o arquivo gerado
-      run: test -s dist/index.html</code></pre><div class="box"><h3>Conferir o build</h3><p><code>test -s</code> retorna sucesso quando o arquivo existe e não está vazio. O resultado ainda está somente no runner.</p></div></div>
+      </div>`},
+    {h:'O build do livro', eyebrow:'Conceito', body:`
+      <div class="cols s2"><div class="stack">
+        ${yaml(`  empacotar:
+    needs: testar
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements.txt
+      - run: python build.py
+      - name: Conferir o arquivo gerado
+        run: test -s dist/index.html`, 'dentro de jobs, no mesmo nível de testar')}
+      </div><div class="stack">
+        ${jobs([{t:'livro.md + receitas/*.md',s:'os textos do livro'},{t:'build.py',s:'Markdown → HTML',st:'hi'},{t:'dist/index.html',s:'o site pronto'}], '')}
+        <div class="box lift"><h3>O que é o build</h3><p><strong>Build</strong> é gerar o resultado final a partir dos arquivos do projeto. Aqui, <code>build.py</code> junta o título de <code>livro.md</code> e as receitas da pasta <code>receitas/</code> em uma página HTML.</p></div>
+        <div class="callout"><strong>test -s</strong> retorna sucesso quando o arquivo existe e não está vazio. O site ainda fica só no runner, que é descartado no fim; o exercício 6 guarda esse resultado.</div>
+      </div></div>`},
+    {h:'Comandos e documentação', eyebrow:'Referência', body:`
+      <div class="cols s2">
+        ${kv([
+          ['check.sh 05','confere o YAML e simula os dois jobs, na ordem do needs'],
+          ['python build.py','gera dist/index.html (precisa do Markdown instalado)'],
+          ['python -m http.server -d dist 8000','serve o site gerado na porta 8000 do Codespace'],
+          ['gh run view','mostra os jobs de uma execução e seus estados'],
+          ['git push','envia o commit e dispara a execução'],
+        ])}
+        <div class="box soft"><h3>Documentação</h3>${docs([L.jobs, L.sintaxe, L.ci, L.g_view])}</div>
+      </div>`},
+    {h:'O exercício', eyebrow:'Tarefa · 20 min', body:`
+      <div class="cols s2"><div class="stack">${steps([
+        `<div class="t">Abra o workflow e acrescente o job <code>empacotar</code> do slide anterior, sem apagar <code>testar</code>. Salve e simule; o log mostra <code>testar</code> e depois <code>empacotar</code>:</div>${cmd('$ cd ~/labs/05-jobs-e-dependencias\n$ code .github/workflows/ci.yml\n$ check.sh 05')}`,
+        `<div class="t">Publique e abra o grafo da execução:</div>${publicar('05')}`,
+        `<div class="t">Quebre o cálculo de propósito: em <code>receitas.py</code>, troque <code>*</code> por <code>+</code>. Simule: <code>testar</code> falha e <code>empacotar</code> é pulado. Envie mesmo assim e veja o mesmo no GitHub:</div>${cmd('$ code receitas.py\n$ check.sh 05\n$ git add receitas.py\n$ git commit -m "Demonstra o build pulado"\n$ git push')}`,
+        `<div class="t">Volte a multiplicação, confira e envie. A execução termina com os dois jobs verdes:</div>${cmd('$ check.sh 05\n$ git add receitas.py\n$ git commit -m "Corrige o cálculo da quantidade"\n$ git push')}`,
+      ])}</div><div class="stack">
+        ${verificacao('05', 'Aprova com <code>needs: testar</code>, o build depois das dependências e os dois jobs verdes na simulação. Com o erro, mostra o build pulado, como o GitHub.')}
+        <div class="callout"><strong>Entrega:</strong> o link da execução final verde e o da execução com <code>empacotar</code> pulado.</div>
+        <div class="box soft"><h3>Missão extra · o site no navegador</h3>${cmd('$ python3 -m venv .venv\n$ source .venv/bin/activate\n$ python -m pip install -r requirements.txt\n$ python build.py\n$ python -m http.server -d dist 8000')}<p style="margin-top:8px;color:var(--muted)">Abra o endereço da porta 8000 na aba PORTS, ao lado de TERMINAL. <kbd>Ctrl+C</kbd> para o servidor.</p></div>
+      </div></div>`},
+  ]});
+
+/* 6 */
+D.push({n:6, key:'06', title:'Artefatos do build', mod:'Módulo 4 · Entrega contínua', time:20, cmds:['upload-artifact','name · path','retention-days'],
+  entrega:'artefato site com a receita nova',
+  slides:[
+    {h:'Artefatos do build', body: cover({n:6,time:20,mod:'Módulo 4 · Entrega contínua',cmds:['actions/upload-artifact','name: site','path: dist/','gh run download'],entrega:'artefato site com a receita nova'},
+      'Guardar o site gerado pelo build como um <strong>artefato</strong> da execução, baixá-lo e conferir que cada commit produz o seu próprio resultado.',
+      lab('06','artefatos-do-build') + '<p style="margin-top:10px;color:var(--muted)">Ponto de partida: o workflow com os jobs <code>testar</code> e <code>empacotar</code>.</p>')},
+    {h:'Guardar o resultado', eyebrow:'Conceito', body:`
+      <div class="cols s2"><div class="stack">
+        ${jobs([{t:'python build.py',s:'gera dist/'},{t:'upload-artifact',s:'compacta e envia',st:'hi'},{t:'artefato site',s:'ZIP ligado à execução'}], '')}
+        ${yaml(`      - name: Guardar o site
+        uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: dist/
+          if-no-files-found: error
+          retention-days: 7`, 'última etapa de jobs.empacotar.steps')}
+      </div><div class="stack">
+        <div class="box lift"><h3>O que é um artefato</h3><p>Um arquivo, ou pasta, guardado pela execução depois que o runner é descartado: um site, um relatório, um pacote. Ele aparece em <strong>Artifacts</strong>, no resumo da execução.</p></div>
+        ${kv([
+          ['name','o nome do artefato na página da execução'],
+          ['path','o que enviar; aqui, a pasta do site'],
+          ['if-no-files-found','error faz a etapa falhar se a pasta estiver vazia'],
+          ['retention-days','por quantos dias guardar'],
+        ], ['Entrada','O que define'])}
+      </div></div>`},
+    {h:'Artefato, cache e deploy', eyebrow:'Conceito', body:`
+      <div class="stack">
+        <div class="cols">
+          <div class="box lift"><h3>Artefato</h3><p>O <strong>resultado</strong> de uma execução, para baixar ou passar a outro job. Cada execução tem os seus: o artefato de um commit antigo continua lá até expirar.</p></div>
+          <div class="box"><h3>Cache</h3><p>Arquivos guardados para <strong>acelerar</strong> as próximas execuções, como dependências já baixadas. Não é entrega; pode ser apagado a qualquer momento.</p></div>
+          <div class="box"><h3>Deploy</h3><p>A <strong>publicação</strong> do resultado no destino final, como um site no ar. Guardar o ZIP ainda não publica nada: o exercício 7 faz o deploy.</p></div>
         </div>
-        <div class="lesson-practice slide-columns">
-          <div class="slide-stack"><h3>Pratique no Codespaces</h3><pre><code>cd ~/labs/05-jobs-e-dependencias
-code .github/workflows/ci.yml
-check.sh 05</code></pre><ol class="task-list"><li>Preserve <code>testar</code> e acrescente o job <code>empacotar</code>.</li><li>Confira, faça commit e publique em <code>actions-05</code>. Veja o grafo da execução.</li><li>Em <code>app.py</code>, troque temporariamente a multiplicação por soma. Faça commit e push na main. Observe o build como <strong>skipped</strong> (pulado).</li><li>Corrija a multiplicação, faça outro commit e push. Termine com os dois jobs verdes.</li></ol></div>
-          <div class="slide-stack"><div class="box"><h3>Sua entrega</h3><p>Execução final verde e uma execução anterior com o build pulado após a falha dos testes.</p></div><details class="box"><summary>Os arquivos de testar aparecem em empacotar?</summary><p>Não. Jobs separados não compartilham automaticamente o sistema de arquivos. As etapas do mesmo job compartilham seus arquivos. <code>needs</code> define a dependência, mas não copia arquivos.</p></details><a href="https://docs.github.com/pt/actions/using-jobs/using-jobs-in-a-workflow">Consultar a documentação de jobs ↗</a></div>
+        ${kv([
+          ['Build','gera os arquivos','python build.py'],
+          ['Artefato','guarda os arquivos','actions/upload-artifact'],
+          ['Deploy','disponibiliza aos usuários','actions/deploy-pages'],
+        ], ['Etapa','Para quê','Neste curso'])}
+      </div>`},
+    {h:'Comandos e documentação', eyebrow:'Referência', body:`
+      <div class="cols s2">
+        ${kv([
+          ['check.sh 06','simula o workflow e confere se o artefato site contém index.html'],
+          ['python3 receitas.py','confere as receitas que vão para o site'],
+          ['gh run list','lista as execuções, para achar a mais recente'],
+          ['gh run download --name site --dir site-baixado','baixa o artefato da execução escolhida'],
+          ['unzip <arquivo>.zip','descompacta um ZIP baixado pelo navegador'],
+        ])}
+        <div class="box soft"><h3>Documentação</h3>${docs([L.artefatos, L.upload, L.g_down])}</div>
+      </div>`},
+    {h:'O exercício', eyebrow:'Tarefa · 20 min', body:`
+      <div class="cols s2"><div class="stack">${steps([
+        `<div class="t">Abra o workflow e acrescente o upload no fim das etapas de <code>empacotar</code>. Simule; procure a linha <strong>artefato site: index.html</strong>:</div>${cmd('$ cd ~/labs/06-artefatos-do-build\n$ code .github/workflows/ci.yml\n$ check.sh 06')}`,
+        `<div class="t">Publique. No resumo da execução, em <strong>Artifacts → site</strong>, baixe o ZIP e abra o <code>index.html</code>:</div>${publicar('06')}`,
+        `<div class="t">Acrescente uma receita nova, de limonada. Crie o arquivo com o conteúdo abaixo e salve:</div>${cmd('$ code receitas/limonada.md')}${arquivo('receitas/limonada.md', `# Limonada
+
+Rende: 4 copos
+
+## Ingredientes
+
+- 2 limões
+- 1 litro de água gelada
+- Açúcar a gosto
+
+## Modo de preparo
+
+1. Bata os limões com casca e a água no liquidificador.
+2. Coe, adoce e sirva.`)}`,
+        `<div class="t">Confira e envie. Depois, baixe o artefato da nova execução e procure a limonada:</div>${cmd('$ python3 receitas.py\n$ check.sh 06\n$ git add receitas/limonada.md\n$ git commit -m "Adiciona receita de limonada"\n$ git push')}`,
+      ])}</div><div class="stack">
+        ${verificacao('06', 'Aprova com o upload de <code>dist/</code> como <code>site</code>, depois do build, com <code>if-no-files-found: error</code> e <code>retention-days: 7</code>, e quando o artefato da simulação contém <code>index.html</code>.')}
+        <div class="callout"><strong>Entrega:</strong> o link da execução final e a confirmação de que o artefato <code>site</code> traz a limonada.</div>
+        <div class="box soft"><h3>Missão extra</h3>${cmd('$ gh run download --name site --dir site-baixado\n$ ls site-baixado')}<p style="margin-top:8px;color:var(--muted)">Baixa o artefato direto no Codespace. Escolha a execução na lista; apague a pasta depois, para não entrar no próximo commit.</p></div>
+      </div></div>`},
+  ]});
+
+/* 7 */
+D.push({n:7, key:'07', title:'Deploy no Pages', mod:'Módulo 4 · Entrega contínua', time:30, cmds:['configure-pages','deploy-pages','permissions','environment'],
+  entrega:'URL pública do livro de receitas',
+  slides:[
+    {h:'Deploy no Pages', body: cover({n:7,time:30,mod:'Módulo 4 · Entrega contínua',cmds:['actions/configure-pages','actions/upload-pages-artifact','actions/deploy-pages','environment: github-pages'],entrega:'URL pública do livro de receitas'},
+      'Publicar o livro de receitas no <strong>GitHub Pages</strong> com um workflow que testa, gera e publica, e que só publica a partir da main.',
+      lab('07','deploy-no-pages') + '<p style="margin-top:10px;color:var(--muted)">Ponto de partida: o workflow com o artefato do build. O workflow guiado vem pronto em <code>$CURSO_DIR/docs/solucoes/07.yml</code>.</p>')},
+    {h:'Do build ao site', eyebrow:'Conceito', body:`
+      <div class="stack">
+        ${jobs([
+          {t:'testar',s:'os três testes',st:'ok'},
+          {t:'empacotar',s:'build + configure-pages + upload-pages-artifact',st:'ok'},
+          {t:'publicar',s:'deploy-pages · URL do site',st:'hi'},
+        ])}
+        <div class="cols">
+          <div class="box lift"><h3>empacotar</h3><p>Gera o site, prepara o Pages com <code>actions/configure-pages</code> e envia a pasta <code>dist/</code> como um artefato especial com <code>actions/upload-pages-artifact</code>.</p></div>
+          <div class="box"><h3>publicar</h3><p><code>actions/deploy-pages</code> coloca esse artefato no ar e devolve a URL. Ela aparece no grafo da execução e na página do repositório.</p></div>
+          <div class="box"><h3>Somente a main</h3><p>A condição <code>if</code> dos dois jobs deixa publicar só a partir da main, por push ou clique, e nunca em um pull request. Os PRs continuam rodando <code>testar</code>.</p></div>
         </div>
-        <nav class="deck-bottom" aria-label="Navegação do exercício 05"><a class="button" href="#exercicio-04">← Variáveis e contextos</a><a class="button primary" href="#exercicio-06">Artefatos do build →</a></nav>
-      </section>
-      <section id="exercicio-06" class="lesson" aria-labelledby="titulo-06" tabindex="-1">
-        <div class="deck-top"><a href="#home" class="back">← Todos os exercícios</a><span>06 / 07 · 20 minutos</span></div>
-        <p class="eyebrow">UPLOAD-ARTIFACT · DOWNLOAD</p>
-        <h2 id="titulo-06">Artefatos do build</h2>
-        <div class="slide-columns">
-          <div class="slide-stack">
-            <p class="lead">Armazene os arquivos gerados como artefatos para baixá-los após a execução.</p>
-            <div class="box"><h3>Armazenamento de artefatos</h3><p>Um <strong>artefato</strong> guarda arquivos de uma execução para consulta ou distribuição. Pode ser um site, relatório ou pacote.</p><p>Aqui, <code>name: site</code> identifica o artefato e <code>path: dist/</code> escolhe os arquivos enviados.</p><p><code>retention-days: 7</code> solicita que o resultado fique disponível por sete dias.</p></div>
-            <div class="callout">O upload vem depois do build. Guardar o ZIP como artefato ainda não publica o site na web.</div>
-          </div>
-          <div class="slide-stack"><p class="small-note">Última etapa de jobs.empacotar.steps. Alinhe o traço com o das outras etapas.</p><pre><code>- name: Guardar o site
-  uses: actions/upload-artifact@v4
-  with:
-    name: site
-    path: dist/
-    if-no-files-found: error
-    retention-days: 7</code></pre><div class="box"><h3>Quando nenhum arquivo é encontrado</h3><p><code>if-no-files-found: error</code> faz a etapa falhar se não houver arquivos para enviar. Confira se o build terminou e se a pasta é <code>dist/</code>.</p></div></div>
-        </div>
-        <div class="lesson-practice slide-columns">
-          <div class="slide-stack"><h3>Pratique no Codespaces</h3><pre><code>cd ~/labs/06-artefatos-do-build
-code .github/workflows/ci.yml
-check.sh 06</code></pre><ol class="task-list"><li>Adicione o upload no final das etapas de <code>empacotar</code>.</li><li>Confira, faça commit e publique em <code>actions-06</code>.</li><li>Depois da execução, encontre Artifacts → site no resumo. Logado no GitHub, baixe o ZIP e abra <code>index.html</code>.</li><li>No Codespace, personalize o título do cardápio, faça commit e push. Baixe o artefato da nova execução e compare o título.</li></ol></div>
-          <div class="slide-stack"><div class="box"><h3>Sua entrega</h3><p>Link da execução final e confirmação de que o artefato <code>site</code> contém <code>index.html</code> com seu título atualizado.</p></div><details class="box"><summary>Onde procurar o artefato de uma versão anterior?</summary><p>Na execução daquele commit, enquanto o artefato não tiver expirado ou sido removido. Cada execução tem seu próprio resultado.</p></details><a href="https://docs.github.com/pt/actions/using-workflows/storing-workflow-data-as-artifacts">Consultar a documentação de artefatos ↗</a></div>
-        </div>
-        <nav class="deck-bottom" aria-label="Navegação do exercício 06"><a class="button" href="#exercicio-05">← Jobs e dependências</a><a class="button primary" href="#exercicio-07">Deploy no Pages →</a></nav>
-      </section>
-      <section id="exercicio-07" class="lesson" aria-labelledby="titulo-07" tabindex="-1">
-        <div class="deck-top"><a href="#home" class="back">← Todos os exercícios</a><span>07 / 07 · 30 minutos</span></div>
-        <p class="eyebrow">TESTAR → GERAR → PUBLICAR</p>
-        <h2 id="titulo-07">Deploy no Pages</h2>
-        <div class="slide-columns">
-          <div class="slide-stack">
-            <p class="lead">Publique o site no GitHub Pages com o workflow fornecido, que reúne testes, build e deploy.</p>
-            <div class="flow"><span>testar</span><b aria-hidden="true">→</b><span>empacotar</span><b aria-hidden="true">→</b><span>publicar</span></div>
-            <div class="box"><h3>Etapas de publicação</h3><p><code>testar</code> verifica o código. Se passar, <code>empacotar</code> gera o HTML, prepara o Pages com <code>actions/configure-pages</code> e envia o site com <code>actions/upload-pages-artifact</code>.</p><p><code>publicar</code> usa <code>actions/deploy-pages</code> para disponibilizar esse artefato no endereço do site.</p></div>
-            <div class="callout">O job de publicação recebe <code>pages: write</code> e <code>id-token: write</code>. O GitHub fornece a credencial da execução; não é necessário cadastrar um token pessoal.</div>
-          </div>
-          <div class="slide-stack"><p class="small-note">Job final do exemplo. O arquivo completo também contém os testes e o build.</p><pre><code>publicar:
-  needs: empacotar
-  if: github.ref == 'refs/heads/main' &amp;&amp; github.event_name != 'pull_request'
-  runs-on: ubuntu-latest
-  permissions:
-    pages: write
-    id-token: write
-  environment:
-    name: github-pages
-    url: ${{ steps.deploy.outputs.page_url }}
-  steps:
-    - name: Publicar
-      id: deploy
-      uses: actions/deploy-pages@v4</code></pre><div class="box"><h3>Publicar somente a main</h3><p>A condição <code>if</code> permite a publicação da main por push ou execução manual e exclui PRs. Os PRs continuam executando <code>testar</code>.</p><p>O environment <code>github-pages</code> identifica o destino e exibe a URL devolvida pela etapa <code>deploy</code>.</p></div></div>
-        </div>
-        <div class="lesson-practice slide-columns">
-          <div class="slide-stack"><h3>Pratique no Codespaces</h3><pre><code>cd ~/labs/07-deploy-no-pages
-# Publique o estado inicial primeiro:
-gh repo create actions-07 --public --source=. --remote=origin --push
-gh browse</code></pre><ol class="task-list"><li>Em Settings → Pages → Build and deployment → Source, escolha <strong>GitHub Actions</strong>.</li><li>Volte ao Codespace e copie o workflow guiado com os comandos abaixo. Leia o fluxo com o professor.</li><li>Personalize o título de <code>cardapio.md</code>. Rode o check, faça commit e push.</li><li>Acompanhe os três jobs e abra a URL do environment <code>github-pages</code>.</li></ol><pre><code>cp "$CURSO_DIR/docs/solucoes/07.yml" .github/workflows/ci.yml
-code .github/workflows/ci.yml
-# Após editar e salvar o cardápio:
-check.sh 07
-git add .github/workflows/ci.yml cardapio.md
-git commit -m "Publica o cardápio no GitHub Pages"
-git push
-gh browse --actions</code></pre></div>
-          <div class="slide-stack"><div class="box"><h3>Sua entrega</h3><p>URL pública do cardápio com seu título e link da execução de deploy com os três jobs verdes.</p></div><details class="box"><summary>Qual é a diferença entre build, artefato e deploy?</summary><p><strong>Build</strong> gera os arquivos. <strong>Artefato</strong> guarda os arquivos. <strong>Deploy</strong> disponibiliza o resultado em seu destino, aqui o Pages.</p></details><details class="box"><summary>E se o site ainda não abrir?</summary><p>Aguarde alguns minutos após a publicação. Se o workflow falhou, confirme a configuração em Settings → Pages e compare <code>permissions</code> e <code>environment</code> com o exemplo. Após corrigir, use Actions → Publicar no Pages → Run workflow → main.</p></details><a href="https://docs.github.com/pt/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages">Consultar o guia de workflows do Pages ↗</a></div>
-        </div>
-        <aside class="box course-finish"><h3>Encerramento</h3><p>Salve os links das entregas, publique as mudanças que deseja manter e pare o Codespace em <a href="https://github.com/codespaces">github.com/codespaces</a> → ⋯ → Stop codespace. Seu site e seus repositórios publicados continuam no GitHub.</p></aside>
-        <nav class="deck-bottom" aria-label="Navegação do exercício 07"><a class="button" href="#exercicio-06">← Artefatos do build</a><a class="button primary" href="#home">Concluir e voltar ao índice →</a></nav>
-      </section>
+        <div class="callout"><strong>Implantação contínua:</strong> cada mudança na main aprovada nos testes gera uma nova versão do site, sem passos manuais.</div>
+      </div>`},
+    {h:'Permissões e environment', eyebrow:'Conceito', body:`
+      <div class="cols s2"><div class="stack">
+        ${yaml(`  publicar:
+    needs: empacotar
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: \${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Publicar
+        id: deploy
+        uses: actions/deploy-pages@v4`, 'o último job do workflow')}
+      </div><div class="stack">
+        <div class="box lift"><h3>Permissões só onde precisa</h3><p>O workflow inteiro tem <code>contents: read</code>. Só o job <code>publicar</code> recebe <code>pages: write</code>, para publicar, e <code>id-token: write</code>, para provar ao Pages qual execução está publicando. Não é preciso cadastrar nenhum token.</p></div>
+        <div class="box"><h3>O environment github-pages</h3><p>Um <strong>environment</strong> representa o destino de uma publicação. Ele guarda o histórico de deploys e mostra a URL, lida da saída da etapa <code>deploy</code>.</p></div>
+        <div class="callout"><strong>concurrency</strong>, no topo do arquivo, evita dois deploys ao mesmo tempo na mesma branch: o segundo espera o primeiro.</div>
+      </div></div>`},
+    {h:'Comandos e documentação', eyebrow:'Referência', body:`
+      <div class="cols s2">
+        ${kv([
+          ['cp "$CURSO_DIR/docs/solucoes/07.yml" .github/workflows/ci.yml','copia o workflow guiado de publicação'],
+          ['check.sh 07','confere o YAML e simula um PR: o deploy precisa ficar de fora'],
+          ['gh api -X POST "repos/{owner}/{repo}/pages" -f build_type=workflow','liga o Pages com a fonte GitHub Actions, sem abrir Settings'],
+          ['gh browse --settings','abre as configurações do repositório'],
+          ['gh run watch','acompanha os três jobs no terminal'],
+          ['gh pr merge --merge','integra o PR na main e dispara o deploy (missão extra)'],
+        ])}
+        <div class="box soft"><h3>Documentação</h3>${docs([L.pages, L.cd, L.ambientes, L.token, L.cpages, L.upages, L.dpages])}</div>
+      </div>`},
+    {h:'O exercício', eyebrow:'Tarefa · 30 min', body:`
+      <div class="cols s2"><div class="stack">${steps([
+        `<div class="t">Publique o estado inicial e abra as configurações:</div>${cmd('$ cd ~/labs/07-deploy-no-pages\n$ gh repo create actions-07 --public --source=. --remote=origin --push\n$ gh browse --settings')}`,
+        `<div class="t">Em <strong>Pages → Build and deployment → Source</strong>, escolha <strong>GitHub Actions</strong>.</div>`,
+        `<div class="t">Copie o workflow guiado e leia o fluxo com o professor. Personalize o título em <code>livro.md</code>:</div>${cmd('$ cp "$CURSO_DIR/docs/solucoes/07.yml" .github/workflows/ci.yml\n$ code .github/workflows/ci.yml\n$ code livro.md')}`,
+        `<div class="t">Simule. Como é um pull request, só <code>testar</code> roda; <code>empacotar</code> e <code>publicar</code> ficam de fora:</div>${cmd('$ check.sh 07')}`,
+        `<div class="t">Envie e acompanhe os três jobs. No fim, abra a URL mostrada no job <code>publicar</code>:</div>${cmd('$ git add .github/workflows/ci.yml livro.md\n$ git commit -m "Publica o livro de receitas no GitHub Pages"\n$ git push\n$ gh browse --actions')}`,
+      ])}</div><div class="stack">
+        ${verificacao('07', 'Aprova com as permissões do Pages só no job <code>publicar</code>, o <code>environment</code> com a URL do deploy e a condição que exclui PRs. A simulação confirma que um PR não publica.')}
+        <div class="callout"><strong>Se o site não abrir,</strong> aguarde alguns minutos. Se o workflow falhou, confira <em>Settings → Pages</em> e compare <code>permissions</code> e <code>environment</code> com o slide. Depois de corrigir, use <strong>Run workflow</strong> na main.</div>
+        <div class="box soft"><h3>Missão extra · o fluxo completo</h3>${cmd('$ git switch -c nova-receita\n# crie uma receita em receitas/ e faça o commit\n$ git push -u origin nova-receita\n$ gh pr create --base main --fill\n$ gh pr merge --merge')}<p style="margin-top:8px;color:var(--muted)">No PR, só <code>testar</code> roda. Depois do merge, o workflow da main publica a receita nova.</p></div>
+        <div class="callout warn"><strong>Ao terminar a aula:</strong> guarde os links das entregas e pare o Codespace em github.com/codespaces → ⋯ → <em>Stop codespace</em>. Os repositórios e o site continuam no GitHub.</div>
+      </div></div>`},
+  ]});
+</script>
+<script>
+/* ---------- tema claro/escuro ---------- */
+const TEMA = 'curso-actions-tema';
+const SOL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+const LUA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+const temaAtual = () => document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+function desenharTema(){
+  const t = temaAtual(), outro = t === 'light' ? 'escuro' : 'claro';
+  document.querySelectorAll('.tema').forEach(b => {
+    b.innerHTML = `${t === 'light' ? SOL : LUA}<span class="rot">tema ${t === 'light' ? 'claro' : 'escuro'}</span>`;
+    b.setAttribute('aria-label', `Tema ${t === 'light' ? 'claro' : 'escuro'} ativo. Mudar para o tema ${outro}`);
+    b.title = `Mudar para o tema ${outro}`;
+  });
+  document.querySelector('meta[name="theme-color"]').content = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('.tema')) return;
+  const t = temaAtual() === 'light' ? 'dark' : 'light';
+  document.documentElement.dataset.theme = t;
+  try { localStorage.setItem(TEMA, t); } catch (err) {}
+  desenharTema();
+});
+matchMedia('(prefers-color-scheme: light)').addEventListener?.('change', desenharTema);
+
+/* ---------- app: home + router ---------- */
+const ALL = [INTRO, ...D];
+const byKey = k => ALL.find(d => String(d.key) === String(k));
+const pad = n => typeof n === 'number' ? String(n).padStart(2,'0') : n;
+
+function renderHome(){
+  const aula = D.filter(d=>!d.antes);
+  const total = aula.reduce((a,d)=>a+d.time,0);
+  const tiles = ALL.map(d => {
+    const isIntro = d.key === 'intro';
+    return `<a class="tile" href="#/d/${d.key}/1">
+      <div class="row"><div class="num">${isIntro?'∅':pad(d.n)}</div><div class="mod">${d.mod}</div></div>
+      <div><h3>${isIntro? d.short : d.title}</h3><div class="cmds" style="margin-top:8px">${d.cmds.map(esc).join(' · ')}</div></div>
+      <div class="foot"><span${d.antes?' class="optional"':''}>${d.antes?'Antes da aula':d.slides.length+' slides'}</span><span>⏱ ${d.time} min</span></div>
+    </a>`;
+  }).join('');
+  document.getElementById('home').innerHTML = `
+    <div class="hometop">
+      <button class="tema" type="button"></button>
     </div>
-  </main>
-  <footer><span>GitHub Actions <span class="brand-slash">/</span> Curso introdutório</span><div><a href="https://github.com/fsilva-alt/devops-ghactions/blob/main/docs/guia-do-professor.md">Guia do professor</a><a href="https://docs.github.com/pt/actions">Documentação oficial ↗</a></div></footer>
+    <header class="hero">
+      <div><h1>GitHub Actions<span>no Codespaces</span></h1>
+        <p class="sub">Curso de GitHub Actions para iniciantes</p></div>
+      <div class="meta"><div><b>${aula.length}</b>exercícios</div><div><b>${total}</b>min de prática</div><div><b>3h</b>de aula</div></div>
+    </header>
+    <div class="legend"><span><span class="sw"></span>exercício</span><span><span class="sw el"></span>exercício 0 · feito antes da aula</span><span>teclado: <kbd>→</kbd> <kbd>←</kbd> mudar de slide · <kbd>Esc</kbd> voltar ao início · <kbd>F</kbd> tela cheia</span></div>
+    <div class="grid">${tiles}</div>
+    <footer class="homefoot">
+      <span>Faça o exercício 0 antes da aula. Ordem da aula: introdução → 1 → 7, com intervalo depois do 4.</span>
+      <span>Gabarito, guia do aluno e scripts: <a href="https://github.com/fsilva-alt/devops-ghactions" target="_blank" rel="noopener">github.com/fsilva-alt/devops-ghactions</a></span>
+      <span>Leitura sugerida: <a href="https://docs.github.com/pt/actions" target="_blank" rel="noopener">Documentação do GitHub Actions (pt-br)</a></span>
+    </footer>`;
+  desenharTema();
+}
+
+let cur = null; // {d, i}
+function renderSlide(d, i){
+  const s = d.slides[i];
+  const n = d.slides.length;
+  const isIntro = d.key === 'intro';
+  document.getElementById('crumb').innerHTML = `${isIntro?'<b>Introdução</b>':`Exercício <b>${pad(d.n)}</b> · <b>${esc(d.title)}</b>`}<span style="opacity:.6"> · ${esc(s.h)}</span>`;
+  document.getElementById('counter').textContent = `${i+1} / ${n}`;
+  document.getElementById('dots').innerHTML = d.slides.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join('');
+  const el = document.getElementById('slide');
+  el.innerHTML = `<div class="eyebrow">${esc(s.eyebrow || (isIntro? 'Introdução' : `Exercício ${pad(d.n)} · ${d.mod}`))}</div><h2>${s.h}</h2>${s.body}`;
+  // Até 29 caracteres o código cabe inteiro em qualquer caixa; acima disso pode quebrar,
+  // mas só nos espaços, para "--public" não virar "--" e "public" em linhas diferentes.
+  // A primeira coluna das tabelas continua sem quebra: ela rola dentro de .tw.
+  el.querySelectorAll('code').forEach(c => {
+    if (c.textContent.length < 30 || c.closest('td:first-child')) return;
+    c.replaceChildren(...c.textContent.split(' ').flatMap((w, k) => {
+      const s = document.createElement('span'); s.textContent = w;
+      return k ? [' ', s] : [s];
+    }));
+    c.classList.add('wrap');
+  });
+  el.style.animation = 'none'; void el.offsetWidth; el.style.animation = '';
+  const prev = document.getElementById('btnPrev'), next = document.getElementById('btnNext');
+  prev.toggleAttribute('disabled', i === 0);
+  const idx = ALL.indexOf(d), last = i === n-1;
+  if (last && idx < ALL.length-1){ const nd = ALL[idx+1]; next.innerHTML = `${nd.key==='intro'?'Introdução':'Exercício '+pad(nd.n)} →`; next.dataset.goto = `#/d/${nd.key}/1`; }
+  else if (last){ next.innerHTML = 'Exercícios ↑'; next.dataset.goto = '#/'; }
+  else { next.innerHTML = 'Próximo →'; delete next.dataset.goto; }
+  window.scrollTo({top:0});
+}
+
+function route(){
+  const h = location.hash || '#/';
+  // Endereços da versão anterior dos slides: #intro, #modulo-NN (conceitos) e #exercicio-NN (tarefa).
+  const antigo = h.match(/^#(intro|modulo-(\d{2})|exercicio-(\d{2}))/);
+  if (antigo){
+    const d = byKey(antigo[1] === 'intro' ? 'intro' : (antigo[2] || antigo[3]));
+    if (d){ location.replace(`#/d/${d.key}/${antigo[3] ? d.slides.length : 1}`); return; }
+  }
+  const m = h.match(/^#\/d\/([^/]+)(?:\/(\d+))?/);
+  const home = document.getElementById('home'), deck = document.getElementById('deck');
+  if (m && byKey(m[1])){
+    const d = byKey(m[1]);
+    let i = Math.min(Math.max((parseInt(m[2]||'1',10)||1)-1, 0), d.slides.length-1);
+    cur = {d, i};
+    home.classList.add('hidden'); deck.classList.remove('hidden');
+    renderSlide(d, i);
+    document.title = `${d.key==='intro'?'Introdução':'Exercício '+pad(d.n)} · ${d.title} — GitHub Actions no Codespaces`;
+  } else {
+    cur = null;
+    deck.classList.add('hidden'); home.classList.remove('hidden');
+    document.title = 'GitHub Actions no Codespaces';
+    if (h !== '#/') history.replaceState(null,'','#/');
+  }
+}
+function go(delta){
+  if (!cur) return;
+  const {d, i} = cur;
+  const ni = i + delta;
+  if (ni < 0){ return; }
+  if (ni >= d.slides.length){
+    const next = document.getElementById('btnNext');
+    if (next.dataset.goto) location.hash = next.dataset.goto;
+    return;
+  }
+  location.hash = `#/d/${d.key}/${ni+1}`;
+}
+
+document.getElementById('btnPrev').addEventListener('click', ()=>go(-1));
+document.getElementById('btnNext').addEventListener('click', ()=>go(1));
+document.addEventListener('keydown', e => {
+  if (e.target && /^(INPUT|TEXTAREA|BUTTON)$/.test(e.target.tagName) && e.key === ' ') return;
+  if (e.target && /^(INPUT|TEXTAREA)$/.test(e.target.tagName)) return;
+  if (e.altKey || e.ctrlKey || e.metaKey) return;
+  switch (e.key){
+    case 'ArrowRight': case 'ArrowDown': case 'PageDown': case ' ': if (cur){ e.preventDefault(); go(1);} break;
+    case 'ArrowLeft': case 'ArrowUp': case 'PageUp': case 'Backspace': if (cur){ e.preventDefault(); go(-1);} break;
+    case 'Escape': case 'h': case 'H': location.hash = '#/'; break;
+    case 'f': case 'F': (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.()); break;
+    case 'Home': if (cur){ location.hash = `#/d/${cur.d.key}/1`; } break;
+    case 'End': if (cur){ location.hash = `#/d/${cur.d.key}/${cur.d.slides.length}`; } break;
+  }
+});
+// swipe
+let tx = null;
+document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, {passive:true});
+document.addEventListener('touchend', e => {
+  if (tx === null || !cur) return;
+  const dx = e.changedTouches[0].clientX - tx; tx = null;
+  if (Math.abs(dx) > 60) go(dx < 0 ? 1 : -1);
+}, {passive:true});
+
+window.addEventListener('hashchange', route);
+renderHome();
+route();
+</script>
 </body>
 </html>

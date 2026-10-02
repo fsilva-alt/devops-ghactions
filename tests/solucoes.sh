@@ -8,7 +8,8 @@ TEMP="$(mktemp -d "$TEMP_BASE/curso-actions.XXXXXX")"
 trap 'rm -rf -- "$TEMP"' EXIT
 export HOME="$TEMP/home"
 unset CURSO_DIR LABS_DIR CURSO_RAMO
-export CURSO_MODO_TESTE=1 CURSO_AUTH_GITHUB=0 CODESPACES=false
+# CURSO_SIMULAR=0: sem Docker aqui; a simulação real com o act fica em tests/act.sh.
+export CURSO_MODO_TESTE=1 CURSO_AUTH_GITHUB=0 CURSO_SIMULAR=0 CODESPACES=false
 export GIT_CONFIG_NOSYSTEM=1 GIT_CONFIG_GLOBAL="$HOME/.gitconfig"
 export PYTHONDONTWRITEBYTECODE=1
 unset GH_TOKEN GITHUB_TOKEN
@@ -128,11 +129,16 @@ printf '\n▶ Exercícios: estados iniciais, erros comuns e soluções\n'
 )
 [[ -f "$LABS_DIR/01-primeiro-workflow/trabalho-preservado" ]]
 if check.sh 02 >/dev/null 2>&1; then exit 1; fi
-for numero in 00 08 99 abc ../01; do
+for numero in 08 99 abc ../01; do
   if check.sh "$numero" >/dev/null 2>&1; then exit 1; fi
   if reset.sh "$numero" >/dev/null 2>&1; then exit 1; fi
 done
-printf '✅ Inferência de exercício, reset isolado e números inválidos.\n'
+# O 00 confere o ambiente e não tem laboratório. Sem Docker e act, reprova com dicas.
+if reset.sh 00 >/dev/null 2>&1; then exit 1; fi
+if check.sh 00 > "$TEMP/ambiente.log" 2>&1; then exit 1; fi
+grep -q 'Exercício 00 — ambiente-pronto' "$TEMP/ambiente.log"
+grep -q 'setup.sh\|Docker' "$TEMP/ambiente.log"
+printf '✅ Inferência de exercício, reset isolado, exercício 00 e números inválidos.\n'
 
 printf '\n▶ Testes reais do projeto e geração do site\n'
 "$CURSO_DIR/.venv/bin/python" -m pip install --disable-pip-version-check -q -r "$CURSO_DIR/templates/projeto/requirements.txt"
@@ -141,12 +147,14 @@ printf '\n▶ Testes reais do projeto e geração do site\n'
   "$CURSO_DIR/.venv/bin/python" -m unittest -v
   "$CURSO_DIR/.venv/bin/python" build.py
   test -s dist/index.html
-  grep -q '<table>' dist/index.html
-  # O erro apresentado na aula deve realmente quebrar os testes.
-  sed -i 's/return preco_centavos \* quantidade/return preco_centavos + quantidade/' app.py
+  for receita in 'Bolo de cenoura' 'Brigadeiro' 'Pão de queijo'; do grep -q "$receita" dist/index.html; done
+  "$CURSO_DIR/.venv/bin/python" receitas.py | grep -q 'Pão de queijo (rende 25 unidades)'
+  # O erro apresentado na aula deve realmente quebrar os testes, com os valores dos slides.
+  sed -i 's/return gramas_por_receita \* receitas/return gramas_por_receita + receitas/' receitas.py
   if "$CURSO_DIR/.venv/bin/python" -m unittest > "$TEMP/teste-com-erro.log" 2>&1; then
     printf '❌ O bug da aula não foi detectado.\n'; exit 1
   fi
   grep -q FAILED "$TEMP/teste-com-erro.log"
+  grep -q '503 != 1500' "$TEMP/teste-com-erro.log"
 )
 printf '\n✅ Suíte concluída. A publicação real no Actions/Pages é conferida na conta do aluno.\n'

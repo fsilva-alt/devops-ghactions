@@ -2,11 +2,12 @@
 # Num Codespace criado com o modelo Blank, execute:
 # sh -c "$(curl -fsSL https://raw.githubusercontent.com/fsilva-alt/devops-ghactions/main/install.sh)"
 #
-# Baixa ou atualiza o curso, prepara os laboratórios, cria o atalho labs,
-# autentica o GitHub CLI e configura os comandos nos novos terminais.
+# Baixa ou atualiza o curso, prepara os laboratórios, instala o act (que simula os
+# workflows em containers Docker), cria o atalho labs, autentica o GitHub CLI e
+# configura os comandos nos novos terminais.
 # Pode ser executado novamente sem apagar o trabalho nos laboratórios.
 # Variáveis opcionais: CURSO_REPO, CURSO_RAMO, CURSO_DIR e LABS_DIR.
-# CURSO_AUTH_GITHUB=0 pula a autenticação em testes locais.
+# CURSO_AUTH_GITHUB=0 pula a autenticação e CURSO_SIMULAR=0 dispensa o act em testes locais.
 set -eu
 falha() { printf '❌ %s\n' "$*" >&2; exit 1; }
 if [ "${CODESPACES:-}" != true ] && [ "${CURSO_MODO_TESTE:-0}" != 1 ]; then
@@ -39,7 +40,7 @@ else
     || falha "Não foi possível clonar $CURSO_REPO em $CURSO_DIR. Confira a conexão, o endereço e se a pasta de destino está vazia."
 fi
 
-printf '▶ Preparando o verificador de YAML...\n'
+printf '▶ Preparando o verificador do curso...\n'
 python3 -m venv "$CURSO_DIR/.venv" || falha "Não foi possível criar o ambiente Python. Confira se python3-venv está instalado e execute o instalador novamente."
 "$CURSO_DIR/.venv/bin/python" -m pip install --disable-pip-version-check -q -r "$CURSO_DIR/scripts/requirements.txt"
 chmod +x "$CURSO_DIR"/scripts/*.sh
@@ -86,7 +87,7 @@ for rc in "$HOME/.bashrc" "$HOME/.zshrc"; do
     printf '# >>> curso de github actions >>>\n'
     printf 'export CURSO_DIR=%s\n' "$(shell_quote "$CURSO_DIR")"
     printf 'export LABS_DIR=%s\n' "$(shell_quote "$LABS_DIR")"
-    printf 'export PATH="$CURSO_DIR/scripts:$PATH"\n'
+    printf 'export PATH="$CURSO_DIR/scripts:$CURSO_DIR/bin:$PATH"\n'
     if [ "$configurar_auth" = 1 ]; then printf '%s\n' "$AUTH_LINHA"; fi
     printf '# <<< curso de github actions <<<\n'
   )"
@@ -101,8 +102,8 @@ printf 'Material do curso: %s\n' "$CURSO_DIR"
 printf 'Laboratórios: %s\n' "$LABS_DIR"
 printf 'Abra um terminal novo para carregar os comandos e o login salvo.\n'
 printf 'Ou execute: source ~/.bashrc (bash) / source ~/.zshrc (zsh).\n'
-printf 'Comece pelo exercício 01 em https://fsilva-alt.github.io/devops-ghactions/#exercicio-01\n'
-printf 'Verificação local: check.sh 01 (é esperado reprovar antes de criar o workflow).\n'
+printf 'Confira o ambiente: check.sh 00 (exercício 00, antes da aula).\n'
+printf 'Slides e exercícios: https://fsilva-alt.github.io/devops-ghactions/\n'
 if [ "$CURSO_AUTH_GITHUB" = 0 ]; then
   printf 'Preparação concluída sem login. Antes da aula, execute o instalador sem CURSO_AUTH_GITHUB=0 para autenticar.\n'
 fi
