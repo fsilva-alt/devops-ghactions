@@ -1,6 +1,6 @@
 # Curso de GitHub Actions no GitHub Codespaces
 
-Aula ao vivo de 3 horas, com 7 exercícios feitos no navegador. O ambiente é o GitHub Codespaces, um computador Linux acessado pela internet que já vem com editor de arquivos, terminal, Git, GitHub CLI e Docker. Cada pessoa usa o seu, chamado **Codespace**.
+Aula ao vivo de 3 horas, com 7 exercícios feitos no navegador e mais 7 opcionais para praticar depois. O ambiente é o GitHub Codespaces, um computador Linux acessado pela internet que já vem com editor de arquivos, terminal, Git, GitHub CLI e Docker. Cada pessoa usa o seu, chamado **Codespace**.
 
 O projeto da aula é um livro de receitas: arquivos Markdown com as receitas, um programa Python com três testes e um gerador de site. O código vem pronto. O curso trata da automação: testar cada mudança, gerar o site e publicá-lo no GitHub Pages com workflows do GitHub Actions.
 
@@ -14,7 +14,8 @@ Comece por [Antes da aula](#antes-da-aula) e depois siga a [Sequência da aula](
 - executar testes a cada push e acompanhar os checks de um pull request;
 - encontrar uma falha nos logs e corrigir sua causa;
 - usar variáveis, contextos e um segredo de demonstração;
-- ordenar jobs, guardar o resultado do build e publicar um site no GitHub Pages.
+- ordenar jobs, guardar o resultado do build e publicar um site no GitHub Pages;
+- nos exercícios opcionais: matriz de versões, cache, filtros de caminho e agendamento, anotações, saídas entre jobs, ação composta e release por tag.
 
 ### Pré-requisitos
 
@@ -32,17 +33,19 @@ Faça esta preparação **pelo menos um dia antes**, para ter tempo de resolver 
    sh -c "$(curl -fsSL https://raw.githubusercontent.com/fsilva-alt/devops-ghactions/main/install.sh)"
    ```
 
-   O instalador salva o material em `~/devops-ghactions`, prepara os 7 laboratórios em `~/labs` e instala o **act**, o programa que simula os workflows no Codespace. Ele também baixa a imagem Docker usada pelo act, com cerca de 2 GB, o que leva alguns minutos na primeira vez. Na pasta em que foi executado, cria o atalho `labs`, para acessar os exercícios pelo explorador do VS Code. O símbolo `~` representa sua pasta pessoal no Codespace.
+   O instalador salva o material em `~/devops-ghactions`, prepara os 14 laboratórios em `~/labs` e instala o **act**, o programa que simula os workflows no Codespace. Ele também baixa a imagem Docker usada pelo act, com cerca de 2 GB, o que leva alguns minutos na primeira vez. Na pasta em que foi executado, cria o atalho `labs`, para acessar os exercícios pelo explorador do VS Code. O símbolo `~` representa sua pasta pessoal no Codespace.
 
    Em seguida, autorize o GitHub CLI com a conta que usará na aula. O login pede o escopo `workflow`, necessário para enviar arquivos de workflow. Se nenhuma janela abrir, siga o código exibido em [github.com/login/device](https://github.com/login/device). Um login salvo e válido é reutilizado. Aguarde a mensagem **Curso de GitHub Actions instalado com sucesso!**. Se o login for interrompido, execute o instalador novamente; os laboratórios são preservados.
 
-4. Abra **um terminal novo**, para carregar os comandos do curso, e execute:
+4. Abra **um terminal novo**, para carregar os comandos do curso. Pratique o editor: crie o arquivo `meu-arquivo.txt` na sua pasta pessoal, cole a linha `Estou pronto para a aula de GitHub Actions!` e salve com **Ctrl+S**. Depois, execute a verificação:
 
    ```bash
+   cd ~
+   code meu-arquivo.txt
    check.sh 00
    ```
 
-   O exercício 00 confere sua identidade no Git, o login do GitHub CLI, os laboratórios, o Docker e o act, e executa um workflow mínimo em um container. Se aparecer **concluído**, o ambiente está pronto. Se aparecer uma dica, siga a orientação e repita o comando. Se o nome ou o e-mail do Git estiverem vazios, configure-os com seus dados:
+   O exercício 00 confere sua identidade no Git, o login do GitHub CLI, os laboratórios, o conteúdo de `~/meu-arquivo.txt`, o Docker e o act, e executa um workflow mínimo em um container. Se aparecer **concluído**, o ambiente está pronto. Se aparecer uma dica, siga a orientação e repita o comando. Se o nome ou o e-mail do Git estiverem vazios, configure-os com seus dados:
 
    ```bash
    git config --global user.name "Seu nome"
@@ -62,7 +65,7 @@ Faça esta preparação **pelo menos um dia antes**, para ter tempo de resolver 
 
 ### Onde ficam os arquivos
 
-Cada exercício tem seu próprio repositório local em `~/labs/NN-nome`, com um ponto de partida pronto. Assim, é possível acompanhar um exercício mesmo sem ter concluído o anterior. O exercício 04 é uma demonstração isolada de configuração; os seguintes retomam os testes e o build do livro de receitas.
+Cada exercício tem seu próprio repositório local em `~/labs/NN-nome`, com um ponto de partida pronto. Assim, é possível acompanhar um exercício mesmo sem ter concluído o anterior. O exercício 04 é uma demonstração isolada de configuração; os seguintes retomam os testes e o build do livro de receitas. Os opcionais, de 08 a 14, partem de um dos workflows da aula e podem ser feitos em qualquer ordem.
 
 | Local | Conteúdo |
 |---|---|
@@ -96,7 +99,7 @@ Se o Docker não estiver disponível, o `check.sh` avisa, confere apenas o YAML 
 
 ### Publicar cada laboratório
 
-Cada exercício usa um repositório público separado, de `actions-01` a `actions-07`, na sua conta. Continue no Codespace Blank preparado antes da aula. Na pasta do laboratório, depois de salvar e verificar o workflow:
+Cada exercício usa um repositório público separado, de `actions-01` a `actions-07`, na sua conta; os opcionais seguem até `actions-14`. Continue no Codespace Blank preparado antes da aula. Na pasta do laboratório, depois de salvar e verificar o workflow:
 
 ```bash
 git add .github/workflows/ci.yml
@@ -131,7 +134,7 @@ Se a conta estiver incorreta, use `gh auth login --hostname github.com --git-pro
 
 | # | Exercício | Conceito novo | Tempo |
 |---|---|---|---:|
-| [00](https://fsilva-alt.github.io/devops-ghactions/#/d/00/1) | O ambiente está pronto? | Git, GitHub CLI, Docker e act (antes da aula) | 5 min |
+| [00](https://fsilva-alt.github.io/devops-ghactions/#/d/00/1) | O ambiente está pronto? | Git, GitHub CLI, editor, Docker e act (antes da aula) | 7 min |
 | [01](https://fsilva-alt.github.io/devops-ghactions/#/d/01/1) | Primeiro workflow | YAML, evento manual, job, runner e step | 15 min |
 | [02](https://fsilva-alt.github.io/devops-ghactions/#/d/02/1) | Testes no push | `push`, `checkout`, `setup-python`, `run` × `uses` | 25 min |
 | [03](https://fsilva-alt.github.io/devops-ghactions/#/d/03/1) | Checks no pull request | `pull_request`, logs, falha e correção | 25 min |
@@ -139,8 +142,17 @@ Se a conta estiver incorreta, use `gh auth login --hostname github.com --git-pro
 | [05](https://fsilva-alt.github.io/devops-ghactions/#/d/05/1) | Jobs e dependências | `needs`, um runner por job, build | 20 min |
 | [06](https://fsilva-alt.github.io/devops-ghactions/#/d/06/1) | Artefatos do build | Guardar e baixar os arquivos de uma execução | 20 min |
 | [07](https://fsilva-alt.github.io/devops-ghactions/#/d/07/1) | Deploy no Pages | Publicação guiada, `permissions`, `environment` | 30 min |
+| [08](https://fsilva-alt.github.io/devops-ghactions/#/d/08/1) | Matriz de versões · **opcional** | `strategy.matrix`, `fail-fast` | 15 min |
+| [09](https://fsilva-alt.github.io/devops-ghactions/#/d/09/1) | Cache de dependências · **opcional** | `cache: pip`, chave do cache, `gh cache list` | 15 min |
+| [10](https://fsilva-alt.github.io/devops-ghactions/#/d/10/1) | Caminhos e agendamento · **opcional** | `paths-ignore`, `schedule`, cron | 15 min |
+| [11](https://fsilva-alt.github.io/devops-ghactions/#/d/11/1) | Anotações no pull request · **opcional** | `::error file=…`, um job de validação | 20 min |
+| [12](https://fsilva-alt.github.io/devops-ghactions/#/d/12/1) | Saídas e resumo · **opcional** | `$GITHUB_OUTPUT`, `outputs`, `$GITHUB_STEP_SUMMARY` | 20 min |
+| [13](https://fsilva-alt.github.io/devops-ghactions/#/d/13/1) | Ação composta · **opcional** | `action.yml`, `using: composite`, `uses: ./…` | 20 min |
+| [14](https://fsilva-alt.github.io/devops-ghactions/#/d/14/1) | Release por tag · **opcional** | `tags`, `git tag`, `gh release create` | 20 min |
 
 Exercícios 01 a 07, com explicações: **155 minutos**. Abertura e introdução: 10; intervalo: 10; encerramento: 5. Total: **180 minutos**. O exercício 00 é feito antes da aula.
+
+A trilha da aula vai do 01 ao 07. Os exercícios de **08 a 14 são opcionais**, para praticar depois da aula, em qualquer ordem; a seção **Missão extra** de cada tarefa também é opcional. Cada opcional parte de um workflow da aula, já pronto no laboratório, e tem o mesmo formato: capa, conceitos, referência, tarefa e `check.sh NN`.
 
 Cada exercício nos slides tem uma capa com o objetivo e a pasta, de um a três slides de conceito, um slide de comandos e documentação e a tarefa com passos numerados.
 
@@ -161,7 +173,7 @@ A apresentação está em `docs/index.html`, em um único arquivo, com a mesma e
 ```bash
 bash tests/rodar.sh          # instalação, verificador, slides e projeto, sem conta GitHub nem Docker
 bash tests/rodar.sh --docker # a mesma suíte em um Ubuntu limpo, dentro de um container
-bash tests/rodar.sh --act    # simulação real com o act para o 00 e as 7 soluções; exige Docker
+bash tests/rodar.sh --act    # simulação real com o act para o 00 e as 14 soluções; exige Docker
 ```
 
 A suíte confere a instalação via `curl` e `sh -c` em um workspace vazio, a atualização do material, a preservação dos laboratórios, o atalho `labs`, a autenticação simulada, os YAMLs iniciais e resolvidos, erros comuns, a estrutura dos slides (com Node.js), os testes do projeto e o build. O modo de teste usa uma origem Git local e não cria repositórios no GitHub nem publica sites.

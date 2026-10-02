@@ -8,8 +8,13 @@ CURSO_DIR="$(cd "$SCRIPTS_DIR/.." && pwd)"
 LABS_DIR="${LABS_DIR:-$HOME/labs}"
 
 # Nome de cada exercício, indexado pelo número. O 00 confere o ambiente e não tem pasta.
+# Do 08 ao 14, os exercícios são opcionais, para praticar depois da aula.
 LAB_NOMES=("ambiente-pronto" "primeiro-workflow" "testes-no-push" "checks-no-pull-request"
-  "variaveis-e-contextos" "jobs-e-dependencias" "artefatos-do-build" "deploy-no-pages")
+  "variaveis-e-contextos" "jobs-e-dependencias" "artefatos-do-build" "deploy-no-pages"
+  "matriz-de-versoes" "cache-de-dependencias" "caminhos-e-agenda" "anotacoes-no-pull-request"
+  "saidas-e-resumo" "acao-composta" "release-por-tag")
+ULTIMO_LAB=$(( ${#LAB_NOMES[@]} - 1 ))
+ULTIMO_NN="$(printf '%02d' "$ULTIMO_LAB")"
 
 # O act executa os workflows no Codespace, cada job em um container Docker.
 # A imagem imita o runner ubuntu-latest do GitHub; o setup.sh baixa as duas coisas.
@@ -43,7 +48,7 @@ exigir_codespaces() {
 normalizar_num() {
   local n="${1%%-*}" minimo="${2:-1}"
   [[ "$n" =~ ^[0-9]{1,2}$ ]] || return 1
-  (( 10#$n >= minimo && 10#$n <= 7 )) || return 1
+  (( 10#$n >= minimo && 10#$n <= ULTIMO_LAB )) || return 1
   printf '%02d' "$((10#$n))"
 }
 
@@ -57,11 +62,11 @@ resolver_lab() {
     pasta="$(pwd -P)"
     labs="$(cd "$LABS_DIR" 2>/dev/null && pwd -P)" || labs="$LABS_DIR"
     rel="${pasta#"$labs"/}"
-    [[ "$rel" != "$pasta" ]] || { erro "Informe o exercício: check.sh 01 (de $(printf '%02d' "$minimo") a 07)."; return 1; }
+    [[ "$rel" != "$pasta" ]] || { erro "Informe o exercício: check.sh 01 (de $(printf '%02d' "$minimo") a $ULTIMO_NN)."; return 1; }
     entrada="${rel%%/*}"
   fi
   nn="$(normalizar_num "$entrada" "$minimo")" || {
-    erro "Exercício inválido: '$entrada'. Use $(printf '%02d' "$minimo") a 07."; return 1;
+    erro "Exercício inválido: '$entrada'. Use $(printf '%02d' "$minimo") a $ULTIMO_NN."; return 1;
   }
   printf '%s' "$nn"
 }

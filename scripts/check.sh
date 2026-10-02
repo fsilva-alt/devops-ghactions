@@ -20,13 +20,37 @@ for a in "$@"; do
     *) args+=("$a") ;;
   esac
 done
-[[ ${#args[@]} -le 1 ]] || { erro "Uso: check.sh [00–07] [--sem-act]"; exit 2; }
+[[ ${#args[@]} -le 1 ]] || { erro "Uso: check.sh [00–$ULTIMO_NN] [--sem-act]"; exit 2; }
 nn="$(resolver_lab "${args[0]:-}" 0)" || exit 2
 python="$CURSO_DIR/.venv/bin/python"
 [[ -x "$python" ]] || { erro "Verificador não instalado. Rode: sh \"$CURSO_DIR/install.sh\""; exit 2; }
 
 FALHAS=()
 falhar() { FALHAS+=("$1"$'\n   💡 '"$2"); }
+
+# Exercício 00: o aluno cria ~/meu-arquivo.txt no editor, com a linha do enunciado, e salva.
+MEU_ARQUIVO="$HOME/meu-arquivo.txt"
+MEU_TEXTO="Estou pronto para a aula de GitHub Actions!"
+verificar_arquivo() {
+  local conteudo
+  if [[ ! -f "$MEU_ARQUIVO" ]]; then
+    falhar "O arquivo ~/meu-arquivo.txt ainda não existe." \
+      "cd ~ e depois code meu-arquivo.txt; cole a linha do enunciado e salve com Ctrl+S."
+    return
+  fi
+  # Tolera o fim de linha do Windows e espaços sobrando no fim das linhas.
+  conteudo="$(tr -d '\r' < "$MEU_ARQUIVO" | sed 's/[[:space:]]*$//')"
+  if [[ -z "$conteudo" ]]; then
+    falhar "O arquivo ~/meu-arquivo.txt está vazio." \
+      "Cole a linha do enunciado e salve com Ctrl+S. Um ● na aba do editor indica alterações não salvas."
+  elif [[ "$conteudo" == *$'\n'* ]]; then
+    falhar "O arquivo ~/meu-arquivo.txt tem mais de uma linha." \
+      "Deixe no arquivo só esta linha e salve: $MEU_TEXTO"
+  elif [[ "$conteudo" != "$MEU_TEXTO" ]]; then
+    falhar "O conteúdo de ~/meu-arquivo.txt não confere. Encontrei: $conteudo" \
+      "Copie a linha do enunciado sem mudar nada e salve: $MEU_TEXTO"
+  fi
+}
 
 # Exercício 00: as ferramentas da aula funcionam neste Codespace?
 verificar_ambiente() {
@@ -45,8 +69,9 @@ verificar_ambiente() {
     fi
   fi
   local faltam=() n
-  for n in {1..7}; do [[ -d "$(lab_dir "$(printf '%02d' "$n")")" ]] || faltam+=("$n"); done
+  for (( n = 1; n <= ULTIMO_LAB; n++ )); do [[ -d "$(lab_dir "$(printf '%02d' "$n")")" ]] || faltam+=("$n"); done
   (( ${#faltam[@]} == 0 )) || falhar "Faltam laboratórios em $LABS_DIR: ${faltam[*]}." "setup.sh"
+  verificar_arquivo
   if ! docker_ok; then
     falhar "O serviço do Docker não respondeu. O act precisa dele para criar os containers dos jobs." \
       "Num Codespace recém-aberto, espere um minuto e tente de novo."

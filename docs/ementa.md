@@ -3,7 +3,7 @@
 | Item | Definição |
 |---|---|
 | Formato | Aula ao vivo, com exercícios no Codespace de cada participante |
-| Duração | 3 horas, com 7 exercícios |
+| Duração | 3 horas, com 7 exercícios; mais 7 exercícios opcionais para depois da aula |
 | Público | Iniciantes em CI/CD; não é preciso saber programar |
 | Pré-requisitos | Conta GitHub pessoal com acesso ao Codespaces e noções de terminal, commit, branch e push |
 | Preparação | Seguir a seção “Antes da aula” do README: criar um Codespace em branco, executar o instalador e conferir o ambiente com `check.sh 00` |
@@ -29,7 +29,7 @@ Ao longo dos exercícios, você aprende a:
 | Módulo | Conteúdo |
 |---|---|
 | Introdução | Como acompanhar a aula; o que é o GitHub Actions; problemas que ele resolve; CI, entrega contínua e implantação contínua; uso em equipe com pull requests e regras de proteção; breve história; cuidados com custos, segredos, permissões e actions de terceiros; Codespace, runner, act e Pages |
-| Abertura | Exercício 00, antes da aula: Git, GitHub CLI com escopo `workflow`, Docker e act |
+| Abertura | Exercício 00, antes da aula: Git, GitHub CLI com escopo `workflow`, um arquivo criado no editor, Docker e act |
 | 1. Fundamentos | Estrutura de um workflow em YAML: `name`, `on`, `permissions`, `jobs`, `runs-on`, `steps`, `run`; evento manual `workflow_dispatch`; execuções, jobs e logs na aba Actions |
 | 2. Integração contínua | Evento `push` com filtro de branch; `uses`, `with` e `run`; `actions/checkout` e `actions/setup-python`; evento `pull_request`; checks; leitura de logs; falha e correção |
 | 3. Configuração | `env`, `inputs`, contexto `github`, `vars` e `secrets`; `${{ }}` e variáveis do shell; segredos mascarados nos logs |
@@ -70,7 +70,7 @@ Cada exercício de 01 a 07 tem um laboratório em `~/labs/NN-nome/`, com o livro
 
 | # | Exercício | Tempo | Estado inicial | Tarefa | Verificação local | Entrega no GitHub |
 |---|---|---:|---|---|---|---|
-| 00 | O ambiente está pronto? | 5 | Codespace com o curso instalado | Conferir Git, `gh`, Docker e act | Ferramentas presentes; workflow mínimo executado em um container | — |
+| 00 | O ambiente está pronto? | 7 | Codespace com o curso instalado | Conferir Git, `gh`, Docker e act; criar `~/meu-arquivo.txt` no editor | Ferramentas presentes; arquivo com o texto do enunciado; workflow mínimo executado em um container | — |
 | 01 | Primeiro workflow | 15 | `.github/workflows/` vazia | Workflow manual com uma saudação | YAML com `workflow_dispatch`; mensagem no log da simulação | Execução manual verde |
 | 02 | Testes no push | 25 | Workflow de boas-vindas | Checkout, Python, dependências e testes no `push` | Três testes aprovados na simulação | Execução verde disparada por push |
 | 03 | Checks no pull request | 25 | Workflow de testes no push | Acrescentar `pull_request`; provocar e corrigir uma falha | Testes aprovados em uma simulação de PR | PR com execução vermelha e verde |
@@ -79,10 +79,24 @@ Cada exercício de 01 a 07 tem um laboratório em `~/labs/NN-nome/`, com o livro
 | 06 | Artefatos do build | 20 | Workflow com testar e empacotar | Upload de `dist/` como `site`; receita de limonada | Artefato da simulação com `index.html` | Artefato com a receita nova |
 | 07 | Deploy no Pages | 30 | Workflow com o artefato | Workflow guiado de publicação; título personalizado | Em um PR simulado, o deploy não roda | URL pública do livro de receitas |
 
+### Exercícios opcionais
+
+Para praticar depois da aula, em qualquer ordem. Têm o mesmo formato dos exercícios da aula, laboratório próprio e verificação com `check.sh NN`.
+
+| # | Exercício | Tempo | Estado inicial | Tarefa | Verificação local | Entrega no GitHub |
+|---|---|---:|---|---|---|---|
+| 08 | Matriz de versões | 15 | Workflow com push e PR | `strategy.matrix` com Python 3.11, 3.12 e 3.13; `fail-fast: false` | Uma cópia verde de `testar` por versão | Execução com os três jobs `testar` |
+| 09 | Cache de dependências | 15 | Workflow com testar e empacotar | `cache: pip` no setup-python dos dois jobs | Dois jobs verdes com o cache configurado | Execução com o cache restaurado em `empacotar` |
+| 10 | Caminhos e agendamento | 15 | Workflow com push e PR | `paths-ignore` com `README.md`; `schedule` semanal | Testes verdes numa simulação do evento `schedule` | Push do README sem execução; push da receita com execução |
+| 11 | Anotações no pull request | 20 | Workflow com push e PR | Job `validar` com `::error file=…` para receitas sem `Rende:` | Dois jobs verdes num PR simulado; a receita sem rendimento reprova | PR com a anotação, o check vermelho e o verde |
+| 12 | Saídas e resumo | 20 | Workflow com push e PR | Jobs `contar` e `resumo`; `outputs`, `needs` e `$GITHUB_STEP_SUMMARY` | Frase do resumo no log da simulação | Execução com o resumo de 4 receitas |
+| 13 | Ação composta | 20 | Workflow com testar e empacotar | `action.yml` composto; os dois jobs usam `./.github/actions/preparar` | Dois jobs verdes usando a ação | Execução verde com a ação |
+| 14 | Release por tag | 20 | Workflow com o artefato | Tags `v*`; job `lancar` com `gh release create` | Num push na main, `lancar` não roda | Release `v1.0.0` com o site compactado |
+
 ## Avaliação
 
 A conclusão de cada exercício exige a verificação local (`check.sh NN`) e a entrega no GitHub. No exercício 03, explique qual linha causava a falha; no 05, por que o segundo job prepara seu próprio ambiente; no 07, a diferença entre gerar, guardar e publicar um site.
 
 ## Continuidade
 
-Próximos temas: cache de dependências, matrizes de versões, workflows reutilizáveis, regras de proteção de branches e environments com aprovação. Consulte a [documentação oficial em português](https://docs.github.com/pt/actions).
+Os exercícios opcionais de 08 a 14 continuam a aula com matriz de versões, cache, filtros de caminho e agendamento, anotações, saídas entre jobs, ação composta e release por tag. Próximos temas: workflows reutilizáveis, regras de proteção de branches, environments com aprovação e actions publicadas no Marketplace. Consulte a [documentação oficial em português](https://docs.github.com/pt/actions).

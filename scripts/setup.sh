@@ -6,7 +6,7 @@ exigir_codespaces
 [[ $# -eq 0 ]] || { erro "Uso: setup.sh. Para recomeçar um exercício, use reset.sh NN."; exit 2; }
 mkdir -p "$LABS_DIR"
 gerados=0
-for n in {1..7}; do
+for (( n = 1; n <= ULTIMO_LAB; n++ )); do
   nn="$(printf '%02d' "$n")"
   dir="$(lab_dir "$nn")"
   if [[ -e "$dir" || -L "$dir" ]]; then
@@ -16,7 +16,7 @@ for n in {1..7}; do
     gerados=$((gerados + 1))
   fi
 done
-ok "$gerados laboratório(s) criado(s). Os 7 exercícios ficam em $LABS_DIR."
+ok "$gerados laboratório(s) criado(s). Os $ULTIMO_LAB laboratórios ficam em $LABS_DIR; os de 08 a $ULTIMO_NN são opcionais."
 
 # CURSO_SIMULAR=0 dispensa o act, por exemplo nos testes sem Docker.
 [[ "${CURSO_SIMULAR:-1}" == 1 ]] || exit 0

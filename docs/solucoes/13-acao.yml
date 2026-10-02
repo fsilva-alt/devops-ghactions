@@ -1,0 +1,12 @@
+name: Preparar o livro
+description: Instala o Python 3.12 e as dependências do livro de receitas
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v6
+      with:
+        python-version: '3.12'
+    - name: Instalar dependências
+      shell: bash
+      run: python -m pip install -r requirements.txt

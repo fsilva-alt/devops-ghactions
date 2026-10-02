@@ -5,7 +5,7 @@ Aqui estão os workflows e comandos completos de cada exercício; as explicaçõ
 ## Como usar
 
 - Entre primeiro na pasta do laboratório indicada na capa do exercício, por exemplo `cd ~/labs/02-testes-no-push`.
-- Os arquivos em [`solucoes/`](solucoes/) são os workflows completos dos 7 exercícios. Para usar um deles, copie-o para `.github/workflows/ci.yml` do laboratório.
+- Os arquivos em [`solucoes/`](solucoes/) são os workflows completos dos 7 exercícios da aula e dos 7 opcionais. Para usar um deles, copie-o para `.github/workflows/ci.yml` do laboratório. O exercício 13 tem também a ação composta, em `13-acao.yml`.
 - Execute `check.sh NN` antes de publicar. Ele confere o YAML e simula o workflow com o act.
 - A cópia resolve apenas o YAML. Conclua também as ações e a entrega no GitHub descritas abaixo.
 
@@ -18,6 +18,13 @@ Aqui estão os workflows e comandos completos de cada exercício; as explicaçõ
 | 05 | `~/labs/05-jobs-e-dependencias` | [05.yml](solucoes/05.yml) |
 | 06 | `~/labs/06-artefatos-do-build` | [06.yml](solucoes/06.yml) |
 | 07 | `~/labs/07-deploy-no-pages` | [07.yml](solucoes/07.yml) |
+| 08 · opcional | `~/labs/08-matriz-de-versoes` | [08.yml](solucoes/08.yml) |
+| 09 · opcional | `~/labs/09-cache-de-dependencias` | [09.yml](solucoes/09.yml) |
+| 10 · opcional | `~/labs/10-caminhos-e-agenda` | [10.yml](solucoes/10.yml) |
+| 11 · opcional | `~/labs/11-anotacoes-no-pull-request` | [11.yml](solucoes/11.yml) |
+| 12 · opcional | `~/labs/12-saidas-e-resumo` | [12.yml](solucoes/12.yml) |
+| 13 · opcional | `~/labs/13-acao-composta` | [13.yml](solucoes/13.yml) e [13-acao.yml](solucoes/13-acao.yml) |
+| 14 · opcional | `~/labs/14-release-por-tag` | [14.yml](solucoes/14.yml) |
 
 Exemplo, **dentro do laboratório 02**:
 
@@ -40,8 +47,18 @@ git config user.email
 gh auth status --hostname github.com
 docker version
 act --version
+cd ~
+code meu-arquivo.txt
 check.sh 00
 ```
+
+No editor, `~/meu-arquivo.txt` deve ter uma única linha, salva com **Ctrl+S**:
+
+```text
+Estou pronto para a aula de GitHub Actions!
+```
+
+O `check.sh 00` aceita espaços sobrando no fim da linha e o fim de linha do Windows, mas não outro texto. `cat ~/meu-arquivo.txt` mostra o que foi salvo.
 
 Se algum item faltar, execute `setup.sh` e repita `check.sh 00`. Para acrescentar o escopo `workflow` a um login existente, use `gh auth refresh --hostname github.com --scopes workflow`.
 
@@ -173,3 +190,93 @@ O workflow usa:
 - `concurrency` para impedir dois deploys simultâneos da mesma referência.
 
 O `check.sh 07` simula um pull request: só `testar` roda, e a simulação falha se `empacotar` ou `publicar` também rodarem. Para repetir o deploy, use **Actions → Publicar no Pages → Run workflow** na `main`. A entrega é a URL pública e o link da execução. Não é preciso cadastrar um token pessoal.
+
+## Exercícios opcionais
+
+Os exercícios de 08 a 14 ficam para depois da aula e podem ser feitos em qualquer ordem. Cada laboratório já começa com um workflow da aula; publique cada um em seu repositório, de `actions-08` a `actions-14`.
+
+## Exercício 08 — Matriz de versões
+
+`strategy.matrix.python-version: ['3.11', '3.12', '3.13']` cria uma cópia do job `testar` para cada versão, e `python-version: ${{ matrix.python-version }}` passa a versão de cada cópia ao setup-python. As versões vão entre aspas: sem elas, `3.10` vira o número `3.1`. `fail-fast: false` deixa todas as cópias terminarem quando uma falha.
+
+O `check.sh 08` simula as três cópias; a primeira vez baixa os três Pythons. A entrega é a execução com `testar (3.11)`, `testar (3.12)` e `testar (3.13)` verdes.
+
+## Exercício 09 — Cache de dependências
+
+`cache: pip`, no `with` do setup-python dos dois jobs, guarda os pacotes baixados pelo pip. A chave inclui o sistema, a versão do Python e um hash do `requirements.txt`. Na primeira execução, `testar` não encontra cache e salva um no fim do job; `empacotar`, que roda depois por causa do `needs`, já mostra `Cache restored` e `Using cached`.
+
+```bash
+gh cache list
+```
+
+A entrega é o link da execução com o cache restaurado em `empacotar` e a saída de `gh cache list`.
+
+## Exercício 10 — Caminhos e agendamento
+
+`paths-ignore: ['README.md']` no `push` evita execuções quando o commit muda só o README. `schedule` com `cron: '0 9 * * 1'` roda os testes toda segunda-feira às 9h em UTC, 6h em Brasília, na branch padrão. O `check.sh 10` simula o evento `schedule`.
+
+```bash
+code README.md
+git add README.md
+git commit -m "Atualiza o README"
+git push
+gh run list --limit 3          # nenhuma execução nova
+code receitas/brigadeiro.md
+git add receitas/brigadeiro.md
+git commit -m "Ajusta o rendimento do brigadeiro"
+git push
+gh run list --limit 3          # uma execução nova, evento push
+```
+
+## Exercício 11 — Anotações no pull request
+
+O job `validar` lista com `grep -L '^Rende:'` as receitas sem a linha de rendimento, escreve uma anotação `::error file=…,line=1,…::` para cada uma e falha com `test -z` se a lista não estiver vazia. Publique a solução na `main` e crie a receita sem rendimento em uma branch:
+
+```bash
+git switch -c receita-de-cafe
+code receitas/cafe.md          # receita sem a linha Rende:
+check.sh 11                    # validar falha e mostra a anotação
+git add receitas/cafe.md
+git commit -m "Adiciona receita de café"
+git push -u origin receita-de-cafe
+gh pr create --base main --fill
+```
+
+Em **Files changed**, a anotação aparece na primeira linha de `cafe.md`. Para corrigir, acrescente `Rende: 4 xícaras` depois do título, faça o commit e o push. A entrega é o link do PR com o check vermelho, a anotação e o check verde.
+
+## Exercício 12 — Saídas e resumo
+
+O step `contagem` escreve `total=3` em `$GITHUB_OUTPUT`; o job `contar` expõe esse valor em `outputs.total`; o job `resumo`, com `needs: [testar, contar]`, lê `needs.contar.outputs.total` por `env` e escreve em `$GITHUB_STEP_SUMMARY`. O `check.sh 12` procura `O livro tem 3 receitas.` no log.
+
+Depois da primeira execução, crie `receitas/limonada.md`, com o conteúdo do exercício 06, e envie. A entrega é o link da execução cujo resumo mostra 4 receitas.
+
+## Exercício 13 — Ação composta
+
+Crie a ação e troque, nos dois jobs, o setup-python e a instalação por `uses: ./.github/actions/preparar`, depois do checkout:
+
+```bash
+mkdir -p .github/actions/preparar
+cp "$CURSO_DIR/docs/solucoes/13-acao.yml" .github/actions/preparar/action.yml
+cp "$CURSO_DIR/docs/solucoes/13.yml" .github/workflows/ci.yml
+check.sh 13
+git add .github
+git commit -m "Configura workflow do exercício 13"
+gh repo create actions-13 --public --source=. --remote=origin --push
+```
+
+Numa ação composta, `runs.using` é `composite`, `name` e `description` são obrigatórios e cada `run` precisa de `shell: bash`. O commit leva a pasta `.github` inteira: sem `action.yml`, o job falha no GitHub.
+
+## Exercício 14 — Release por tag
+
+`tags: ['v*']` no `push` dispara o workflow quando uma tag que começa com `v` é enviada. O job `lancar` roda só nesse caso, com `if: startsWith(github.ref, 'refs/tags/v')`, e é o único com `contents: write`. Ele baixa o artefato `site`, compacta e cria o release com `gh release create`, usando `GH_TOKEN: ${{ github.token }}`.
+
+O `check.sh 14` simula um push na `main`: `testar` e `empacotar` rodam, e `lancar` fica de fora. Depois de publicar:
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+gh run watch
+gh release view v1.0.0 --web
+```
+
+A entrega é o link do release `v1.0.0`, com `livro-de-receitas.zip`.

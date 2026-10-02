@@ -4,13 +4,15 @@
 
 1. Siga a seção [Antes da aula](../README.md#antes-da-aula) do README para criar um Codespace com o modelo **Blank** e executar o instalador.
 2. Conclua o login do GitHub CLI com a conta que usará para publicar os exercícios.
-3. Abra um terminal novo e execute `check.sh 00`. Se aparecer uma dica, siga a orientação e repita o comando. Ao pedir ajuda, envie o comando executado e a mensagem completa do terminal.
+3. Abra um terminal novo e faça o exercício 00 nos [slides](https://fsilva-alt.github.io/devops-ghactions/#/d/00/1): ele inclui criar `~/meu-arquivo.txt` no editor, com o texto indicado. Depois, execute `check.sh 00`. Se aparecer uma dica, siga a orientação e repita o comando. Ao pedir ajuda, envie o comando executado e a mensagem completa do terminal.
 4. Pare o Codespace em [github.com/codespaces](https://github.com/codespaces), no menu **⋯ → Stop codespace**. No dia da aula, abra o mesmo Codespace.
 
 ## Como acompanhar os exercícios
 
 - Comece pelo slide **Como acompanhar a aula**. Ele apresenta o terminal, o editor, o instalador e a diferença entre um comando e o conteúdo de um arquivo.
 - Siga a sequência **01 → 02 → 03 → 04 → 05 → 06 → 07**. Cada exercício tem uma capa, slides de conceito, um slide de comandos e documentação e a tarefa com passos numerados.
+- O YAML e os arquivos que você precisa copiar estão no próprio slide da tarefa.
+- Os exercícios de **08 a 14 são opcionais**, para praticar depois da aula, em qualquer ordem. A **Missão extra** de cada tarefa também é opcional.
 - Em cada exercício, leia o objetivo, entre na pasta indicada e execute uma etapa por vez.
 - Nos slides, o `$` marca um comando: copie a linha sem esse símbolo. Blocos com o nome de um arquivo em cima, como `.github/workflows/ci.yml`, vão no editor.
 - Salve os arquivos com **Ctrl+S**, ou **Cmd+S** no Mac, antes de executar o `check.sh` ou fazer commit.
@@ -53,7 +55,7 @@ O instalador pode ser executado novamente para atualizar o material; ele preserv
 
 ## Publicação dos exercícios
 
-Cada laboratório é publicado em um repositório público separado, de `actions-01` a `actions-07`. Execute `gh repo create` apenas na primeira publicação de cada laboratório. Para as alterações seguintes, use `git add`, `git commit` e `git push`, conforme a tarefa.
+Cada laboratório é publicado em um repositório público separado, de `actions-01` a `actions-07`; os opcionais seguem até `actions-14`. Execute `gh repo create` apenas na primeira publicação de cada laboratório. Para as alterações seguintes, use `git add`, `git commit` e `git push`, conforme a tarefa.
 
 Use o mesmo Codespace Blank durante toda a aula.
 
@@ -67,6 +69,7 @@ Use o mesmo Codespace Blank durante toda a aula.
 | Simulação demorada na primeira vez | O act baixa a imagem do runner local, com cerca de 2 GB, e as actions usadas pelo workflow. As execuções seguintes levam poucos segundos. |
 | Simulação aprovada e falha no GitHub | Abra a etapa com falha no log da execução. A entrega considerada é a do GitHub. |
 | `Author identity unknown` | Configure seu nome e e-mail conforme a preparação do README. |
+| `check.sh 00` não aceita `meu-arquivo.txt` | Salve o arquivo no editor: um ● na aba indica alterações não salvas. Confira com `cat ~/meu-arquivo.txt`; o arquivo fica na pasta pessoal, `~`. |
 | Push recusado por permissão | Consulte [Se o push falhar por permissão](../README.md#se-o-push-falhar-por-permissão) e confira a conta e o escopo `workflow`. |
 | Repositório já existe | Se esse laboratório já foi publicado, use `git push`. Para uma nova tentativa, escolha outro nome. |
 | Botão Run workflow ausente | Confirme que o workflow contém `workflow_dispatch` e foi publicado na branch padrão, `main`. |

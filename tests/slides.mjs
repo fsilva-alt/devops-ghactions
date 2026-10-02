@@ -39,11 +39,12 @@ const slides = [];
 for (const d of contexto.__ALL) {
   d.slides.forEach((s, i) => {
     contexto.renderSlide(d, i);
-    slides.push({ key: d.key, n: d.n, i, h: s.h, eyebrow: s.eyebrow || '', html: elementos.slide.innerHTML });
+    slides.push({ key: d.key, n: d.n, i, h: s.h, eyebrow: s.eyebrow || '', html: elementos.slide.innerHTML,
+      anterior: elementos.btnPrev.dataset.goto || '', proximo: elementos.btnNext.dataset.goto || '' });
   });
 }
 const exercicios = contexto.__ALL.map(d => ({
-  key: d.key, n: d.n, title: d.title, time: d.time, antes: !!d.antes, mod: d.mod,
+  key: d.key, n: d.n, title: d.title, time: d.time, antes: !!d.antes, opcional: !!d.opcional, mod: d.mod,
   entrega: d.entrega || '', slides: d.slides.map(s => ({ h: s.h, eyebrow: s.eyebrow || '' })),
 }));
 console.log(JSON.stringify({ home: elementos.home.innerHTML, exercicios, slides }));

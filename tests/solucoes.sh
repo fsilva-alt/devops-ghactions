@@ -30,7 +30,7 @@ export PATH="$CURSO_DIR/scripts:$TEMP/bin:$PATH"
 cd "$TEMP/workspace"
 [[ -d "$CURSO_DIR/.git" && -x "$CURSO_DIR/.venv/bin/python" ]]
 [[ $(readlink "$TEMP/workspace/labs") == "$LABS_DIR" ]]
-[[ $(find "$LABS_DIR" -mindepth 1 -maxdepth 1 -type d | wc -l) -eq 7 ]]
+[[ $(find "$LABS_DIR" -mindepth 1 -maxdepth 1 -type d | wc -l) -eq 14 ]]
 touch "$LABS_DIR/01-primeiro-workflow/trabalho-preservado"
 printf 'Atualização do material\n' > "$TEMP/origem/atualizacao.txt"
 git -C "$TEMP/origem" add atualizacao.txt
@@ -129,7 +129,7 @@ printf '\n▶ Exercícios: estados iniciais, erros comuns e soluções\n'
 )
 [[ -f "$LABS_DIR/01-primeiro-workflow/trabalho-preservado" ]]
 if check.sh 02 >/dev/null 2>&1; then exit 1; fi
-for numero in 08 99 abc ../01; do
+for numero in 15 99 abc ../01; do
   if check.sh "$numero" >/dev/null 2>&1; then exit 1; fi
   if reset.sh "$numero" >/dev/null 2>&1; then exit 1; fi
 done
@@ -138,7 +138,18 @@ if reset.sh 00 >/dev/null 2>&1; then exit 1; fi
 if check.sh 00 > "$TEMP/ambiente.log" 2>&1; then exit 1; fi
 grep -q 'Exercício 00 — ambiente-pronto' "$TEMP/ambiente.log"
 grep -q 'setup.sh\|Docker' "$TEMP/ambiente.log"
-printf '✅ Inferência de exercício, reset isolado, exercício 00 e números inválidos.\n'
+# O arquivo do editor: ausente, vazio, com texto errado e, por fim, correto.
+grep -q 'meu-arquivo.txt ainda não existe' "$TEMP/ambiente.log"
+: > "$HOME/meu-arquivo.txt"
+check.sh 00 > "$TEMP/ambiente.log" 2>&1 || true
+grep -q 'meu-arquivo.txt está vazio' "$TEMP/ambiente.log"
+printf 'Estou pronto\n' > "$HOME/meu-arquivo.txt"
+check.sh 00 > "$TEMP/ambiente.log" 2>&1 || true
+grep -q 'não confere. Encontrei: Estou pronto' "$TEMP/ambiente.log"
+printf 'Estou pronto para a aula de GitHub Actions!  \r\n\n' > "$HOME/meu-arquivo.txt"
+check.sh 00 > "$TEMP/ambiente.log" 2>&1 || true
+if grep -q 'meu-arquivo' "$TEMP/ambiente.log"; then cat "$TEMP/ambiente.log"; exit 1; fi
+printf '✅ Inferência de exercício, reset isolado, exercício 00 com o arquivo do editor e números inválidos.\n'
 
 printf '\n▶ Testes reais do projeto e geração do site\n'
 "$CURSO_DIR/.venv/bin/python" -m pip install --disable-pip-version-check -q -r "$CURSO_DIR/templates/projeto/requirements.txt"

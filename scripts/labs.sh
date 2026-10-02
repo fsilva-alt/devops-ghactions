@@ -11,9 +11,9 @@ gerar_lab() (
   case "$nn" in
     02|04) base=01 ;;
     03) base=02 ;;
-    05) base=03 ;;
-    06) base=05 ;;
-    07) base=06 ;;
+    05|08|10|11|12) base=03 ;;
+    06|09|13) base=05 ;;
+    07|14) base=06 ;;
   esac
   if [[ -n "$base" ]]; then
     cp "$CURSO_DIR/docs/solucoes/$base.yml" "$dir/.github/workflows/ci.yml"

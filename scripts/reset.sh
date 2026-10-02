@@ -3,7 +3,7 @@
 source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 source "$SCRIPTS_DIR/labs.sh"
 exigir_codespaces
-[[ $# -le 1 ]] || { erro "Uso: reset.sh [01–07]"; exit 2; }
+[[ $# -le 1 ]] || { erro "Uso: reset.sh [01–$ULTIMO_NN]"; exit 2; }
 nn="$(resolver_lab "${1:-}")" || exit 2
 dir="$(lab_dir "$nn")"
 if [[ -e "$dir" || -L "$dir" ]]; then

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Simulação real com o act: instala o curso em um HOME descartável, baixa o act e a
-# imagem do runner local, e confere o exercício 00, as 7 soluções e as falhas da aula.
+# imagem do runner local, e confere o exercício 00, as 14 soluções e as falhas da aula.
 # Exige Docker e acesso à internet; não usa conta GitHub.
 set -euo pipefail
 RAIZ="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -31,22 +31,33 @@ aprovar() { check.sh "$1" > "$saida" 2>&1 || { cat "$saida"; printf '❌ check.s
 reprovar() { if check.sh "$1" > "$saida" 2>&1; then cat "$saida"; printf '❌ check.sh %s deveria reprovar.\n' "$1"; exit 1; fi; }
 contem() { grep -qF -- "$1" "$saida" || { cat "$saida"; printf '❌ Saída sem: %s\n' "$1"; exit 1; }; }
 
+reprovar 00; contem 'meu-arquivo.txt ainda não existe'
+printf 'Estou pronto para a aula de GitHub Actions!\n' > "$HOME/meu-arquivo.txt"
 aprovar 00; contem 'Olá do runner local!'
-printf '✅ 00: workflow mínimo executado em um container.\n'
+printf '✅ 00: arquivo do editor conferido e workflow mínimo executado em um container.\n'
 
 reprovar 02; contem 'Acrescente o evento push'
-for n in 1 2 3 4 5 6 7; do
+for n in $(seq 1 14); do
   nn="$(printf '%02d' "$n")"
-  cp "$CURSO_DIR/docs/solucoes/$nn.yml" "$(echo "$LABS_DIR/$nn"-*)/.github/workflows/ci.yml"
+  lab="$(echo "$LABS_DIR/$nn"-*)"
+  cp "$CURSO_DIR/docs/solucoes/$nn.yml" "$lab/.github/workflows/ci.yml"
+  if [[ "$nn" == 13 ]]; then
+    mkdir -p "$lab/.github/actions/preparar"
+    cp "$CURSO_DIR/docs/solucoes/13-acao.yml" "$lab/.github/actions/preparar/action.yml"
+  fi
   aprovar "$nn"
   contem 'Simulação concluída'
   case "$nn" in
     01) contem 'Olá, GitHub Actions!' ;;
-    02|03) contem 'Ran 3 tests' ;;
+    02|03|10) contem 'Ran 3 tests' ;;
     04) contem 'Receita do dia: Brigadeiro'; contem 'Turma: turma-local'; contem 'Segredo disponível' ;;
-    05) contem 'Site gerado em dist/index.html com 3 receitas' ;;
+    05|09|13) contem 'Site gerado em dist/index.html com 3 receitas' ;;
     06) contem 'artefato site: index.html' ;;
     07) contem 'empacotar e publicar não rodaram' ;;
+    08) contem 'testar (3.11)'; contem 'testar (3.13)'; contem '3 cópias do job testar' ;;
+    11) contem 'Ran 3 tests' ;;
+    12) contem 'O livro tem 3 receitas.'; contem 'resumo ✅ Escrever o resumo da execução' ;;
+    14) contem 'lancar não rodou' ;;
   esac
   printf '✅ %s: solução aprovada na simulação.\n' "$nn"
 done
@@ -60,6 +71,13 @@ for nn in 03 05; do
   git -C "$lab" checkout -q receitas.py
 done
 printf '✅ 03 e 05: a falha proposital reprova a simulação com 503 != 1500.\n'
+
+# 11: uma receita sem Rende: reprova o job validar e aparece como anotação.
+lab="$LABS_DIR/11-anotacoes-no-pull-request"
+printf '# Café coado\n\n## Ingredientes\n\n- 500 ml de água\n' > "$lab/receitas/cafe.md"
+reprovar 11; contem '::error file=receitas/cafe.md'; contem 'O job validar falhou'
+rm "$lab/receitas/cafe.md"
+printf '✅ 11: a receita sem rendimento reprova a simulação com a anotação.\n'
 
 # Sem needs no 07, o if continua barrando o deploy no PR; sem o if, a simulação reprova.
 lab="$LABS_DIR/07-deploy-no-pages"

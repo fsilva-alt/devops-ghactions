@@ -61,10 +61,12 @@ assert "<title>GitHub Actions no Codespaces</title>" in pagina
 assert not re.search(r"devops-(git|docker)", pagina), "Os cursos são independentes: sem links entre eles."
 
 exercicios = dados["exercicios"]
-assert [e["key"] for e in exercicios] == ["intro", *[f"{n:02d}" for n in range(8)]]
-aula = [e for e in exercicios[1:] if not e["antes"]]
+assert [e["key"] for e in exercicios] == ["intro", *[f"{n:02d}" for n in range(15)]]
+aula = [e for e in exercicios[1:] if not e["antes"] and not e["opcional"]]
 assert [e["n"] for e in aula] == list(range(1, 8)) and sum(e["time"] for e in aula) == 155
 assert exercicios[1]["antes"], "O exercício 00 é feito antes da aula."
+opcionais = [e["n"] for e in exercicios if e["opcional"]]
+assert opcionais == list(range(8, 15)), f"Os opcionais são do 08 ao 14: {opcionais}"
 
 # Introdução: o que é o Actions, os problemas que resolve e o uso em CI/CD.
 titulos_intro = [s["h"] for s in exercicios[0]["slides"]]
@@ -85,6 +87,9 @@ for e in exercicios[1:]:
 for s in dados["slides"]:
     onde = f"slide {s['key']}/{s['i'] + 1}"
     links, texto = analisar(s["html"], onde)
+    # O conteúdo a copiar fica no próprio slide da tarefa, sem mandar o aluno procurar em outro.
+    if s["eyebrow"].startswith("Tarefa"):
+        assert not re.search(r"do slide anterior|YAML do slide|com o slide\b", texto), f"{onde}: conteúdo em outro slide"
     if s["eyebrow"] == "Referência":
         assert '<table class="kv">' in s["html"] and '<ul class="links">' in s["html"], f"{onde}: comandos e links"
     if s["eyebrow"].startswith("Tarefa"):
@@ -98,9 +103,18 @@ for s in dados["slides"]:
         if not url.scheme and url.path:
             assert (PAGINA.parent / unquote(url.path)).is_file(), f"{onde}: arquivo ausente {link}"
 
+# Navegação entre exercícios: no primeiro slide, Anterior leva ao último slide do exercício anterior;
+# no último, Próximo leva ao primeiro slide do seguinte.
+for antes, depois in zip(exercicios, exercicios[1:]):
+    primeiro = next(s for s in dados["slides"] if s["key"] == depois["key"] and s["i"] == 0)
+    ultimo = next(s for s in dados["slides"] if s["key"] == antes["key"] and s["i"] == len(antes["slides"]) - 1)
+    assert primeiro["anterior"] == f"#/d/{antes['key']}/{len(antes['slides'])}", f"Anterior em {depois['key']}/1"
+    assert ultimo["proximo"] == f"#/d/{depois['key']}/1", f"Próximo em {antes['key']}"
+assert dados["slides"][0]["anterior"] == "", "O primeiro slide da introdução não tem anterior."
+
 links, texto = analisar(dados["home"], "início")
 assert 'class="tema"' in dados["home"], "O início tem o seletor de tema."
 assert re.search(r'<div class="right">.*<button class="tema"', pagina), "Os slides têm o seletor de tema."
-for n in range(1, 8):
+for n in range(1, 15):
     assert f"#/d/{n:02d}/1" in links
-print(f"✅ Apresentação: {len(dados['slides'])} slides, introdução, 00 + 7 exercícios, 155 minutos e links válidos.")
+print(f"✅ Apresentação: {len(dados['slides'])} slides, introdução, 00 + 7 exercícios + 7 opcionais, 155 minutos e links válidos.")

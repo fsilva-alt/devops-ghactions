@@ -15,12 +15,25 @@ import zipfile
 from pathlib import Path
 
 # Evento simulado em cada exercício e jobs que precisam terminar com sucesso.
+# Do 08 ao 14, os exercícios opcionais.
 EVENTO = {0: "push", 1: "workflow_dispatch", 2: "push", 3: "pull_request", 4: "workflow_dispatch",
-          5: "push", 6: "push", 7: "pull_request"}
+          5: "push", 6: "push", 7: "pull_request", 8: "push", 9: "push", 10: "schedule",
+          11: "pull_request", 12: "push", 13: "push", 14: "push"}
 JOBS_OK = {2: {"testar"}, 3: {"testar"}, 5: {"testar", "empacotar"}, 6: {"testar", "empacotar"},
-           7: {"testar"}}
+           7: {"testar"}, 8: {"testar"}, 9: {"testar", "empacotar"}, 10: {"testar"},
+           11: {"testar", "validar"}, 12: {"testar", "contar", "resumo"}, 13: {"testar", "empacotar"},
+           14: {"testar", "empacotar"}}
 # Trechos que precisam aparecer no log da execução.
-LOG = {0: "Olá do runner local!", 1: "Olá, GitHub Actions!", 4: "Receita do dia:"}
+LOG = {0: "Olá do runner local!", 1: "Olá, GitHub Actions!", 4: "Receita do dia:", 12: "O livro tem 3 receitas."}
+# Jobs que a simulação precisa deixar de fora: o deploy num PR e o release sem tag.
+FORA = {7: (("empacotar", "publicar"), "Em um pull request, {} também rodou.",
+            "Use o if do enunciado nos dois jobs: o deploy só pode acontecer na main.",
+            "pull_request ── empacotar e publicar não rodaram, como esperado: o deploy só acontece na main."),
+        14: (("lancar",), "Num push na main, {} também rodou.",
+             "Use o if do enunciado em lancar: o release só pode acontecer com uma tag v*.",
+             "push na main ── lancar não rodou, como esperado: o release só acontece com uma tag v*.")}
+# Comandos de workflow que viram anotações na página da execução.
+ANOTACOES = ("::error", "::warning", "::notice")
 
 # Avisos do runner local que não ajudam a entender o exercício.
 RUIDO = ("WARNING: Running pip as the 'root' user", "DeprecationWarning", "node --trace-deprecation")
@@ -54,7 +67,7 @@ def comando(n, pasta, artefatos):
     cmd = [os.environ["ACT_BIN"], EVENTO[n], "-W", ".github/workflows/ci.yml",
            "-P", f"ubuntu-latest={imagem}", "--action-offline-mode", "--rm", "--json",
            "--actor", os.environ.get("GITHUB_USER") or "aluno"]
-    if n in (3, 7):
+    if EVENTO[n] == "pull_request":
         evento = pasta / ".git/curso-actions/pull_request.json"
         evento.parent.mkdir(parents=True, exist_ok=True)
         evento.write_text(json.dumps({"pull_request": {"head": {"ref": "teste-do-ci"}, "base": {"ref": "main"}}}))
@@ -62,14 +75,14 @@ def comando(n, pasta, artefatos):
     if n == 4:
         # Valores locais no lugar dos cadastrados em Settings > Secrets and variables > Actions.
         cmd += ["--var", "TURMA=turma-local", "-s", "CURSO_TOKEN=somente-demonstracao"]
-    if n == 6:
+    if n in (6, 14):
         cmd += ["--artifact-server-path", str(artefatos)]
     return cmd
 
 
 def executar(cmd, pasta):
-    """Roda o act e mostra um log curto; devolve (código, resultados dos jobs, saída dos comandos)."""
-    jobs, saida = {}, []
+    """Roda o act e mostra um log curto; devolve (código, resultados dos jobs, cópias de cada job, saída)."""
+    jobs, copias, saida = {}, {}, []
     processo = subprocess.Popen(cmd, cwd=pasta, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
                                 stderr=subprocess.STDOUT, text=True, encoding="utf-8", errors="replace")
     for linha in processo.stdout or []:
@@ -82,23 +95,38 @@ def executar(cmd, pasta):
         if not isinstance(evento, dict):
             continue
         job = evento.get("jobID") or "act"
+        # Numa matriz, cada cópia do job leva os seus valores no rótulo: testar (3.12).
+        matriz = evento.get("matrix") if isinstance(evento.get("matrix"), dict) else {}
+        rotulo = f"{job} ({', '.join(str(v) for v in matriz.values())})" if matriz else job
         msg = str(evento.get("msg", "")).rstrip()
         if evento.get("raw_output"):
             saida.append(msg)
             if not any(r in msg for r in RUIDO):
-                print(f"  {job} │ {msg}")
+                print(f"  {rotulo} │ {msg}")
+        elif any(a in msg for a in ANOTACOES):
+            # O act mostra as anotações como mensagens próprias, fora da saída dos comandos.
+            anotacao = msg[msg.index("::"):]
+            saida.append(anotacao)
+            print(f"  {rotulo} │ {anotacao}")
         elif evento.get("stepResult") and evento.get("stage") == "Main":
             marca = {"success": "✅", "failure": "❌", "skipped": "pulada:"}.get(evento["stepResult"], "•")
-            print(f"  {job} {marca} {evento.get('step', '')}")
+            # Numa ação composta, o act repete o nome da ação nas etapas internas: numera cada uma.
+            ids = evento.get("stepID")
+            ids = ids if isinstance(ids, list) else []
+            interna = f" · etapa {int(ids[-1]) + 1} da ação" if len(ids) > 1 and str(ids[-1]).isdigit() else ""
+            print(f"  {rotulo} {marca} {evento.get('step', '')}{interna}")
         elif evento.get("jobResult"):
-            jobs[job] = evento["jobResult"]
-            print(f"  {job} ── {'job concluído' if evento['jobResult'] == 'success' else 'job com falha'}")
+            # Uma cópia com falha marca o job inteiro, como no grafo do GitHub.
+            if jobs.get(job) in (None, "success"):
+                jobs[job] = evento["jobResult"]
+            copias[job] = copias.get(job, 0) + 1
+            print(f"  {rotulo} ── {'job concluído' if evento['jobResult'] == 'success' else 'job com falha'}")
         elif evento.get("level") in ("error", "fatal") and msg:
-            print(f"  {job} erro: {msg}")
-    return processo.wait(), jobs, "\n".join(saida)
+            print(f"  {rotulo} erro: {msg}")
+    return processo.wait(), jobs, copias, "\n".join(saida)
 
 
-def conferir(n, codigo, jobs, saida, artefatos):
+def conferir(n, codigo, jobs, copias, saida, artefatos):
     falhas = []
     if not jobs:
         falhas.append(("Nenhum job foi executado na simulação.",
@@ -124,13 +152,21 @@ def conferir(n, codigo, jobs, saida, artefatos):
             print(f"  artefato site: {', '.join(nomes)}")
         else:
             falhas.append(("O artefato site não contém index.html.", "Envie a pasta dist/ depois de python build.py."))
-    if n == 7 and not falhas:
-        fora = [j for j in ("empacotar", "publicar") if j in jobs]
+    if n in FORA and not falhas:
+        nomes, problema, dica, sucesso = FORA[n]
+        fora = [j for j in nomes if j in jobs]
         if fora:
-            falhas.append((f"Em um pull request, {' e '.join(fora)} também rodou.",
-                           "Use o if do enunciado nos dois jobs: o deploy só pode acontecer na main."))
+            falhas.append((problema.format(" e ".join(fora)), dica))
         else:
-            print("  pull_request ── empacotar e publicar não rodaram, como esperado: o deploy só acontece na main.")
+            print(f"  {sucesso}")
+    if n == 8 and not falhas:
+        if copias.get("testar", 0) < 2:
+            falhas.append(("A matriz criou só uma cópia do job testar.",
+                           "Liste pelo menos duas versões em strategy.matrix.python-version."))
+        else:
+            print(f"  matriz ── {copias['testar']} cópias do job testar, uma para cada versão do Python.")
+    if n == 10 and not falhas:
+        print("  schedule ── os testes rodaram como na execução agendada da segunda-feira.")
     return falhas
 
 
@@ -151,8 +187,8 @@ def main():
         print(f"▶ Baixando a imagem do runner local ({nome}, cerca de 2 GB). Só acontece uma vez.")
     print(f"▶ Simulando o workflow com o act (evento {EVENTO[n]}), cada job em um container Docker...")
     with tempfile.TemporaryDirectory(prefix="curso-act-") as artefatos:
-        codigo, jobs, saida = executar(comando(n, pasta, artefatos), pasta)
-        falhas = conferir(n, codigo, jobs, saida, artefatos)
+        codigo, jobs, copias, saida = executar(comando(n, pasta, artefatos), pasta)
+        falhas = conferir(n, codigo, jobs, copias, saida, artefatos)
     if n == 0:
         shutil.rmtree(pasta, ignore_errors=True)
     if falhas:
