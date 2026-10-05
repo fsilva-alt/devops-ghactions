@@ -1,0 +1,168 @@
+/* Estilos próprios deste curso. São incluídos depois do tema base do coursekit e usam os
+   mesmos tokens (--accent, --surface-2, --border, --text-3 …), por isso funcionam nos modos
+   claro e escuro. Use-os no Markdown com HTML ou com atributos {.classe}. */
+
+/* Rótulo acima do título de uma seção: Conceito, Referência, Tarefa … */
+.prose .eyebrow {
+  margin: 3rem 0 0;
+  font-size: .875rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--accent-text);
+}
+.prose .eyebrow:first-child { margin-top: 0; }
+.prose .eyebrow + :is(h2, h3) { margin-top: .25rem; }
+
+/* Objetivo de cada exercício. */
+.prose .lead {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  color: var(--text-2);
+}
+
+/* Rótulo secundário (datas, pistas). */
+.prose .up {
+  font-size: .875rem;
+  color: var(--text-3);
+}
+.prose p.up { margin: 0 0 .25rem; }
+
+/* Links de documentação: a descrição fica embaixo do link. */
+.prose ul.links small {
+  display: block;
+  font-size: .875rem;
+  color: var(--text-3);
+}
+
+/* Diagramas dentro de colunas começam alinhados ao topo. */
+.column > :is(.flow, .layers, .gwrap, .netbox):first-child { margin-top: 0; }
+
+/* Diagramas de fluxo: caixas (.node) ligadas por setas (.arr). */
+.flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  justify-content: center;
+  gap: 10px;
+  margin: 1.4em 0;
+}
+.flow .node {
+  flex: 1 1 150px;
+  min-width: 150px;
+  display: grid;
+  align-content: center;
+  gap: 4px;
+  padding: 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  text-align: center;
+}
+.flow .node b { font-weight: 650; color: var(--text); }
+.flow .node small { font-size: .875rem; line-height: 1.4; color: var(--text-3); }
+.flow .node.hi { border-color: var(--accent); background: var(--accent-soft); }
+.flow .node.dim { border-color: var(--border); color: var(--text-3); }
+.flow .arr {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  gap: 2px;
+  padding: 0 6px;
+  font-size: .875rem;
+  color: var(--text-3);
+  text-align: center;
+}
+.flow .arr strong { font-family: var(--font-mono); font-weight: 500; color: var(--accent-text); }
+.flow .arr .a { font-size: 1.6em; line-height: 1; color: var(--accent-text); }
+.flow .arr.back .a { color: var(--c-warning); }
+.flow.vert { flex-direction: column; }
+.flow.vert .node { flex-basis: auto; }
+@media (max-width: 640px) {
+  .flow { flex-direction: column; }
+  .flow .arr .a { transform: rotate(90deg); }
+}
+
+/* Estado de cada job em uma execução. */
+.flow .node.ok { border-color: var(--c-tip); }
+.flow .node.ok b::before { content: "✓ "; color: var(--c-tip); }
+.flow .node.fail { border-color: var(--c-danger); }
+.flow .node.fail b::before { content: "✗ "; color: var(--c-danger); }
+.flow .node.skip { border-style: dashed; border-color: var(--border-strong); }
+.flow .node.skip b { color: var(--text-3); }
+.flow .node.skip b::before { content: "⊘ "; }
+
+/* Um grupo de caixas com borda tracejada e rótulo (uma rede, uma máquina). */
+.netbox {
+  position: relative;
+  margin: 1.6em 0 1.4em;
+  padding: 26px 14px 14px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-md);
+}
+.netbox::before {
+  content: attr(data-label);
+  position: absolute;
+  top: -10px;
+  left: 14px;
+  padding: 0 8px;
+  background: var(--bg);
+  font-size: .875rem;
+  font-weight: 600;
+  color: var(--accent-text);
+}
+.netbox .flow { margin: 0; }
+
+/* Anatomia de um workflow: evento → workflow → runners → jobs → steps, com a legenda das peças. */
+.anat {
+  display: grid;
+  grid-template-columns: minmax(0, 11em) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  margin: 1.4em 0;
+}
+.anat .camada { display: grid; gap: 10px; min-width: 0; padding: 12px; border: 1px solid var(--border-strong); border-radius: var(--radius-md); }
+.anat .cab { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; min-width: 0; color: var(--text-2); }
+.anat .cab b { font-weight: 650; color: var(--text); }
+.anat .cab small { flex-basis: 100%; font-size: .875rem; line-height: 1.4; color: var(--text-3); }
+.anat .camada.ev { border-color: var(--c-warning); }
+.anat .camada.wf { border-color: var(--accent); background: var(--accent-soft); }
+.anat .runners { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17em), 1fr)); gap: 12px; }
+.anat .camada.rn { border: 1px dashed var(--c-note); background: var(--surface); }
+.anat .camada.jb { background: var(--surface-2); }
+.anat ol { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.anat li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--code-bg);
+}
+.prose .anat li code { flex: 1; min-width: 0; padding: 0; border: 0; background: none; color: var(--text); font-size: .875rem; white-space: normal; overflow-wrap: anywhere; }
+.anat .seta { display: grid; place-items: center; gap: 2px; font-size: .875rem; color: var(--text-3); }
+.anat .seta .a { font-size: 1.6em; line-height: 1; color: var(--accent-text); }
+@media (max-width: 760px) {
+  .anat { grid-template-columns: minmax(0, 1fr); }
+  .anat .seta .a { transform: rotate(90deg); }
+}
+.peca { font-size: .875rem; font-weight: 600; white-space: nowrap; color: var(--text-3); }
+.peca.ev { color: var(--c-warning); }
+.peca.wf { color: var(--accent-text); }
+.peca.rn { color: var(--c-note); }
+.peca.jb { color: var(--c-tip); }
+.peca.st { color: var(--text-2); }
+.peca.ac, .peca.cm { padding: 0 .375rem; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); font-weight: 400; }
+.peca.ac { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-text); }
+.prose ul.anat-leg {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 19em), 1fr));
+  gap: 10px 28px;
+  margin: 1.2em 0;
+  padding: 0;
+  list-style: none;
+}
+.prose ul.anat-leg li { display: grid; grid-template-columns: 6rem minmax(0, 1fr); align-items: baseline; gap: .625rem; margin: 0; font-size: 1rem; line-height: 1.5; color: var(--text-2); }
+.anat-leg .peca { justify-self: start; }

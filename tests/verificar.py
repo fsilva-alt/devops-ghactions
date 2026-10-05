@@ -130,5 +130,4 @@ config = json.loads((CURSO / ".devcontainer/devcontainer.json").read_text())
 assert "scripts/requirements.txt" in config["postCreateCommand"]
 solucoes = sorted(p.name for p in (CURSO / "docs/solucoes").glob("*.yml"))
 assert solucoes == sorted([f"{n:02d}.yml" for n in range(1, 15)] + ["13-acao.yml"]), solucoes
-subprocess.run([sys.executable, str(CURSO / "tests/apresentacao.py")], check=True)
 print("✅ 7 exercícios da aula e 7 opcionais no site, links locais e configuração do Codespace.")

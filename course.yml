@@ -1,0 +1,31 @@
+# GitHub Actions no Codespaces: o curso do repositório devops-ghactions, escrito em
+# Markdown e renderizado com o coursekit (../coursekit). Todas as opções estão
+# documentadas em coursekit/templates/starter/course.yml.
+
+title: GitHub Actions no Codespaces
+subtitle: "Aprenda GitHub Actions desde o primeiro workflow, com explicações em português, 7 exercícios guiados e 7 opcionais no GitHub Codespaces: testes, build e publicação de um livro de receitas no GitHub Pages."
+description: |
+  Curso de GitHub Actions para iniciantes
+
+  - Faça o exercício 0 antes da aula. Ordem da aula: introdução → 1 → 7, com intervalo depois do 4. Os exercícios 08 a 14 são opcionais e podem ser feitos em qualquer ordem.
+  - Gabarito, guia do aluno e scripts: [github.com/fsilva-alt/devops-ghactions](https://github.com/fsilva-alt/devops-ghactions)
+  - Leitura sugerida: [Documentação do GitHub Actions (pt-br)](https://docs.github.com/pt/actions)
+updated: auto            # data do capítulo editado mais recentemente
+language: pt-BR
+
+accent: "#4a7300"         # cor do curso no modo claro
+accent_dark: "#c3e84b"    # e no modo escuro
+
+numbering: none          # sem números: o da ficha de cada desafio é o que vale (check.sh NN)
+transition: none
+highlight: true
+line_numbers: false
+typographer: false       # mantém aspas e traços exatamente como foram escritos
+
+# Cada subpasta de chapters/ é um módulo (título em _part.yml) e cada arquivo .md dentro
+# dela é um capítulo: o conteúdo de um desafio, que termina com o próprio desafio.
+
+styles:
+  - styles/custom.css
+
+slug: devops-ghactions         # chave do progresso salvo (o CI gera o curso em outra pasta)

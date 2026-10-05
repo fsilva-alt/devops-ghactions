@@ -3,3 +3,5 @@ __pycache__/
 *.pyc
 dist/
 bin/
+# Página gerada pelo coursekit e caches (gere de novo com ./build.sh)
+.cache/
