@@ -12,7 +12,7 @@ Fazer os testes rodarem em cada **pull request**, provocar uma falha de propósi
 ::::columns
 :::card Onde fazer
 ```console
-$ cd ~/labs/03-checks-no-pull-request
+$ code ~/labs/03-checks-no-pull-request
 ```
 
 O laboratório começa com o workflow de testes no push, com o cálculo correto.
@@ -116,10 +116,15 @@ Cada execução pertence a um commit. Para corrigir, é preciso um novo commit e
 ## O exercício
 
 :::steps
-1. Entre no laboratório e abra o workflow:
+1. Abra o laboratório no VS Code:
 
    ```console
-   $ cd ~/labs/03-checks-no-pull-request
+   $ code ~/labs/03-checks-no-pull-request
+   ```
+
+   Na janela do laboratório, abra um terminal em **Terminal → New Terminal** e abra o workflow:
+
+   ```console
    $ code .github/workflows/ci.yml
    ```
 

@@ -12,7 +12,7 @@ Criar uma verificação para as receitas. Um job confere se todas informam o ren
 ::::columns
 :::card Onde fazer
 ```console
-$ cd ~/labs/11-anotacoes-no-pull-request
+$ code ~/labs/11-anotacoes-no-pull-request
 ```
 
 O laboratório começa com o workflow de testes no push e no pull request.
@@ -116,10 +116,15 @@ Sem `needs`, `validar` roda ao mesmo tempo que `testar`. No PR, cada um vira um 
 ## O exercício
 
 :::steps
-1. Entre no laboratório e abra o workflow:
+1. Abra o laboratório no VS Code:
 
    ```console
-   $ cd ~/labs/11-anotacoes-no-pull-request
+   $ code ~/labs/11-anotacoes-no-pull-request
+   ```
+
+   Na janela do laboratório, abra um terminal em **Terminal → New Terminal** e abra o workflow:
+
+   ```console
    $ code .github/workflows/ci.yml
    ```
 

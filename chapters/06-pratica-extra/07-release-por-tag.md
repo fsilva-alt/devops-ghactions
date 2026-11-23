@@ -12,7 +12,7 @@ Publicar versões numeradas do livro. Quando você envia uma tag como `v1.0.0`, 
 ::::columns
 :::card Onde fazer
 ```console
-$ cd ~/labs/14-release-por-tag
+$ code ~/labs/14-release-por-tag
 ```
 
 O laboratório começa com o workflow do artefato `site`, do exercício 6.
@@ -124,10 +124,15 @@ Criar um release escreve no repositório, por isso só `lancar` recebe `contents
 ## O exercício
 
 :::steps
-1. Entre no laboratório e abra o workflow:
+1. Abra o laboratório no VS Code:
 
    ```console
-   $ cd ~/labs/14-release-por-tag
+   $ code ~/labs/14-release-por-tag
+   ```
+
+   Na janela do laboratório, abra um terminal em **Terminal → New Terminal** e abra o workflow:
+
+   ```console
    $ code .github/workflows/ci.yml
    ```
 

@@ -12,7 +12,7 @@ Guardar os pacotes baixados pelo pip em um **cache**. O job `empacotar` e as pr�
 ::::columns
 :::card Onde fazer
 ```console
-$ cd ~/labs/09-cache-de-dependencias
+$ code ~/labs/09-cache-de-dependencias
 ```
 
 O laboratório começa com o workflow de `testar` e `empacotar` do exercício 5, que instala as dependências duas vezes.
@@ -109,10 +109,15 @@ Os caches aparecem na aba **Actions**, em *Caches*, e em `gh cache list`. Os que
 ## O exercício
 
 :::steps
-1. Entre no laboratório e abra o workflow:
+1. Abra o laboratório no VS Code:
 
    ```console
-   $ cd ~/labs/09-cache-de-dependencias
+   $ code ~/labs/09-cache-de-dependencias
+   ```
+
+   Na janela do laboratório, abra um terminal em **Terminal → New Terminal** e abra o workflow:
+
+   ```console
    $ code .github/workflows/ci.yml
    ```
 

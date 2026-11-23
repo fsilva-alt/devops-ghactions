@@ -12,7 +12,7 @@ Rodar os mesmos testes em **três versões do Python** de uma vez. Uma matriz cr
 ::::columns
 :::card Onde fazer
 ```console
-$ cd ~/labs/08-matriz-de-versoes
+$ code ~/labs/08-matriz-de-versoes
 ```
 
 O laboratório começa com o workflow de testes no push e no pull request, só com o Python 3.12.
@@ -117,10 +117,15 @@ No grafo e nos pull requests, cada cópia aparece com o valor entre parênteses,
 ## O exercício
 
 :::steps
-1. Entre no laboratório e abra o workflow:
+1. Abra o laboratório no VS Code:
 
    ```console
-   $ cd ~/labs/08-matriz-de-versoes
+   $ code ~/labs/08-matriz-de-versoes
+   ```
+
+   Na janela do laboratório, abra um terminal em **Terminal → New Terminal** e abra o workflow:
+
+   ```console
    $ code .github/workflows/ci.yml
    ```
 

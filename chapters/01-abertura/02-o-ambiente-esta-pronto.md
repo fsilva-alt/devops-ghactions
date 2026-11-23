@@ -139,7 +139,12 @@ Assim você não gasta a franquia. Em github.com/codespaces, clique em ⋯ e esc
 
 :::card Missão extra · opcional
 ```console
-$ cd ~/labs/02-testes-no-push
+$ code ~/labs/02-testes-no-push
+```
+
+O VS Code abre a pasta do laboratório. Nessa janela, abra um terminal em **Terminal → New Terminal**, que já começa na pasta:
+
+```console
 $ act -l
 ```
 

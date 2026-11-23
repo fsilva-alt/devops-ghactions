@@ -11,10 +11,10 @@ Escrever o primeiro workflow, iniciá-lo com um clique na aba **Actions** e enco
 
 ::::columns
 :::card Onde fazer
-No terminal do Codespace, na pasta do laboratório:
+No terminal do Codespace, abra a pasta do laboratório no VS Code:
 
 ```console
-$ cd ~/labs/01-primeiro-workflow
+$ code ~/labs/01-primeiro-workflow
 ```
 
 A pasta tem o livro de receitas pronto e a pasta `.github/workflows/` vazia. É nela que o GitHub procura os workflows.
@@ -121,6 +121,7 @@ O botão só aparece quando o workflow com `workflow_dispatch` está na **branch
 
 | Comando | Para quê |
 | --- | --- |
+| `code ~/labs/01-primeiro-workflow` | abre a pasta do laboratório no VS Code; um terminal novo já começa nela |
 | `code .github/workflows/ci.yml` | abre (ou cria, ao salvar) o arquivo do workflow no editor |
 | `git add <arquivo>` | prepara o arquivo para o próximo commit |
 | `git commit -m "<mensagem>"` | registra a versão com uma mensagem |
@@ -143,10 +144,15 @@ O botão só aparece quando o workflow com `workflow_dispatch` está na **branch
 ## O exercício
 
 :::steps
-1. Entre no laboratório e abra o arquivo do workflow. Ele ainda não existe, e o editor o cria quando você salva:
+1. Abra o laboratório no VS Code:
 
    ```console
-   $ cd ~/labs/01-primeiro-workflow
+   $ code ~/labs/01-primeiro-workflow
+   ```
+
+   O VS Code abre a pasta do laboratório. Nessa janela, abra um terminal em **Terminal → New Terminal**, que já começa na pasta, e abra o arquivo do workflow. Ele ainda não existe, e o editor o cria quando você salva:
+
+   ```console
    $ code .github/workflows/ci.yml
    ```
 

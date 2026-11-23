@@ -12,7 +12,7 @@ Tirar a repetição do workflow. As etapas que preparam o Python nos dois jobs v
 ::::columns
 :::card Onde fazer
 ```console
-$ cd ~/labs/13-acao-composta
+$ code ~/labs/13-acao-composta
 ```
 
 O laboratório começa com o workflow de `testar` e `empacotar` do exercício 5, que repete o preparo do Python.
@@ -115,10 +115,15 @@ Para trocar a versão do Python, edite só o `action.yml`, e os dois jobs passam
 ## O exercício
 
 :::steps
-1. Entre no laboratório, crie a pasta da ação e abra o arquivo dela:
+1. Abra o laboratório no VS Code:
 
    ```console
-   $ cd ~/labs/13-acao-composta
+   $ code ~/labs/13-acao-composta
+   ```
+
+   Na janela do laboratório, abra um terminal em **Terminal → New Terminal**, crie a pasta da ação e abra o arquivo dela:
+
+   ```console
    $ mkdir -p .github/actions/preparar
    $ code .github/actions/preparar/action.yml
    ```

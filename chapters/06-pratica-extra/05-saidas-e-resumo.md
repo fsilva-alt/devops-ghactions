@@ -12,7 +12,7 @@ Passar um valor de um job para outro e escrever um **resumo** na página da exec
 ::::columns
 :::card Onde fazer
 ```console
-$ cd ~/labs/12-saidas-e-resumo
+$ code ~/labs/12-saidas-e-resumo
 ```
 
 O laboratório começa com o workflow de testes no push e no pull request.
@@ -102,10 +102,15 @@ O `tee -a` mostra a frase no log e também a acrescenta ao resumo. A saída do `
 ## O exercício
 
 :::steps
-1. Entre no laboratório e abra o workflow:
+1. Abra o laboratório no VS Code:
 
    ```console
-   $ cd ~/labs/12-saidas-e-resumo
+   $ code ~/labs/12-saidas-e-resumo
+   ```
+
+   Na janela do laboratório, abra um terminal em **Terminal → New Terminal** e abra o workflow:
+
+   ```console
    $ code .github/workflows/ci.yml
    ```
 

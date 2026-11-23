@@ -4,7 +4,7 @@ Aqui estão os workflows e comandos completos de cada exercício; as explicaçõ
 
 ## Como usar
 
-- Entre primeiro na pasta do laboratório indicada na capa do exercício, por exemplo `cd ~/labs/02-testes-no-push`.
+- Abra primeiro o laboratório indicado na capa do exercício, por exemplo `code ~/labs/02-testes-no-push`, e use um terminal novo nessa janela, que já começa na pasta.
 - Os arquivos em [`solucoes/`](solucoes/) são os workflows completos dos 7 exercícios da aula e dos 7 opcionais. Para usar um deles, copie-o para `.github/workflows/ci.yml` do laboratório. O exercício 13 tem também a ação composta, em `13-acao.yml`.
 - Execute `check.sh NN` antes de publicar. Ele confere o YAML e simula o workflow com o act.
 - A cópia resolve apenas o YAML. Conclua também as ações e a entrega no GitHub descritas abaixo.

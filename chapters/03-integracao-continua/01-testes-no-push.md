@@ -12,7 +12,7 @@ Fazer o runner baixar o código, instalar o Python e rodar os três testes do li
 ::::columns
 :::card Onde fazer
 ```console
-$ cd ~/labs/02-testes-no-push
+$ code ~/labs/02-testes-no-push
 ```
 
 O laboratório começa com o workflow manual de boas-vindas e não depende do exercício anterior.
@@ -136,10 +136,15 @@ Sem as aspas, o YAML lê um número decimal.
 ## O exercício
 
 :::steps
-1. Entre no laboratório, veja as receitas e rode os testes no Codespace. Procure `OK`:
+1. Abra o laboratório no VS Code:
 
    ```console
-   $ cd ~/labs/02-testes-no-push
+   $ code ~/labs/02-testes-no-push
+   ```
+
+   Na janela do laboratório, abra um terminal em **Terminal → New Terminal**. Veja as receitas e rode os testes no Codespace. Procure `OK`:
+
+   ```console
    $ python3 receitas.py
    $ python3 -m unittest -v
    ```

@@ -12,7 +12,7 @@ Configurar uma execução com valores que vêm do YAML, do formulário do Run wo
 ::::columns
 :::card Onde fazer
 ```console
-$ cd ~/labs/04-variaveis-e-contextos
+$ code ~/labs/04-variaveis-e-contextos
 ```
 
 É uma demonstração isolada, em que o workflow mostra a receita do dia da cozinha.
@@ -123,10 +123,15 @@ O Actions não dá erro nesse caso. Por isso a etapa usa `test -n`, que confere 
 ## O exercício
 
 :::steps
-1. Entre no laboratório e copie o workflow completo do exercício:
+1. Abra o laboratório no VS Code:
 
    ```console
-   $ cd ~/labs/04-variaveis-e-contextos
+   $ code ~/labs/04-variaveis-e-contextos
+   ```
+
+   Na janela do laboratório, abra um terminal em **Terminal → New Terminal** e copie o workflow completo do exercício:
+
+   ```console
    $ cp "$CURSO_DIR/docs/solucoes/04.yml" .github/workflows/ci.yml
    $ code .github/workflows/ci.yml
    ```

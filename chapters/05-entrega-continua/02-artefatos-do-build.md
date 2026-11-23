@@ -12,7 +12,7 @@ Guardar o site gerado pelo build como um **artefato** da execução, baixar esse
 ::::columns
 :::card Onde fazer
 ```console
-$ cd ~/labs/06-artefatos-do-build
+$ code ~/labs/06-artefatos-do-build
 ```
 
 O laboratório começa com o workflow dos jobs `testar` e `empacotar`.
@@ -104,10 +104,15 @@ São arquivos guardados para acelerar as próximas execuções, como dependênci
 ## O exercício
 
 :::steps
-1. Entre no laboratório e abra o workflow:
+1. Abra o laboratório no VS Code:
 
    ```console
-   $ cd ~/labs/06-artefatos-do-build
+   $ code ~/labs/06-artefatos-do-build
+   ```
+
+   Na janela do laboratório, abra um terminal em **Terminal → New Terminal** e abra o workflow:
+
+   ```console
    $ code .github/workflows/ci.yml
    ```
 

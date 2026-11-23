@@ -40,7 +40,7 @@ O instalador prepara os laboratórios em `~/labs`, instala o simulador `act`, ba
 :::
 
 :::note Comandos para se localizar
-`pwd` mostra em que pasta você está, `ls` lista o que há nela e `cd caminho` entra em outra pasta. O `~` é a sua pasta pessoal. Para abrir um arquivo no editor, use `code nome-do-arquivo`.
+`pwd` mostra em que pasta você está, `ls` lista o que há nela e `cd caminho` entra em outra pasta. O `~` é a sua pasta pessoal. Para abrir um arquivo no editor, use `code nome-do-arquivo`. Para abrir a pasta de um laboratório no VS Code, use `code ~/labs/NN-nome` e abra um terminal novo, que já começa nessa pasta.
 :::
 
 <p class="eyebrow">Introdução</p>

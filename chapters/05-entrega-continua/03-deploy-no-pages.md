@@ -12,7 +12,7 @@ Publicar o livro de receitas no **GitHub Pages** com um workflow que testa, gera
 ::::columns
 :::card Onde fazer
 ```console
-$ cd ~/labs/07-deploy-no-pages
+$ code ~/labs/07-deploy-no-pages
 ```
 
 O laboratório começa com o workflow do artefato do build. O workflow guiado vem pronto em `$CURSO_DIR/docs/solucoes/07.yml`.
@@ -115,10 +115,15 @@ No topo do arquivo, ele evita dois deploys ao mesmo tempo na mesma branch. O seg
 ## O exercício
 
 :::steps
-1. Publique o estado inicial e abra as configurações:
+1. Abra o laboratório no VS Code:
 
    ```console
-   $ cd ~/labs/07-deploy-no-pages
+   $ code ~/labs/07-deploy-no-pages
+   ```
+
+   Na janela do laboratório, abra um terminal em **Terminal → New Terminal**. Publique o estado inicial e abra as configurações:
+
+   ```console
    $ gh repo create actions-07 --public --source=. --remote=origin --push
    $ gh browse --settings
    ```

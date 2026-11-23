@@ -60,6 +60,7 @@ Faça esta preparação **pelo menos um dia antes**, para ter tempo de resolver 
 
 - **Executar um comando:** copie a linha para o terminal e pressione Enter. Aguarde o término antes de executar a próxima. Nos slides, o `$` no início da linha marca um comando e não deve ser copiado.
 - **Editar um arquivo:** use `code nome-do-arquivo` na pasta do laboratório. Blocos de YAML vão no arquivo indicado acima deles, não no terminal. Salve com **Ctrl+S**, ou **Cmd+S** no Mac.
+- **Abrir um laboratório:** use `code ~/labs/NN-nome`, como na capa de cada exercício. O VS Code abre a pasta do laboratório; nessa janela, abra um terminal em **Terminal → New Terminal**, que já começa na pasta.
 - **Mudar de pasta:** use `cd caminho`. `pwd` mostra a pasta atual, e `ls` lista os arquivos.
 - **Usar os exemplos:** troque `NN` pelo número do exercício. Por exemplo, `check.sh NN` vira `check.sh 02` no exercício 02.
 
@@ -85,7 +86,7 @@ O instalador define `CURSO_DIR`, `LABS_DIR` e o `PATH` nos novos terminais bash 
 | `setup.sh` | Cria os laboratórios ausentes e baixa o act e a imagem do runner local |
 | `reset.sh NN` | **Apaga o trabalho local desse laboratório** e recria o estado inicial |
 
-Dentro de uma pasta de laboratório, `check.sh` e `reset.sh` descobrem o número automaticamente, inclusive pelo atalho `labs`. Depois de um reset, entre novamente na pasta com o `cd` do enunciado.
+Dentro de uma pasta de laboratório, `check.sh` e `reset.sh` descobrem o número automaticamente, inclusive pelo atalho `labs`. Depois de um reset, abra um terminal novo na janela do laboratório ou entre novamente na pasta com o `cd` que o `reset.sh` mostra.
 
 O instalador pode ser executado de novo: ele atualiza o material do curso e cria apenas os laboratórios ausentes. Para receber o ponto de partida atualizado de um laboratório, guarde o trabalho que deseja manter e use `reset.sh NN`. Os caminhos podem ser personalizados com `CURSO_DIR` e `LABS_DIR`; `CURSO_REPO` e `CURSO_RAMO` permitem usar outra origem ou branch do material.
 

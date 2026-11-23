@@ -12,7 +12,7 @@ Acrescentar um segundo job, que gera o site do livro de receitas, e fazer esse j
 ::::columns
 :::card Onde fazer
 ```console
-$ cd ~/labs/05-jobs-e-dependencias
+$ code ~/labs/05-jobs-e-dependencias
 ```
 
 O laboratório começa com o workflow de testes no push e no pull request.
@@ -113,10 +113,15 @@ Ele termina com sucesso quando o arquivo existe e não está vazio. O site ainda
 ## O exercício
 
 :::steps
-1. Entre no laboratório e abra o workflow:
+1. Abra o laboratório no VS Code:
 
    ```console
-   $ cd ~/labs/05-jobs-e-dependencias
+   $ code ~/labs/05-jobs-e-dependencias
+   ```
+
+   Na janela do laboratório, abra um terminal em **Terminal → New Terminal** e abra o workflow:
+
+   ```console
    $ code .github/workflows/ci.yml
    ```
 

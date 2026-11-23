@@ -13,7 +13,7 @@
 - Siga a sequência **01 → 02 → 03 → 04 → 05 → 06 → 07**. Cada exercício tem uma capa, slides de conceito, um slide de comandos e documentação e a tarefa com passos numerados.
 - O YAML e os arquivos que você precisa copiar estão no próprio slide da tarefa.
 - Os exercícios de **08 a 14 são opcionais**, para praticar depois da aula, em qualquer ordem. A **Missão extra** de cada tarefa também é opcional.
-- Em cada exercício, leia o objetivo, entre na pasta indicada e execute uma etapa por vez.
+- Em cada exercício, leia o objetivo, abra o laboratório com o `code ~/labs/NN-nome` da capa, abra um terminal novo nessa janela e execute uma etapa por vez.
 - Nos slides, o `$` marca um comando: copie a linha sem esse símbolo. Blocos com o nome de um arquivo em cima, como `.github/workflows/ci.yml`, vão no editor.
 - Salve os arquivos com **Ctrl+S**, ou **Cmd+S** no Mac, antes de executar o `check.sh` ou fazer commit.
 - Antes de publicar, execute `check.sh NN`, trocando `NN` pelo número do exercício. Corrija o que for indicado e repita.
@@ -35,7 +35,7 @@ O **runner** é a máquina que executa os jobs no GitHub. Ele é separado do Cod
 
 O **act** executa os mesmos jobs no Codespace, em containers Docker, quando você roda `check.sh`. Ele serve para encontrar erros antes do push. Não publica no Pages nem lê as variáveis e os segredos cadastrados no repositório.
 
-`pwd` mostra a pasta atual, `ls` lista seu conteúdo e `cd caminho` muda de pasta. Para abrir um arquivo no editor, use `code nome-do-arquivo`.
+`pwd` mostra a pasta atual, `ls` lista seu conteúdo e `cd caminho` muda de pasta. Para abrir um arquivo no editor, use `code nome-do-arquivo`. Para abrir a pasta de um laboratório no VS Code, use `code ~/labs/NN-nome`; um terminal novo (**Terminal → New Terminal**) já começa nessa pasta.
 
 O material fica em `~/devops-ghactions`, e os arquivos da prática ficam em `~/labs`. O atalho `labs`, criado na pasta em que o instalador foi executado, aponta para os mesmos arquivos. Os enunciados estão nos [slides](https://fsilva-alt.github.io/devops-ghactions/); a cópia local fica em `~/devops-ghactions/docs/index.html`.
 
@@ -49,7 +49,7 @@ O material fica em `~/devops-ghactions`, e os arquivos da prática ficam em `~/l
 | `setup.sh` | Criar os laboratórios que ainda não existem e baixar o act e sua imagem |
 | `reset.sh NN` | Apagar o trabalho local de um laboratório e recriar seus arquivos iniciais |
 
-Dentro de um laboratório, `check.sh` e `reset.sh` funcionam sem o número. Depois de um reset, execute de novo o `cd` do enunciado.
+Dentro de um laboratório, `check.sh` e `reset.sh` funcionam sem o número. Depois de um reset, abra um terminal novo na janela do laboratório ou execute o `cd` que o `reset.sh` mostra.
 
 O instalador pode ser executado novamente para atualizar o material; ele preserva os laboratórios existentes. Para receber um novo estado inicial, guarde as alterações que deseja manter e execute `reset.sh NN`. O reset também remove o remoto local `origin`, mas não apaga o repositório publicado no GitHub. Consulte [Retomar depois de resetar](../README.md#retomar-depois-de-resetar).
 
@@ -76,7 +76,7 @@ Use o mesmo Codespace Blank durante toda a aula.
 | `Invalid workflow file` | Confira a linha indicada, a indentação com espaços e as chaves do YAML. |
 | Correção não aparece no Actions | Salve o arquivo, faça commit e push. Reexecutar um commit antigo usa o código daquele commit. |
 | `CURSO_TOKEN` ausente | Cadastre o segredo fictício no repositório `actions-04` com `gh secret set CURSO_TOKEN --body "somente-demonstracao"`. |
-| Pasta não encontrada depois de `reset.sh` | Entre novamente na pasta com o `cd` do enunciado. |
+| Pasta não encontrada depois de `reset.sh` | Abra um terminal novo na janela do laboratório ou entre novamente na pasta com o `cd` que o `reset.sh` mostra. |
 | Site do exercício 07 não abre | Aguarde o fim do deploy e confira **Settings → Pages → Source: GitHub Actions**. Se houver falha, leia o log. |
 
 Ao pedir ajuda, informe o exercício, o comando executado e a mensagem completa do terminal ou o link da execução no Actions.
