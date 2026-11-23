@@ -5,26 +5,24 @@ duration: 20
 # Artefatos do build
 
 {.lead}
-Guardar o site gerado pelo build como um **artefato** da execução, baixá-lo e conferir que cada commit produz o seu próprio resultado.
+Guardar o site gerado pelo build como um **artefato** da execução, baixar esse artefato e conferir que cada commit produz o seu próprio resultado.
 
 `actions/upload-artifact` `name: site` `path: dist/` `gh run download`
 
 ::::columns
 :::card Onde fazer
-No terminal do Codespace, na pasta do laboratório:
-
 ```console
 $ cd ~/labs/06-artefatos-do-build
 ```
 
-Ponto de partida: o workflow com os jobs `testar` e `empacotar`.
+O laboratório começa com o workflow dos jobs `testar` e `empacotar`.
 :::
 :::card Para este exercício
 `⏱ tempo`
 : 20 min
 
 `módulo`
-: Módulo 4 · Entrega contínua
+: Entrega contínua
 
 `verificação`
 : `check.sh 06`
@@ -51,7 +49,7 @@ Ponto de partida: o workflow com os jobs `testar` e `empacotar`.
 ```
 
 :::card O que é um artefato
-Um arquivo, ou pasta, guardado pela execução depois que o runner é descartado: um site, um relatório, um pacote. Ele aparece em **Artifacts**, no resumo da execução.
+É um arquivo ou uma pasta que a execução guarda depois que o runner é descartado, como um site ou um relatório. Ele aparece em **Artifacts**, no resumo da execução.
 :::
 
 | Entrada | O que define |
@@ -67,13 +65,13 @@ Um arquivo, ou pasta, guardado pela execução depois que o runner é descartado
 
 ::::columns
 :::card Artefato
-O **resultado** de uma execução, para baixar ou passar a outro job. Cada execução tem os seus: o artefato de um commit antigo continua lá até expirar.
+É o resultado de uma execução, para baixar ou passar a outro job. O artefato de um commit antigo continua disponível até expirar.
 :::
 :::card Cache
-Arquivos guardados para **acelerar** as próximas execuções, como dependências já baixadas. Não é entrega; pode ser apagado a qualquer momento.
+São arquivos guardados para acelerar as próximas execuções, como dependências já baixadas. Pode ser apagado a qualquer momento, então não serve como entrega.
 :::
 :::card Deploy
-A **publicação** do resultado no destino final, como um site no ar. Guardar o ZIP ainda não publica nada: o exercício 7 faz o deploy.
+É a publicação do resultado no destino final, como um site no ar. Guardar o ZIP ainda não publica nada. O deploy fica para o exercício 7.
 :::
 ::::
 
@@ -89,15 +87,12 @@ A **publicação** do resultado no destino final, como um site no ar. Guardar o 
 
 | Comando | Para quê |
 | --- | --- |
-| `check.sh 06` | simula o workflow e confere se o artefato site contém index.html |
 | `python3 receitas.py` | confere as receitas que vão para o site |
 | `gh run list` | lista as execuções, para achar a mais recente |
 | `gh run download --name site --dir site-baixado` | baixa o artefato da execução escolhida |
 | `unzip <arquivo>.zip` | descompacta um ZIP baixado pelo navegador |
 
 :::card Documentação
-Links para consultar depois. A documentação do GitHub tem versão em português.
-
 {.links}
 - [Artefatos de workflow](https://docs.github.com/pt/actions/concepts/workflows-and-actions/workflow-artifacts)<small>guardar e baixar arquivos de uma execução</small>
 - [Action · actions/upload-artifact](https://github.com/actions/upload-artifact)<small>name, path, retention-days</small>
@@ -116,7 +111,7 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
    $ code .github/workflows/ci.yml
    ```
 
-   Cole a etapa abaixo no **fim do arquivo**, depois de `python build.py`, a última etapa de `empacotar`. O traço fica alinhado com os traços das outras etapas, seis espaços depois da margem. Salve:
+   Cole a etapa abaixo no **fim do arquivo**, depois de `python build.py`, que é a última etapa de `empacotar`. O traço fica alinhado com os das outras etapas, seis espaços depois da margem. Salve:
 
    ```yaml title="acrescente no fim das etapas de empacotar"
          - name: Guardar o site
@@ -128,7 +123,7 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
              retention-days: 7
    ```
 
-2. Simule; procure a linha **artefato site: index.html**:
+2. Rode a verificação e procure a linha **artefato site: index.html**:
 
    ```console
    $ check.sh 06
@@ -143,7 +138,7 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
    $ gh browse --actions
    ```
 
-4. Acrescente uma receita nova, de limonada. Crie o arquivo com o conteúdo abaixo e salve:
+4. Acrescente uma receita de limonada. Crie o arquivo com o conteúdo abaixo e salve:
 
    ```console
    $ code receitas/limonada.md
@@ -166,7 +161,7 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
    2. Coe, adoce e sirva.
    ```
 
-5. Confira e envie. Depois, baixe o artefato da nova execução e procure a limonada:
+5. Rode a verificação e envie. Depois, baixe o artefato da nova execução e procure a limonada:
 
    ```console
    $ python3 receitas.py
@@ -182,11 +177,11 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
 $ check.sh 06
 ```
 
-Aprova com o upload de `dist/` como `site`, depois do build, com `if-no-files-found: error` e `retention-days: 7`, e quando o artefato da simulação contém `index.html`.
+Aprova quando o upload de `dist/` como `site` vem depois do build, com `if-no-files-found: error` e `retention-days: 7`, e o artefato da simulação contém `index.html`.
 :::
 
-:::note
-**Entrega:** o link da execução final e a confirmação de que o artefato `site` traz a limonada.
+:::note Entrega
+O link da execução final e a confirmação de que o artefato `site` traz a limonada.
 :::
 
 :::card Missão extra
@@ -195,5 +190,5 @@ $ gh run download --name site --dir site-baixado
 $ ls site-baixado
 ```
 
-Baixa o artefato direto no Codespace. Escolha a execução na lista; apague a pasta depois, para não entrar no próximo commit.
+O comando baixa o artefato direto no Codespace. Escolha a execução na lista. Depois, apague a pasta, para ela não entrar no próximo commit.
 :::

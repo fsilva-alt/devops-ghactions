@@ -5,22 +5,22 @@ duration: 7
 # O ambiente está pronto?
 
 {.lead}
-Antes da aula, confira se o Codespace tem tudo: o Git com sua identidade, o GitHub CLI com permissão para enviar workflows, o Docker funcionando e o **act**, que simula os workflows. Também pratique o editor, criando um arquivo com um texto combinado. Fazer esta etapa com antecedência dá tempo de pedir ajuda.
+Confirmar que o Codespace tem o que a aula usa: o Git com a sua identidade, o GitHub CLI com permissão para enviar workflows, o Docker e o **act**, que simula os workflows. Faça antes da aula, para ter tempo de pedir ajuda.
 
 `git config user.name` `gh auth status` `docker version` `act --version` `code meu-arquivo.txt` `check.sh 00`
 
 ::::columns
 :::card Onde fazer
-No terminal do Codespace, em **qualquer pasta**. Estes comandos conferem as ferramentas do Codespace e não dependem de arquivos da pasta atual.
+No terminal do Codespace, em qualquer pasta, logo depois de rodar o [instalador](01-antes-de-comecar.md#como-acompanhar-a-aula).
 
-A exceção é o arquivo `meu-arquivo.txt`: ele fica na sua pasta pessoal, `~`, onde o `check.sh 00` procura por ele.
+Só o arquivo `meu-arquivo.txt` tem lugar certo. Ele fica na sua pasta pessoal, `~`, onde o `check.sh 00` procura por ele.
 :::
 :::card Para este exercício
 `⏱ tempo`
 : 7 min · antes da aula
 
 `módulo`
-: Abertura · feito antes da aula, logo depois do instalador
+: Abertura
 
 `verificação`
 : `check.sh 00`
@@ -32,20 +32,20 @@ A exceção é o arquivo `meu-arquivo.txt`: ele fica na sua pasta pessoal, `~`, 
 
 <p class="eyebrow">Conceito</p>
 
-## Duas máquinas e um simulador
+## Onde o workflow roda
 
 <div class="flow"><div class="node"><b>Codespace</b><small>onde você escreve o workflow</small></div><div class="arr"><span class="a">→</span>git push</div><div class="node hi"><b>GitHub</b><small>recebe o push e cria a execução</small></div><div class="arr"><span class="a">→</span>para cada job</div><div class="node"><b>runner</b><small>máquina nova, que roda as etapas</small></div></div>
 
 <div class="netbox" data-label="no Codespace · check.sh"><div class="flow"><div class="node "><b>act</b><small>lê .github/workflows/ci.yml</small></div><div class="arr"><span class="a">→</span>cria</div><div class="node hi"><b>container Docker</b><small>imagem parecida com ubuntu-latest</small></div><div class="arr"><span class="a">→</span>cria</div><div class="node "><b>etapas</b><small>os mesmos comandos do runner</small></div></div></div>
 
 :::card Por que simular?
-Uma execução no GitHub leva alguns minutos e só começa depois do push. O `check.sh` usa o act para criar, no próprio Codespace, um **container** para cada job e rodar as etapas. Um erro de digitação aparece em segundos.
+Uma execução no GitHub só começa depois do push e leva alguns minutos. Com o act, o `check.sh` cria um **container** para cada job no próprio Codespace e roda as mesmas etapas. Um erro de digitação aparece em segundos.
 
-A imagem do runner local tem cerca de 2 GB; o instalador a baixa uma vez.
+A imagem do runner local tem cerca de 2 GB e é baixada uma vez pelo instalador.
 :::
 
-:::note
-**O que o act não faz:** não cria execuções no GitHub, não publica no Pages e não lê os segredos cadastrados no repositório. O `check.sh` usa valores de demonstração no lugar deles.
+:::note O que o act não faz
+Ele não cria execuções no GitHub, não publica no Pages e não lê os segredos cadastrados no repositório. No lugar dos segredos, o `check.sh` usa valores de demonstração.
 :::
 
 <p class="eyebrow">Referência</p>
@@ -54,7 +54,7 @@ A imagem do runner local tem cerca de 2 GB; o instalador a baixa uma vez.
 
 | Comando | Para quê |
 | --- | --- |
-| `git config user.name` | mostra o nome que vai nos seus commits; vazio significa não configurado |
+| `git config user.name` | mostra o nome que vai nos seus commits; vazio quer dizer que falta configurar |
 | `gh auth status --hostname github.com` | mostra a conta conectada e os escopos do login |
 | `gh auth refresh --hostname github.com --scopes workflow` | acrescenta o escopo workflow, necessário para enviar arquivos .github/workflows |
 | `docker version` | mostra as seções Client e Server: o comando e o serviço do Docker |
@@ -65,8 +65,6 @@ A imagem do runner local tem cerca de 2 GB; o instalador a baixa uma vez.
 | `setup.sh` | cria os laboratórios ausentes e baixa o act e a imagem do runner local |
 
 :::card Documentação
-Links para consultar depois. A documentação do GitHub tem versão em português.
-
 {.links}
 - [Comando · gh auth status](https://cli.github.com/manual/gh_auth_status)
 - [Visão geral do GitHub Codespaces](https://docs.github.com/pt/codespaces/overview)
@@ -105,7 +103,7 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
    $ act --version
    ```
 
-5. Pratique o editor, que você vai usar em todos os exercícios. Vá para a sua pasta pessoal e abra o arquivo `meu-arquivo.txt`. Ele ainda não existe; o editor cria o arquivo ao salvar:
+5. Pratique o editor, que você vai usar em todos os exercícios. Na sua pasta pessoal, abra `meu-arquivo.txt`. O arquivo ainda não existe, e o editor o cria quando você salva:
 
    ```console
    $ cd ~
@@ -121,12 +119,6 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
    ```console
    $ cat meu-arquivo.txt
    ```
-
-6. Rode a verificação. Ela confere o arquivo, executa um workflow mínimo em um container e procura a mensagem **Olá do runner local!**:
-
-   ```console
-   $ check.sh 00
-   ```
 :::
 
 :::card Verificação
@@ -134,15 +126,15 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
 $ check.sh 00
 ```
 
-Confere Git, login do `gh` com o escopo workflow, os 14 laboratórios, o Docker, o act, a imagem do runner local e o conteúdo de `~/meu-arquivo.txt`. Faltou algo? Siga a dica, execute `setup.sh` se ela pedir, e repita.
+Confere o Git, o login do `gh` com o escopo workflow, os 14 laboratórios, o Docker, o act, a imagem do runner local e o conteúdo de `~/meu-arquivo.txt`. Depois roda um workflow mínimo em um container e procura a mensagem **Olá do runner local!**. Se faltar algo, siga a dica e repita.
 :::
 
 :::note Arquivo não salvo?
-Um **●** na aba do editor indica alterações que ainda não foram gravadas. Salve antes de rodar o `check.sh`.
+Um **●** na aba do editor indica alterações que ainda não foram salvas. Salve antes de rodar o `check.sh`.
 :::
 
-:::warning
-**Depois, pare o Codespace** para não gastar a franquia. Em github.com/codespaces, clique em ⋯ e escolha *Stop codespace*. No dia da aula, basta abrir de novo; o act, a imagem e os laboratórios continuam lá.
+:::warning Depois, pare o Codespace
+Assim você não gasta a franquia. Em github.com/codespaces, clique em ⋯ e escolha *Stop codespace*. No dia da aula, abra o mesmo Codespace. O act, a imagem e os laboratórios continuam nele.
 :::
 
 :::card Missão extra · opcional

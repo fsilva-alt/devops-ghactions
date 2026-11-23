@@ -5,19 +5,17 @@ duration: 20
 # Saídas e resumo
 
 {.lead}
-Passar um valor de um job para outro e escrever um **resumo** na página da execução: o número de receitas e a lista do livro, sem abrir nenhum log.
+Passar um valor de um job para outro e escrever um **resumo** na página da execução, com o número de receitas e a lista do livro.
 
 `$GITHUB_OUTPUT` `jobs.<job>.outputs` `needs.contar.outputs.total` `$GITHUB_STEP_SUMMARY`
 
 ::::columns
 :::card Onde fazer
-No terminal do Codespace, na pasta do laboratório:
-
 ```console
 $ cd ~/labs/12-saidas-e-resumo
 ```
 
-Ponto de partida: o workflow de testes no push e no pull request.
+O laboratório começa com o workflow de testes no push e no pull request.
 :::
 :::card Para este exercício
 `⏱ tempo`
@@ -32,13 +30,13 @@ Ponto de partida: o workflow de testes no push e no pull request.
 `entrega`
 : execução com o resumo do livro, com 4 receitas
 
-Exercício opcional: pode ser feito depois da aula, em qualquer ordem. O laboratório já vem com o ponto de partida.
+Faça depois da aula, em qualquer ordem.
 :::
 ::::
 
 <p class="eyebrow">Conceito</p>
 
-## Do step ao job seguinte
+## Como um valor passa de um job para outro
 
 <div class="flow"><div class="node "><b>step contagem</b><small>escreve total=3 em $GITHUB_OUTPUT</small></div><div class="arr"><span class="a">→</span></div><div class="node hi"><b>job contar</b><small>outputs.total</small></div><div class="arr"><span class="a">→</span></div><div class="node ok"><b>job resumo</b><small>lê needs.contar.outputs.total</small></div></div>
 
@@ -53,7 +51,7 @@ Exercício opcional: pode ser feito depois da aula, em qualquer ordem. O laborat
 Cada linha `nome=valor` escrita nele vira uma saída do step. O `id: contagem` dá o nome usado em `steps.contagem.outputs.total`.
 :::
 :::card Por que needs?
-Jobs rodam em runners diferentes; uma variável de um não aparece no outro. O `resumo` lê a saída de `contar` porque espera por ele. Com `needs: [testar, contar]`, espera os dois, que rodam em paralelo.
+Os jobs rodam em runners diferentes, e a variável de um não aparece no outro. O `resumo` lê a saída de `contar` porque espera por ele. Com `needs: [testar, contar]`, ele espera os dois, que rodam em paralelo.
 :::
 ::::
 
@@ -74,16 +72,12 @@ Livro de receitas
 
 ::::columns
 :::card $GITHUB\_STEP\_SUMMARY
-O que um step escreve nesse arquivo aparece, formatado como **Markdown**, na página da execução. Títulos, listas e tabelas funcionam.
+O que um step escreve nesse arquivo aparece na página da execução, formatado como Markdown. Títulos, listas e tabelas funcionam.
 :::
-:::card tee -a
-Mostra a frase no log e também a acrescenta ao resumo. O `check.sh` procura essa frase no log da simulação.
+:::card O que o run escreve
+O `tee -a` mostra a frase no log e também a acrescenta ao resumo. A saída do `receitas.py` já é Markdown, com um título sublinhado com `=` e uma lista com `-`, e vai direto para o arquivo.
 :::
 ::::
-
-:::note
-**receitas.py já escreve Markdown:** um título sublinhado com `=` e uma lista com `-`. Por isso a saída do programa vai direto para o resumo.
-:::
 
 <p class="eyebrow">Referência</p>
 
@@ -91,14 +85,11 @@ Mostra a frase no log e também a acrescenta ao resumo. O `check.sh` procura ess
 
 | Comando | Para quê |
 | --- | --- |
-| `check.sh 12` | simula os três jobs e procura a frase do resumo no log |
 | `ls receitas/*.md \| wc -l` | conta as receitas no Codespace, como o job contar |
 | `python3 receitas.py` | mostra a lista que vai para o resumo |
 | `gh run view --web` | abre a execução escolhida no navegador, com o resumo |
 
 :::card Documentação
-Links para consultar depois. A documentação do GitHub tem versão em português.
-
 {.links}
 - [Passar informações entre jobs](https://docs.github.com/pt/actions/how-tos/write-workflows/choose-what-workflows-do/pass-job-outputs)<small>outputs no job e needs nos jobs seguintes</small>
 - [Comandos de workflow](https://docs.github.com/pt/actions/reference/workflows-and-actions/workflow-commands)<small>::error, ::warning, GITHUB\_OUTPUT e GITHUB\_STEP\_SUMMARY</small>
@@ -143,7 +134,7 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
              python3 receitas.py >> "$GITHUB_STEP_SUMMARY"
    ```
 
-2. Simule; procure **O livro tem 3 receitas.** no log do job `resumo`:
+2. Rode a verificação e procure **O livro tem 3 receitas.** no log do job `resumo`:
 
    ```console
    $ check.sh 12
@@ -185,7 +176,7 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
    2. Coe, adoce e sirva.
    ```
 
-5. Confira e envie. O resumo da nova execução mostra 4 receitas:
+5. Rode a verificação e envie. O resumo da nova execução mostra 4 receitas:
 
    ```console
    $ check.sh 12
@@ -200,11 +191,11 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
 $ check.sh 12
 ```
 
-Aprova com a saída `total` do step `contagem` exposta em `outputs`, o job `resumo` lendo `needs.contar.outputs.total` e escrevendo em `$GITHUB_STEP_SUMMARY`, e a frase no log da simulação.
+Aprova quando o job `contar` expõe em `outputs` a saída `total` do step `contagem`, e o job `resumo` lê `needs.contar.outputs.total` e escreve em `$GITHUB_STEP_SUMMARY`. A frase também precisa aparecer no log da simulação.
 :::
 
-:::note
-**Entrega:** o link da execução com o resumo das 4 receitas.
+:::note Entrega
+O link da execução com o resumo das 4 receitas.
 :::
 
 :::card Missão extra · a data no resumo

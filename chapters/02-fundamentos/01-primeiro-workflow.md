@@ -5,7 +5,7 @@ duration: 15
 # Primeiro workflow
 
 {.lead}
-Escrever o primeiro workflow, executá-lo com um clique na aba **Actions** e encontrar, no log do runner, a mensagem que ele mostrou.
+Escrever o primeiro workflow, iniciá-lo com um clique na aba **Actions** e encontrar a mensagem dele no log do runner.
 
 `on: workflow_dispatch` `runs-on: ubuntu-latest` `steps · run` `gh repo create` `Run workflow`
 
@@ -24,7 +24,7 @@ A pasta tem o livro de receitas pronto e a pasta `.github/workflows/` vazia. É 
 : 15 min
 
 `módulo`
-: Módulo 1 · Fundamentos
+: Fundamentos
 
 `verificação`
 : `check.sh 01`
@@ -34,6 +34,14 @@ A pasta tem o livro de receitas pronto e a pasta `.github/workflows/` vazia. É 
 :::
 ::::
 
+:::important Você precisa do material do curso instalado
+Os laboratórios em `~/labs` e o comando `check.sh` são criados pelo instalador. Se você ainda não rodou o instalador neste Codespace, rode agora e abra um terminal novo:
+
+```console
+$ sh -c "$(curl -fsSL https://raw.githubusercontent.com/fsilva-alt/devops-ghactions/main/install.sh)"
+```
+:::
+
 <p class="eyebrow">Conceito</p>
 
 ## Evento, workflow, job e step
@@ -42,19 +50,15 @@ A pasta tem o livro de receitas pronto e a pasta `.github/workflows/` vazia. É 
 
 ::::columns
 :::card O evento inicia a execução
-`workflow_dispatch` é o evento manual: aparece como o botão **Run workflow** na aba Actions. Os próximos exercícios usam `push` e `pull_request`, que disparam o workflow automaticamente.
+`workflow_dispatch` é o evento manual. Ele aparece como o botão **Run workflow** na aba Actions. Os próximos exercícios usam `push` e `pull_request`, que iniciam o workflow automaticamente.
 :::
 :::card Jobs rodam em runners
-Cada job recebe uma máquina nova. `runs-on: ubuntu-latest` pede um Linux hospedado pelo GitHub, com ferramentas comuns já instaladas.
+Cada job recebe uma máquina nova. `runs-on: ubuntu-latest` pede um Linux hospedado pelo GitHub. É nessa máquina que o `echo` roda, e não no Codespace. O resultado aparece no log da execução.
 :::
 :::card Steps rodam em ordem
-As etapas de um job executam uma depois da outra, na mesma máquina. Se uma falha, as seguintes não rodam e o job fica vermelho.
+As etapas de um job rodam uma depois da outra, na mesma máquina. Se uma falha, as seguintes não rodam e o job fica vermelho.
 :::
 ::::
-
-:::note O echo não roda no Codespace.
-No Codespace você escreve e publica o arquivo. Quem executa o comando é o runner, em outra máquina; o resultado aparece no log da execução.
-:::
 
 <p class="eyebrow">Conceito</p>
 
@@ -89,8 +93,8 @@ jobs:
 | `run` | o comando executado no runner |
 :::
 
-:::note A indentação faz parte do YAML.
-Ela mostra o que pertence a quê: `runs-on` pertence ao job, que pertence a `jobs`. Use espaços, nunca tabulação.
+:::note A indentação faz parte do YAML
+Os espaços no início da linha mostram o que pertence a quê. `runs-on` pertence ao job, que pertence a `jobs`. Use espaços, nunca tabulação.
 :::
 
 <p class="eyebrow">Conceito</p>
@@ -104,10 +108,10 @@ Ela mostra o que pertence a quê: `runs-on` pertence ao job, que pertence a `job
 Uma **execução** (run) registra o evento, o commit, quem a iniciou, a duração e o resultado de cada job. O link dela é a sua entrega neste exercício.
 :::
 :::card O botão Run workflow
-Aparece quando o workflow com `workflow_dispatch` está na **branch padrão**, a `main`. Por isso o primeiro push vem antes do clique.
+O botão só aparece quando o workflow com `workflow_dispatch` está na **branch padrão**, a `main`. Por isso o primeiro push vem antes do clique.
 :::
 :::card Verde, vermelho, amarelo
-✓ verde: terminou sem erro. ✗ vermelho: alguma etapa falhou. ● amarelo: ainda em execução ou na fila, esperando um runner.
+✓ verde: terminou sem erro. ✗ vermelho: alguma etapa falhou. ● amarelo: ainda está rodando ou esperando um runner.
 :::
 ::::
 
@@ -118,7 +122,6 @@ Aparece quando o workflow com `workflow_dispatch` está na **branch padrão**, a
 | Comando | Para quê |
 | --- | --- |
 | `code .github/workflows/ci.yml` | abre (ou cria, ao salvar) o arquivo do workflow no editor |
-| `check.sh 01` | confere o YAML e simula o job com o act |
 | `git add <arquivo>` | prepara o arquivo para o próximo commit |
 | `git commit -m "<mensagem>"` | registra a versão com uma mensagem |
 | `gh repo create <nome> --public --source=. --remote=origin --push` | cria o repositório no GitHub e envia o commit; uma vez por laboratório |
@@ -126,8 +129,6 @@ Aparece quando o workflow com `workflow_dispatch` está na **branch padrão**, a
 | `gh run list` | lista as execuções no terminal |
 
 :::card Documentação
-Links para consultar depois. A documentação do GitHub tem versão em português.
-
 {.links}
 - [Entender o GitHub Actions](https://docs.github.com/pt/actions/get-started/understand-github-actions)<small>eventos, workflows, jobs, actions e runners</small>
 - [Início rápido do GitHub Actions](https://docs.github.com/pt/actions/get-started/quickstart)<small>o primeiro workflow, passo a passo</small>
@@ -142,14 +143,14 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
 ## O exercício
 
 :::steps
-1. Entre no laboratório e abra o arquivo do workflow. Ele ainda não existe; o editor cria o arquivo ao salvar:
+1. Entre no laboratório e abra o arquivo do workflow. Ele ainda não existe, e o editor o cria quando você salva:
 
    ```console
    $ cd ~/labs/01-primeiro-workflow
    $ code .github/workflows/ci.yml
    ```
 
-2. Copie o YAML abaixo para o editor e salve com <kbd>Ctrl+S</kbd>. É o mesmo do slide **Como ler o YAML**; mantenha os espaços no início das linhas:
+2. Copie o YAML abaixo para o editor e salve com <kbd>Ctrl+S</kbd>. É o mesmo do slide **Como ler o YAML**. Mantenha os espaços no início das linhas:
 
    ```yaml title=".github/workflows/ci.yml"
    name: Boas-vindas
@@ -168,7 +169,7 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
            run: echo "Olá, GitHub Actions!"
    ```
 
-3. Confira e simule. Procure **Olá, GitHub Actions!** na saída do job:
+3. Rode a verificação, que confere o YAML e simula o job. Procure **Olá, GitHub Actions!** na saída:
 
    ```console
    $ check.sh 01
@@ -191,11 +192,11 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
 $ check.sh 01
 ```
 
-Aprova com o evento manual, `permissions` de leitura e a etapa da saudação, e quando a simulação mostra a mensagem no log.
+Aprova quando o workflow tem o evento manual, `permissions` só de leitura e a etapa da saudação, e a simulação mostra a mensagem no log.
 :::
 
-:::note
-**Sem execução depois do push:** o resultado está correto, porque o único evento deste workflow é o manual. A execução começa no clique em Run workflow.
+:::note Nenhuma execução depois do push?
+É o esperado, porque o único evento deste workflow é o manual. A execução só começa quando você clica em Run workflow.
 :::
 
 :::card Missão extra
@@ -204,5 +205,5 @@ Aprova com o evento manual, `permissions` de leitura e a etapa da saudação, e 
         run: ls -la
 ```
 
-Rode `check.sh 01`: a lista sai vazia. O runner começa sem os arquivos do repositório; no exercício 2, `actions/checkout` resolve isso.
+Rode `check.sh 01` e veja que a lista sai vazia. O runner começa sem os arquivos do repositório. No exercício 2, `actions/checkout` baixa esses arquivos.
 :::

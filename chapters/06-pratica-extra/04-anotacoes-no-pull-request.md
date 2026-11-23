@@ -5,19 +5,17 @@ duration: 20
 # Anotações no pull request
 
 {.lead}
-Criar uma verificação para as receitas: um job confere se todas informam o rendimento e, quando uma não informa, marca o arquivo no pull request com uma **anotação** de erro.
+Criar uma verificação para as receitas. Um job confere se todas informam o rendimento e, quando falta em alguma, marca o arquivo no pull request com uma **anotação** de erro.
 
 `::error file=…` `job validar` `grep -L` `Files changed`
 
 ::::columns
 :::card Onde fazer
-No terminal do Codespace, na pasta do laboratório:
-
 ```console
 $ cd ~/labs/11-anotacoes-no-pull-request
 ```
 
-Ponto de partida: o workflow de testes no push e no pull request.
+O laboratório começa com o workflow de testes no push e no pull request.
 :::
 :::card Para este exercício
 `⏱ tempo`
@@ -32,7 +30,7 @@ Ponto de partida: o workflow de testes no push e no pull request.
 `entrega`
 : PR com a anotação na receita e o check verde depois da correção
 
-Exercício opcional: pode ser feito depois da aula, em qualquer ordem. O laboratório já vem com o ponto de partida.
+Faça depois da aula, em qualquer ordem.
 :::
 ::::
 
@@ -55,16 +53,12 @@ Exercício opcional: pode ser feito depois da aula, em qualquer ordem. O laborat
 
 ::::columns
 :::card Onde a anotação aparece
-No resumo da execução, em **Annotations**, e no pull request, na aba **Files changed**, ao lado da linha marcada. Quem revisa vê o problema sem abrir o log.
+Ela aparece no resumo da execução, em **Annotations**, e no pull request, na aba **Files changed**, ao lado da linha marcada. Quem revisa vê o problema sem abrir o log.
 :::
 :::card Comandos de workflow
-Linhas que começam com `::` são lidas pelo runner como **comandos**, não como texto comum. O mesmo mecanismo cria saídas e resumos, no exercício 12.
+O runner lê as linhas que começam com `::` como comandos, e não como texto comum. A anotação só marca o arquivo. Quem faz a etapa falhar é o código de saída do comando, aqui o `test -z` do fim.
 :::
 ::::
-
-:::note A anotação não reprova sozinha.
-Quem faz a etapa falhar é o código de saída do comando; aqui, o `test -z` do fim.
-:::
 
 <p class="eyebrow">Conceito</p>
 
@@ -94,7 +88,7 @@ Quem faz a etapa falhar é o código de saída do comando; aqui, o `test -z` do 
 | `test -z` | termina com sucesso se a lista estiver vazia; senão, a etapa falha |
 :::
 :::card Duas verificações em paralelo
-Sem `needs`, `validar` roda ao mesmo tempo que `testar`. No PR, cada um vira um check: um confere o código; o outro, o conteúdo do livro.
+Sem `needs`, `validar` roda ao mesmo tempo que `testar`. No PR, cada um vira um check. Um confere o código, e o outro confere o conteúdo do livro.
 :::
 ::::
 
@@ -104,15 +98,12 @@ Sem `needs`, `validar` roda ao mesmo tempo que `testar`. No PR, cada um vira um 
 
 | Comando | Para quê |
 | --- | --- |
-| `check.sh 11` | confere o job validar e simula um pull request |
 | `grep -L '^Rende:' receitas/*.md` | lista no Codespace as receitas sem rendimento |
 | `git switch -c <branch>` | cria a branch da receita nova |
 | `gh pr create --base main --fill` | abre o PR para a main |
 | `gh pr checks` | mostra os checks testar e validar no terminal |
 
 :::card Documentação
-Links para consultar depois. A documentação do GitHub tem versão em português.
-
 {.links}
 - [Comandos de workflow](https://docs.github.com/pt/actions/reference/workflows-and-actions/workflow-commands)<small>::error, ::warning, GITHUB\_OUTPUT e GITHUB\_STEP\_SUMMARY</small>
 - [Como ler os logs de uma execução](https://docs.github.com/pt/actions/how-tos/monitor-workflows/use-workflow-run-logs)
@@ -148,7 +139,7 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
              test -z "$faltando"
    ```
 
-2. Simule e publique a main:
+2. Rode a verificação e publique a main:
 
    ```console
    $ check.sh 11
@@ -161,7 +152,7 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
    $ gh browse --actions
    ```
 
-3. Crie uma branch e uma receita de café **sem** a linha `Rende:`. Crie o arquivo com o conteúdo abaixo e salve:
+3. Crie uma branch e uma receita de café sem a linha `Rende:`. Use o conteúdo abaixo e salve:
 
    ```console
    $ git switch -c receita-de-cafe
@@ -182,7 +173,7 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
    2. Passe a água pelo filtro com o café.
    ```
 
-4. Simule: `validar` falha e mostra a anotação. Envie mesmo assim e abra o PR:
+4. Rode a verificação. `validar` falha e mostra a anotação. Envie mesmo assim e abra o PR:
 
    ```console
    $ check.sh 11
@@ -193,7 +184,7 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
    $ gh pr view --web
    ```
 
-5. No PR, abra **Files changed**: a anotação aparece na primeira linha de `cafe.md`. Corrija: acrescente a linha abaixo logo depois do título, com uma linha em branco antes e depois. Confira e envie:
+5. No PR, abra **Files changed**. A anotação aparece na primeira linha de `cafe.md`. Para corrigir, acrescente a linha abaixo logo depois do título, com uma linha em branco antes e depois. Rode a verificação e envie:
 
    ```markdown title="linha nova em receitas/cafe.md"
    Rende: 4 xícaras
@@ -212,11 +203,11 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
 $ check.sh 11
 ```
 
-Aprova com o job `validar`, depois do checkout, gerando `::error file=` para as receitas sem `Rende:`, e com `testar` e `validar` verdes numa simulação de pull request.
+Aprova quando o job `validar` faz o checkout e gera `::error file=` para as receitas sem `Rende:`, e `testar` e `validar` ficam verdes em uma simulação de pull request.
 :::
 
-:::note
-**Entrega:** o link do PR, com a anotação na receita, o check vermelho e o verde depois da correção.
+:::note Entrega
+O link do PR, com a anotação na receita, o check vermelho e o verde depois da correção.
 :::
 
 :::card Missão extra · uma observação

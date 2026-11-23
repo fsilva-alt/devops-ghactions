@@ -11,13 +11,11 @@ Rodar os mesmos testes em **três versões do Python** de uma vez. Uma matriz cr
 
 ::::columns
 :::card Onde fazer
-No terminal do Codespace, na pasta do laboratório:
-
 ```console
 $ cd ~/labs/08-matriz-de-versoes
 ```
 
-Ponto de partida: o workflow de testes no push e no pull request, só com o Python 3.12.
+O laboratório começa com o workflow de testes no push e no pull request, só com o Python 3.12.
 :::
 :::card Para este exercício
 `⏱ tempo`
@@ -32,13 +30,13 @@ Ponto de partida: o workflow de testes no push e no pull request, só com o Pyth
 `entrega`
 : execução com um job testar verde para cada versão
 
-Exercício opcional: pode ser feito depois da aula, em qualquer ordem. O laboratório já vem com o ponto de partida.
+Faça depois da aula, em qualquer ordem.
 :::
 ::::
 
 <p class="eyebrow">Conceito</p>
 
-## Um job, várias cópias
+## Uma cópia do job para cada versão
 
 <div class="flow"><div class="node ok"><b>testar (3.11)</b><small>Python 3.11</small></div><div class="node ok"><b>testar (3.12)</b><small>Python 3.12</small></div><div class="node ok"><b>testar (3.13)</b><small>Python 3.13</small></div></div>
 
@@ -58,16 +56,16 @@ Exercício opcional: pode ser feito depois da aula, em qualquer ordem. O laborat
 
 ::::columns
 :::card O que a matriz faz
-`strategy.matrix` define uma lista de valores. O Actions cria **uma cópia do job para cada valor**, todas ao mesmo tempo, cada uma em seu runner.
+`strategy.matrix` define uma lista de valores. O Actions cria uma cópia do job para cada valor. Todas rodam ao mesmo tempo, cada uma em seu runner.
 
-Dentro de cada cópia, `${{ matrix.python-version }}` vira o valor daquela cópia: 3.11, 3.12 ou 3.13.
+Em cada cópia, `${{ matrix.python-version }}` vira o valor dela: 3.11, 3.12 ou 3.13.
 :::
 :::card Por que várias versões?
-Quem usa o projeto pode ter outro Python. Com a matriz, o mesmo push mostra em quais versões o código funciona, sem repetir o job no YAML.
+Quem usa o projeto pode ter outro Python. Com a matriz, o mesmo push mostra em quais versões o código funciona, sem repetir o job no YAML. Uma matriz também pode combinar listas, como versões e sistemas.
 :::
 ::::
 
-:::warning Versões entre aspas.
+:::warning Escreva as versões entre aspas
 Sem aspas, o YAML lê `3.10` como o número 3.1, e o setup-python procura uma versão que não existe.
 :::
 
@@ -90,13 +88,10 @@ Sem aspas, o YAML lê `3.10` como o número 3.1, e o setup-python procura uma ve
 
 ::::columns
 :::card Cancelar ou terminar?
-Por padrão, a primeira falha **cancela** as cópias que ainda estão rodando, para economizar minutos. Com `fail-fast: false`, todas terminam e você vê exatamente quais versões falharam.
+Por padrão, a primeira falha cancela as cópias que ainda estão rodando, para economizar minutos. Com `fail-fast: false`, todas terminam e você vê quais versões falharam.
 :::
-:::card Um check por cópia
+:::card Cada cópia vira um check
 No grafo e nos pull requests, cada cópia aparece com o valor entre parênteses, como `testar (3.12)`. Uma regra de proteção pode exigir todas verdes.
-:::
-:::card Mais de uma variável
-Uma matriz pode combinar listas, como versões do Python e sistemas em `runs-on`. Duas listas de três valores geram nove cópias.
 :::
 ::::
 
@@ -106,14 +101,10 @@ Uma matriz pode combinar listas, como versões do Python e sistemas em `runs-on`
 
 | Comando | Para quê |
 | --- | --- |
-| `check.sh 08` | confere a matriz e simula uma cópia do job para cada versão |
-| `git push` | envia o commit e dispara as cópias |
 | `gh run watch` | acompanha as cópias ao mesmo tempo no terminal |
 | `gh run view` | mostra os jobs da execução, um por versão |
 
 :::card Documentação
-Links para consultar depois. A documentação do GitHub tem versão em português.
-
 {.links}
 - [Executar variações de jobs com uma matriz](https://docs.github.com/pt/actions/how-tos/write-workflows/choose-what-workflows-do/run-job-variations)<small>strategy, matrix e fail-fast</small>
 - [Action · actions/setup-python](https://github.com/actions/setup-python)
@@ -133,7 +124,7 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
    $ code .github/workflows/ci.yml
    ```
 
-   No job `testar`, acrescente o bloco `strategy` entre `runs-on` e `steps`, e troque `'3.12'` por `${{ matrix.python-version }}`. O início do job fica assim; as outras etapas continuam iguais. Salve:
+   No job `testar`, acrescente o bloco `strategy` entre `runs-on` e `steps` e troque `'3.12'` por `${{ matrix.python-version }}`. O início do job fica como abaixo, e as outras etapas continuam iguais. Salve:
 
    ```yaml title="início de jobs.testar"
      testar:
@@ -149,7 +140,7 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
              python-version: ${{ matrix.python-version }}
    ```
 
-2. Simule. Na primeira vez, o act baixa os três Pythons; cada linha do log mostra a versão entre parênteses:
+2. Rode a verificação. Na primeira vez, o act baixa os três Pythons. Cada linha do log mostra a versão entre parênteses:
 
    ```console
    $ check.sh 08
@@ -170,17 +161,17 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
 $ check.sh 08
 ```
 
-Aprova com a matriz de pelo menos duas versões entre aspas, incluindo 3.12, `fail-fast: false`, o setup-python lendo `matrix.python-version` e todas as cópias verdes na simulação.
+Aprova quando a matriz tem pelo menos duas versões entre aspas, incluindo a 3.12, e `fail-fast: false`. O setup-python precisa ler `matrix.python-version`, e todas as cópias precisam ficar verdes na simulação.
 :::
 
-:::note
-**Entrega:** o link da execução com os três jobs `testar` verdes.
+:::note Entrega
+O link da execução com os três jobs `testar` verdes.
 :::
 
-:::card Missão extra · a armadilha das aspas
+:::card Missão extra · uma versão sem aspas
 ```yaml title="troque a linha da matriz"
         python-version: [3.10, '3.11', '3.12', '3.13']
 ```
 
-Envie direto com `git commit -am` e `git push`; o `check.sh` recusaria. O job aparece como `testar (3.1)` e falha; com `fail-fast: false`, as outras versões terminam. Corrija para `'3.10'` e envie de novo.
+Envie direto com `git commit -am` e `git push`, porque o `check.sh` recusaria a mudança. O job aparece como `testar (3.1)` e falha. Com `fail-fast: false`, as outras versões terminam. Corrija para `'3.10'` e envie de novo.
 :::

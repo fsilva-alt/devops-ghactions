@@ -5,19 +5,17 @@ duration: 20
 # Release por tag
 
 {.lead}
-Publicar **versões numeradas** do livro: ao enviar uma tag como `v1.0.0`, o workflow testa, gera o site e cria um **release** no GitHub, com o site compactado para baixar.
+Publicar versões numeradas do livro. Quando você envia uma tag como `v1.0.0`, o workflow testa, gera o site e cria um **release** no GitHub, com o site compactado para baixar.
 
 `tags: ['v*']` `git tag v1.0.0` `actions/download-artifact` `gh release create`
 
 ::::columns
 :::card Onde fazer
-No terminal do Codespace, na pasta do laboratório:
-
 ```console
 $ cd ~/labs/14-release-por-tag
 ```
 
-Ponto de partida: o workflow com o artefato `site` do exercício 6.
+O laboratório começa com o workflow do artefato `site`, do exercício 6.
 :::
 :::card Para este exercício
 `⏱ tempo`
@@ -32,7 +30,7 @@ Ponto de partida: o workflow com o artefato `site` do exercício 6.
 `entrega`
 : release v1.0.0 com o site compactado
 
-Exercício opcional: pode ser feito depois da aula, em qualquer ordem. O laboratório já vem com o ponto de partida.
+Faça depois da aula, em qualquer ordem.
 :::
 ::::
 
@@ -44,10 +42,10 @@ Exercício opcional: pode ser feito depois da aula, em qualquer ordem. O laborat
 
 ::::columns
 :::card Tag
-Um nome fixo para um commit, como `v1.0.0`. Diferente de uma branch, a tag não anda quando chegam novos commits: ela marca sempre a mesma versão.
+É um nome fixo para um commit, como `v1.0.0`. Diferente de uma branch, a tag não muda quando chegam novos commits.
 :::
 :::card Release
-A página de uma versão no GitHub, com notas e arquivos para baixar. `--generate-notes` escreve as notas a partir dos commits e PRs desde a versão anterior.
+É a página de uma versão no GitHub, com notas e arquivos para baixar. A opção `--generate-notes` escreve as notas a partir dos commits e PRs desde a versão anterior.
 :::
 :::card O filtro de tags
 ```yaml title="substitua só o bloco on"
@@ -60,13 +58,13 @@ on:
   workflow_dispatch:
 ```
 
-Com `branches` e `tags`, o push roda na main **e** nas tags que começam com `v`.
+Com `branches` e `tags`, o workflow roda nos pushes para a main e também nos pushes de tags que começam com `v`.
 :::
 ::::
 
 <p class="eyebrow">Conceito</p>
 
-## Só com uma tag
+## Quando o job lancar roda
 
 ```yaml title="o último job do workflow"
   lancar:
@@ -90,13 +88,13 @@ Com `branches` e `tags`, o push roda na main **e** nas tags que começam com `v`
 
 ::::columns
 :::card A condição
-`startsWith(github.ref, 'refs/tags/v')` só é verdadeira no push de uma tag que começa com `v`. Num push na main, `testar` e `empacotar` rodam, e `lancar` fica de fora.
+`startsWith(github.ref, 'refs/tags/v')` só é verdadeira no push de uma tag que começa com `v`. Em um push na main, `testar` e `empacotar` rodam, e `lancar` fica de fora.
 :::
-:::card Permissão só onde precisa
-Criar um release escreve no repositório: só `lancar` recebe `contents: write`. O `GITHUB_TOKEN` da execução chega ao `gh` pela variável `GH_TOKEN`.
+:::card Permissão de escrita só no lancar
+Criar um release escreve no repositório, por isso só `lancar` recebe `contents: write`. O `GITHUB_TOKEN` da execução chega ao `gh` pela variável `GH_TOKEN`.
 :::
 :::card O artefato entre jobs
-`lancar` roda em outro runner: `actions/download-artifact` baixa o `site` guardado por `empacotar`, o mesmo artefato do exercício 6.
+`lancar` roda em outro runner. Por isso `actions/download-artifact` baixa o `site` guardado por `empacotar`, o mesmo artefato do exercício 6.
 :::
 ::::
 
@@ -106,15 +104,12 @@ Criar um release escreve no repositório: só `lancar` recebe `contents: write`.
 
 | Comando | Para quê |
 | --- | --- |
-| `check.sh 14` | simula um push na main: lancar precisa ficar de fora |
 | `git tag v1.0.0` | cria a tag no commit atual |
 | `git push origin v1.0.0` | envia a tag e dispara o workflow |
 | `gh release view v1.0.0 --web` | abre o release no navegador |
 | `gh release download v1.0.0` | baixa os arquivos do release |
 
 :::card Documentação
-Links para consultar depois. A documentação do GitHub tem versão em português.
-
 {.links}
 - [Sobre releases](https://docs.github.com/pt/repositories/releasing-projects-on-github/about-releases)<small>versões com notas e arquivos para baixar</small>
 - [Comando · gh release create](https://cli.github.com/manual/gh_release_create)<small>--generate-notes, arquivos anexos</small>
@@ -170,7 +165,7 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
            run: gh release create "$GITHUB_REF_NAME" livro-de-receitas.zip --repo "$GITHUB_REPOSITORY" --generate-notes
    ```
 
-3. Simule. Num push na main, só `testar` e `empacotar` rodam:
+3. Rode a verificação. Em um push na main, só `testar` e `empacotar` rodam:
 
    ```console
    $ check.sh 14
@@ -200,15 +195,15 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
 $ check.sh 14
 ```
 
-Aprova com `tags` com `v*` no push, o job `lancar` com `needs: empacotar`, a condição da tag, `contents: write` só nele e `gh release create` com `GH_TOKEN`, e quando a simulação de um push na main deixa `lancar` de fora.
+Aprova quando o push tem `tags` com `v*` e o job `lancar` tem `needs: empacotar`, a condição da tag, `contents: write` só nele e `gh release create` com `GH_TOKEN`. Na simulação de um push na main, `lancar` precisa ficar de fora.
 :::
 
-:::note
-**Entrega:** o link do release `v1.0.0`, com o arquivo `livro-de-receitas.zip`.
+:::note Entrega
+O link do release `v1.0.0`, com o arquivo `livro-de-receitas.zip`.
 :::
 
 :::card Missão extra · a versão 1.1.0
-acrescente uma receita em receitas/ e faça o commit
+Acrescente uma receita em `receitas/`, faça o commit e envie com uma nova tag:
 
 ```console
 $ git push

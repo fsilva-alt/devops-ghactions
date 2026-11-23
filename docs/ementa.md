@@ -28,12 +28,12 @@ Ao longo dos exercícios, você aprende a:
 
 | Módulo | Conteúdo |
 |---|---|
-| Introdução | Como acompanhar a aula; o que é o GitHub Actions; problemas que ele resolve; CI, entrega contínua e implantação contínua; uso em equipe com pull requests e regras de proteção; breve história; cuidados com custos, segredos, permissões e actions de terceiros; Codespace, runner, act e Pages |
-| Abertura | Exercício 00, antes da aula: Git, GitHub CLI com escopo `workflow`, um arquivo criado no editor, Docker e act |
-| 1. Fundamentos | Estrutura de um workflow em YAML: `name`, `on`, `permissions`, `jobs`, `runs-on`, `steps`, `run`; evento manual `workflow_dispatch`; execuções, jobs e logs na aba Actions |
-| 2. Integração contínua | Evento `push` com filtro de branch; `uses`, `with` e `run`; `actions/checkout` e `actions/setup-python`; evento `pull_request`; checks; leitura de logs; falha e correção |
-| 3. Configuração | `env`, `inputs`, contexto `github`, `vars` e `secrets`; `${{ }}` e variáveis do shell; segredos mascarados nos logs |
-| 4. Entrega contínua | `needs` e jobs em paralelo; um runner por job; build do site; `actions/upload-artifact`; artefato, cache e deploy; GitHub Pages com `configure-pages`, `upload-pages-artifact` e `deploy-pages`; `permissions` por job; `environment`; condição para publicar só a `main` |
+| 1. Abertura | Introdução: como acompanhar a aula; o que é o GitHub Actions; problemas que ele resolve; CI, entrega contínua e implantação contínua; uso em equipe com pull requests e regras de proteção; breve história; cuidados com custos, segredos, permissões e actions de terceiros; Codespace, runner, act e Pages. Exercício 00, antes da aula: Git, GitHub CLI com escopo `workflow`, um arquivo criado no editor, Docker e act |
+| 2. Fundamentos | Exercício 01. Estrutura de um workflow em YAML: `name`, `on`, `permissions`, `jobs`, `runs-on`, `steps`, `run`; evento manual `workflow_dispatch`; execuções, jobs e logs na aba Actions |
+| 3. Integração contínua | Exercícios 02 e 03. Evento `push` com filtro de branch; `uses`, `with` e `run`; `actions/checkout` e `actions/setup-python`; evento `pull_request`; checks; leitura de logs; falha e correção |
+| 4. Configuração | Exercício 04. `env`, `inputs`, contexto `github`, `vars` e `secrets`; `${{ }}` e variáveis do shell; segredos mascarados nos logs |
+| 5. Entrega contínua | Exercícios 05 a 07. `needs` e jobs em paralelo; um runner por job; build do site; `actions/upload-artifact`; artefato, cache e deploy; GitHub Pages com `configure-pages`, `upload-pages-artifact` e `deploy-pages`; `permissions` por job; `environment`; condição para publicar só a `main` |
+| 6. Prática extra | Exercícios opcionais 08 a 14: matriz de versões, cache de dependências, filtros de caminho e agendamento, anotações, saídas entre jobs, ação composta e release por tag |
 
 O projeto é um livro de receitas. As receitas ficam em arquivos Markdown na pasta `receitas/`; `receitas.py` lista as receitas e calcula a quantidade de um ingrediente para várias receitas; `build.py` gera o site em `dist/index.html`. O código vem pronto, e os enunciados guiam cada alteração.
 

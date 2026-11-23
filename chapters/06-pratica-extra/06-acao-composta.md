@@ -5,19 +5,17 @@ duration: 20
 # Ação composta
 
 {.lead}
-Tirar a repetição do workflow: as etapas que preparam o Python nos dois jobs viram uma **ação composta** do próprio repositório, chamada com uma linha de `uses`.
+Tirar a repetição do workflow. As etapas que preparam o Python nos dois jobs viram uma **ação composta** do próprio repositório, chamada com uma linha de `uses`.
 
 `.github/actions/preparar/action.yml` `runs.using: composite` `shell: bash` `uses: ./.github/actions/preparar`
 
 ::::columns
 :::card Onde fazer
-No terminal do Codespace, na pasta do laboratório:
-
 ```console
 $ cd ~/labs/13-acao-composta
 ```
 
-Ponto de partida: o workflow com `testar` e `empacotar` do exercício 5, que repete o preparo do Python.
+O laboratório começa com o workflow de `testar` e `empacotar` do exercício 5, que repete o preparo do Python.
 :::
 :::card Para este exercício
 `⏱ tempo`
@@ -32,7 +30,7 @@ Ponto de partida: o workflow com `testar` e `empacotar` do exercício 5, que rep
 `entrega`
 : execução verde com os dois jobs usando a ação preparar
 
-Exercício opcional: pode ser feito depois da aula, em qualquer ordem. O laboratório já vem com o ponto de partida.
+Faça depois da aula, em qualquer ordem.
 :::
 ::::
 
@@ -56,10 +54,10 @@ runs:
 ```
 
 ::::columns
-:::card As partes da ação
+:::card As chaves do action.yml
 | Chave | O que define |
 | --- | --- |
-| `name · description` | como a ação se apresenta; os dois são obrigatórios |
+| `name · description` | o nome e a descrição da ação; os dois são obrigatórios |
 | `runs.using: composite` | a ação é uma lista de etapas |
 | `steps` | as etapas, escritas como num job |
 | `shell: bash` | obrigatório em cada run de uma ação composta |
@@ -69,8 +67,8 @@ Uma ação composta junta **etapas**, usadas dentro de um job. Um workflow reuti
 :::
 ::::
 
-:::warning
-**run sem shell é erro** numa ação composta: o arquivo da ação não herda o shell padrão do job.
+:::warning Todo run precisa de shell
+Em uma ação composta, um `run` sem `shell` é erro, porque o arquivo da ação não herda o shell padrão do job.
 :::
 
 <p class="eyebrow">Conceito</p>
@@ -87,13 +85,10 @@ Uma ação composta junta **etapas**, usadas dentro de um job. Um workflow reuti
 
 ::::columns
 :::card Primeiro o checkout
-`uses: ./…` aponta para uma pasta do **repositório**. Ela só existe no runner depois do `actions/checkout`.
+`uses: ./…` aponta para uma pasta do repositório. Ela só existe no runner depois do `actions/checkout`.
 :::
-:::card Um lugar para mudar
-Para trocar a versão do Python, edite só o `action.yml`: os dois jobs passam a usar a nova versão. Menos repetição, menos chance de um job ficar diferente do outro.
-:::
-:::card No log
-A etapa **Run ./.github/actions/preparar** se abre e mostra as etapas internas da ação, com o log de cada uma.
+:::card A versão do Python fica em um arquivo só
+Para trocar a versão do Python, edite só o `action.yml`, e os dois jobs passam a usar a nova versão.
 :::
 ::::
 
@@ -105,12 +100,9 @@ A etapa **Run ./.github/actions/preparar** se abre e mostra as etapas internas d
 | --- | --- |
 | `mkdir -p .github/actions/preparar` | cria a pasta da ação |
 | `code .github/actions/preparar/action.yml` | abre o arquivo da ação no editor |
-| `check.sh 13` | confere a ação e o workflow e simula os dois jobs |
 | `git add .github` | prepara o workflow e a ação para o commit |
 
 :::card Documentação
-Links para consultar depois. A documentação do GitHub tem versão em português.
-
 {.links}
 - [Criar uma ação composta](https://docs.github.com/pt/actions/tutorials/create-actions/create-a-composite-action)<small>action.yml com runs.using: composite</small>
 - [Sintaxe de metadados de actions](https://docs.github.com/pt/actions/reference/workflows-and-actions/metadata-syntax)<small>name, description, runs e shell</small>
@@ -173,7 +165,7 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
            run: test -s dist/index.html
    ```
 
-3. Simule; os dois jobs rodam a ação e terminam verdes:
+3. Rode a verificação. Os dois jobs rodam a ação e terminam verdes:
 
    ```console
    $ check.sh 13
@@ -194,17 +186,17 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
 $ check.sh 13
 ```
 
-Aprova com a ação composta (setup-python 3.12 e a instalação com `shell: bash`), os dois jobs chamando `./.github/actions/preparar` depois do checkout, sem repetir o setup-python, e os dois jobs verdes na simulação.
+Aprova quando a ação composta tem o setup-python 3.12 e a instalação com `shell: bash`, e os dois jobs chamam `./.github/actions/preparar` depois do checkout, sem repetir o setup-python. Os dois jobs precisam ficar verdes na simulação.
 :::
 
-:::note
-**Entrega:** o link da execução verde. No log, a etapa da ação mostra as etapas internas.
+:::note Entrega
+O link da execução verde. No log, a etapa **Run ./.github/actions/preparar** mostra as etapas internas da ação.
 :::
 
-:::card Missão extra · uma mudança, dois jobs
+:::card Missão extra · cache nos dois jobs
 ```yaml title="acrescente ao with do setup-python, em action.yml"
         cache: pip
 ```
 
-A linha fica alinhada com `python-version`. Envie: os dois jobs passam a usar o cache do exercício 9, sem mudar o workflow.
+A linha fica alinhada com `python-version`. Envie a mudança. Os dois jobs passam a usar o cache do exercício 9, sem nenhuma alteração no workflow.
 :::

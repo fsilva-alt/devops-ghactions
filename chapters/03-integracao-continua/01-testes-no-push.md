@@ -5,26 +5,24 @@ duration: 25
 # Testes no push
 
 {.lead}
-Fazer o runner baixar o código, instalar o Python e rodar os **três testes** do livro de receitas a cada push na main.
+Fazer o runner baixar o código, instalar o Python e rodar os três testes do livro de receitas a cada push na main.
 
 `on: push` `actions/checkout` `actions/setup-python` `python -m unittest`
 
 ::::columns
 :::card Onde fazer
-No terminal do Codespace, na pasta do laboratório:
-
 ```console
 $ cd ~/labs/02-testes-no-push
 ```
 
-Ponto de partida: o workflow manual de boas-vindas. Este laboratório é independente do anterior.
+O laboratório começa com o workflow manual de boas-vindas e não depende do exercício anterior.
 :::
 :::card Para este exercício
 `⏱ tempo`
 : 25 min
 
 `módulo`
-: Módulo 2 · Integração contínua
+: Integração contínua
 
 `verificação`
 : `check.sh 02`
@@ -41,7 +39,7 @@ Ponto de partida: o workflow manual de boas-vindas. Este laboratório é indepen
 <div class="flow"><div class="node "><b>git push</b><small>um commit chega à main</small></div><div class="arr"><span class="a">→</span></div><div class="node hi"><b>evento push</b><small>o GitHub cria a execução</small></div><div class="arr"><span class="a">→</span></div><div class="node ok"><b>job testar</b><small>3 testes no runner</small></div></div>
 
 {.lead}
-Com `push`, o workflow roda **automaticamente** a cada commit enviado. O resultado fica ligado àquele commit: o hash na página da execução diz exatamente qual versão foi testada.
+Com o evento `push`, o workflow roda a cada commit enviado para a main. O resultado fica ligado ao commit, e o hash na página da execução mostra qual versão foi testada.
 
 ```yaml
 on:
@@ -51,7 +49,7 @@ on:
 ```
 
 :::card Os testes do livro
-`receitas.py` calcula a quantidade de um ingrediente para várias receitas. Os testes conferem, por exemplo, que **3 receitas** de pão de queijo, com 500 g de polvilho cada, pedem **1500 g**.
+`receitas.py` calcula a quantidade de um ingrediente para várias receitas. Um dos testes confere que 3 receitas de pão de queijo, com 500 g de polvilho cada, pedem 1500 g.
 
 ```console
 $ python3 -m unittest -v
@@ -60,8 +58,8 @@ OK
 ```
 :::
 
-:::note
-**branches: \[main\]** filtra o evento: só pushes na main iniciam o workflow. Manter `workflow_dispatch` deixa o botão Run workflow disponível.
+:::note O filtro branches
+Com `branches: [main]`, só os pushes na main iniciam o workflow. O `workflow_dispatch` mantém o botão Run workflow.
 :::
 
 <p class="eyebrow">Conceito</p>
@@ -102,12 +100,12 @@ jobs:
 | `run` | um comando do terminal, executado no runner |
 :::
 :::card O runner começa vazio
-`actions/checkout` baixa os arquivos do repositório. `actions/setup-python` instala o Python pedido. Depois vêm as dependências e, por último, os testes, nessa ordem.
+O que você instalou no Codespace não aparece no runner, que é outra máquina. Por isso `actions/checkout` baixa os arquivos do repositório, e `actions/setup-python` instala o Python. Depois vêm as dependências e os testes.
 :::
 ::::
 
-:::note Instalar no Codespace não instala no runner.
-São máquinas diferentes. Escreva `'3.12'` entre aspas: sem elas, o YAML lê um número decimal.
+:::note Escreva '3.12' entre aspas
+Sem as aspas, o YAML lê um número decimal.
 :::
 
 <p class="eyebrow">Referência</p>
@@ -118,15 +116,12 @@ São máquinas diferentes. Escreva `'3.12'` entre aspas: sem elas, o YAML lê um
 | --- | --- |
 | `python3 receitas.py` | lista as receitas no terminal do Codespace |
 | `python3 -m unittest -v` | roda os três testes no Codespace |
-| `check.sh 02` | confere o YAML e roda o job testar em um container |
 | `git diff` | mostra o que mudou antes do git add |
 | `git push` | envia novos commits; na main, dispara o workflow |
 | `gh run list` | lista as execuções, com evento e resultado |
 | `gh run watch` | acompanha a execução em andamento no terminal |
 
 :::card Documentação
-Links para consultar depois. A documentação do GitHub tem versão em português.
-
 {.links}
 - [Integração contínua](https://docs.github.com/pt/actions/get-started/continuous-integration)<small>o que é CI e como o Actions ajuda</small>
 - [Eventos que disparam workflows](https://docs.github.com/pt/actions/reference/workflows-and-actions/events-that-trigger-workflows)<small>push, pull\_request, workflow\_dispatch, schedule…</small>
@@ -155,7 +150,7 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
    $ code .github/workflows/ci.yml
    ```
 
-   **Substitua todo o conteúdo** pelo YAML abaixo, o mesmo do slide **Preparar o runner**, e salve com <kbd>Ctrl+S</kbd>. Dica: <kbd>Ctrl+A</kbd> seleciona o arquivo inteiro antes de colar.
+   Substitua **todo o conteúdo** pelo YAML abaixo, o mesmo do slide **Preparar o runner**, e salve com <kbd>Ctrl+S</kbd>. Para selecionar o arquivo inteiro antes de colar, use <kbd>Ctrl+A</kbd>.
 
    ```yaml title=".github/workflows/ci.yml"
    name: CI
@@ -182,7 +177,7 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
            run: python -m unittest -v
    ```
 
-3. Simule. Os três testes rodam em um container, como no runner:
+3. Rode a verificação. Os três testes rodam em um container, como no runner:
 
    ```console
    $ check.sh 02
@@ -197,7 +192,7 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
    $ gh browse --actions
    ```
 
-5. Personalize o título do livro em `livro.md`, por exemplo `# Livro de receitas da Ana`. Envie e confira uma nova execução, com o hash do novo commit:
+5. Personalize o título do livro em `livro.md`, por exemplo `# Livro de receitas da Ana`. Envie e confira a nova execução, com o hash do novo commit:
 
    ```console
    $ code livro.md
@@ -212,11 +207,11 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
 $ check.sh 02
 ```
 
-Aprova com `push` na main, checkout antes do Python, dependências antes dos testes e os três testes aprovados na simulação.
+Aprova quando o workflow roda no `push` da main, faz o checkout antes do Python, instala as dependências antes dos testes e os três testes passam na simulação.
 :::
 
-:::note
-**Simulação aprovada e execução com falha no GitHub:** abra a etapa vermelha no log. Diferenças entre o runner local e o do GitHub são raras; a execução considerada na entrega é a do GitHub.
+:::note A simulação passou, mas a execução falhou no GitHub?
+Abra a etapa vermelha no log. Essa diferença é rara, e o que vale para a entrega é a execução no GitHub.
 :::
 
 :::card Missão extra

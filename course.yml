@@ -22,8 +22,13 @@ highlight: true
 line_numbers: false
 typographer: false       # mantém aspas e traços exatamente como foram escritos
 
-# Cada subpasta de chapters/ é um módulo (título em _part.yml) e cada arquivo .md dentro
-# dela é um capítulo: o conteúdo de um desafio, que termina com o próprio desafio.
+# Cada subpasta de chapters/ é um módulo e cada arquivo .md dentro dela é um capítulo: o
+# conteúdo de um exercício, que termina com o próprio exercício. O título do módulo fica no
+# arquivo _part.yml da pasta, o nome que o coursekit procura.
+
+# O coursekit numera os grupos como "Parte 1", "Parte 2"… Neste curso, todo grupo é um módulo.
+labels:
+  part: "Módulo {n}"
 
 styles:
   - styles/custom.css

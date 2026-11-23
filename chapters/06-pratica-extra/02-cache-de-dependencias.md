@@ -5,19 +5,17 @@ duration: 15
 # Cache de dependências
 
 {.lead}
-Guardar os pacotes baixados pelo pip em um **cache** e reaproveitá-los: o job `empacotar` e as próximas execuções instalam a partir da cópia guardada, em vez de baixar tudo de novo.
+Guardar os pacotes baixados pelo pip em um **cache**. O job `empacotar` e as próximas execuções instalam a partir da cópia guardada, em vez de baixar tudo de novo.
 
 `actions/setup-python` `cache: pip` `Cache restored` `gh cache list`
 
 ::::columns
 :::card Onde fazer
-No terminal do Codespace, na pasta do laboratório:
-
 ```console
 $ cd ~/labs/09-cache-de-dependencias
 ```
 
-Ponto de partida: o workflow com `testar` e `empacotar` do exercício 5, que instala as dependências duas vezes.
+O laboratório começa com o workflow de `testar` e `empacotar` do exercício 5, que instala as dependências duas vezes.
 :::
 :::card Para este exercício
 `⏱ tempo`
@@ -32,13 +30,13 @@ Ponto de partida: o workflow com `testar` e `empacotar` do exercício 5, que ins
 `entrega`
 : execução com o cache restaurado no job empacotar
 
-Exercício opcional: pode ser feito depois da aula, em qualquer ordem. O laboratório já vem com o ponto de partida.
+Faça depois da aula, em qualquer ordem.
 :::
 ::::
 
 <p class="eyebrow">Conceito</p>
 
-## Guardar para reaproveitar
+## Como o cache funciona
 
 <div class="flow"><div class="node "><b>testar</b><small>cache não encontrado · baixa e salva</small></div><div class="arr"><span class="a">→</span></div><div class="node hi"><b>cache do pip</b><small>guardado pelo GitHub</small></div><div class="arr"><span class="a">→</span></div><div class="node ok"><b>empacotar</b><small>cache restaurado · usa a cópia</small></div></div>
 
@@ -51,15 +49,15 @@ Exercício opcional: pode ser feito depois da aula, em qualquer ordem. O laborat
 
 ::::columns
 :::card A chave do cache
-O setup-python monta uma **chave** com o sistema, a versão do Python e um resumo (hash) do `requirements.txt`. Se o arquivo muda, a chave muda: o cache antigo não serve, e um novo é salvo no fim do job.
+O setup-python monta uma **chave** com o sistema, a versão do Python e um resumo (hash) do `requirements.txt`. Se o arquivo muda, a chave também muda. O cache antigo deixa de servir, e um novo é salvo no fim do job.
 :::
-:::card Cache não é artefato
-O artefato, do exercício 6, é o **resultado** de uma execução, para baixar. O cache só **acelera** as próximas e pode ser apagado a qualquer momento: o workflow precisa funcionar sem ele.
+:::card Diferença para o artefato
+O artefato, do exercício 6, é o resultado de uma execução. O cache só acelera as próximas e pode ser apagado a qualquer momento, então o workflow precisa funcionar sem ele.
 :::
 ::::
 
-:::note
-**Checkout antes:** a chave depende do `requirements.txt`, que só existe no runner depois do `actions/checkout`.
+:::note O checkout vem antes
+A chave depende do `requirements.txt`, que só existe no runner depois do `actions/checkout`.
 :::
 
 <p class="eyebrow">Conceito</p>
@@ -83,11 +81,8 @@ $ gh cache list
 :::card A primeira execução já usa o cache
 `testar` não encontra cache, instala e salva um no fim do job. `empacotar`, que espera `testar` por causa do `needs`, já encontra e restaura esse cache.
 :::
-:::card Onde ficam os caches
-Na aba **Actions**, em *Caches*, com tamanho e último uso. No terminal, `gh cache list` mostra a mesma lista.
-:::
-:::card Limites
-Caches sem uso por 7 dias são apagados, e cada repositório tem um limite de espaço. Um cache criado na main serve às outras branches; o de uma branch não serve à main.
+:::card Onde ficam e quanto duram
+Os caches aparecem na aba **Actions**, em *Caches*, e em `gh cache list`. Os que ficam 7 dias sem uso são apagados, e cada repositório tem um limite de espaço. Um cache criado na main serve às outras branches, mas o de uma branch não serve à main.
 :::
 ::::
 
@@ -97,15 +92,11 @@ Caches sem uso por 7 dias são apagados, e cada repositório tem um limite de es
 
 | Comando | Para quê |
 | --- | --- |
-| `check.sh 09` | confere o cache: pip nos dois jobs e simula a execução |
-| `git push` | envia o commit e dispara a execução |
 | `gh run view --log` | mostra o log completo; procure Cache restored e Using cached |
 | `gh cache list` | lista os caches do repositório, com chave e tamanho |
 | `gh run rerun` | repete uma execução escolhida da lista |
 
 :::card Documentação
-Links para consultar depois. A documentação do GitHub tem versão em português.
-
 {.links}
 - [Cache de dependências](https://docs.github.com/pt/actions/reference/workflows-and-actions/dependency-caching)<small>chaves, restauração e limites do cache</small>
 - [Action · actions/setup-python](https://github.com/actions/setup-python)
@@ -125,7 +116,7 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
    $ code .github/workflows/ci.yml
    ```
 
-   Nos **dois** jobs, `testar` e `empacotar`, acrescente `cache: pip` ao `with` do setup-python, alinhado com `python-version`. Cada setup-python fica assim. Salve:
+   Nos dois jobs, `testar` e `empacotar`, acrescente `cache: pip` ao `with` do setup-python, alinhado com `python-version`. Cada setup-python fica como abaixo. Salve:
 
    ```yaml title="o setup-python de testar e de empacotar"
          - uses: actions/setup-python@v6
@@ -134,7 +125,7 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
              cache: pip
    ```
 
-2. Simule; os dois jobs devem terminar verdes:
+2. Rode a verificação. Os dois jobs devem terminar verdes:
 
    ```console
    $ check.sh 09
@@ -161,11 +152,11 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
 $ check.sh 09
 ```
 
-Aprova com `cache: pip` no setup-python dos dois jobs, depois do checkout, e com os dois jobs verdes na simulação.
+Aprova quando o setup-python dos dois jobs tem `cache: pip`, depois do checkout, e os dois jobs ficam verdes na simulação.
 :::
 
-:::note
-**Entrega:** o link da execução em que `empacotar` restaura o cache e a saída de `gh cache list`.
+:::note Entrega
+O link da execução em que `empacotar` restaura o cache e a saída de `gh cache list`.
 :::
 
 :::card Missão extra · repetir a execução
@@ -173,5 +164,5 @@ Aprova com `cache: pip` no setup-python dos dois jobs, depois do checkout, e com
 $ gh run rerun
 ```
 
-Escolha a execução da lista. Desta vez, `testar` também mostra `Cache restored`: o cache salvo na primeira tentativa continua disponível.
+Escolha a execução da lista. Desta vez, `testar` também mostra `Cache restored`, porque o cache salvo na primeira tentativa continua disponível.
 :::

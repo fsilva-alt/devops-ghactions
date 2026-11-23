@@ -5,26 +5,24 @@ duration: 20
 # Variáveis e contextos
 
 {.lead}
-Configurar uma execução com valores vindos de lugares diferentes: o YAML, o formulário do Run workflow, a própria execução e as configurações do repositório, incluindo um **segredo** que nunca aparece no log.
+Configurar uma execução com valores que vêm do YAML, do formulário do Run workflow, da própria execução e das configurações do repositório. Um deles é um **segredo**, que nunca aparece no log.
 
 `env` `inputs` `github.actor` `vars` `secrets` `gh secret set`
 
 ::::columns
 :::card Onde fazer
-No terminal do Codespace, na pasta do laboratório:
-
 ```console
 $ cd ~/labs/04-variaveis-e-contextos
 ```
 
-Uma demonstração isolada: o workflow apresenta a receita do dia da cozinha.
+É uma demonstração isolada, em que o workflow mostra a receita do dia da cozinha.
 :::
 :::card Para este exercício
 `⏱ tempo`
 : 20 min
 
 `módulo`
-: Módulo 3 · Configuração
+: Configuração
 
 `verificação`
 : `check.sh 04`
@@ -59,7 +57,7 @@ env:
       printf 'Cozinha: %s\nReceita do dia: %s\n' "$COZINHA" "$RECEITA"
 ```
 
-:::card Cinco origens
+:::card Os cinco contextos
 | Contexto | De onde vem |
 | --- | --- |
 | `env` | definido no próprio YAML, como o nome da cozinha |
@@ -69,13 +67,13 @@ env:
 | `secrets` | valor sensível cadastrado no repositório |
 :::
 
-:::note
-**Duas sintaxes:** o Actions troca `${{ … }}` pelo valor antes de rodar a etapa; o shell lê `$VARIAVEL` durante a execução. Passar o input por `env` faz o shell tratá-lo como texto, mesmo com aspas.
+:::note Duas sintaxes
+O Actions troca `${{ … }}` pelo valor antes de rodar a etapa. O shell lê `$VARIAVEL` durante a execução. Quando o input passa por `env`, o shell trata o valor como texto, mesmo que ele tenha aspas.
 :::
 
 <p class="eyebrow">Conceito</p>
 
-## Segredos sem vazamento
+## Como usar um segredo
 
 ```yaml title="última etapa do job"
       - name: Verificar segredo sem exibir o valor
@@ -91,13 +89,11 @@ Os dois são cadastrados em **Settings → Secrets and variables → Actions**. 
 :::
 
 :::card O que protege um segredo
-Ele não fica no YAML nem no histórico do Git. Só chega às etapas que o pedem por `env`, e o GitHub troca seu valor por `***` se ele aparecer no log.
-
-`test -n` confere se o valor não está vazio, sem imprimi-lo.
+O segredo não fica no YAML nem no histórico do Git. Ele só chega às etapas que o pedem por `env`, e o GitHub troca o valor por `***` se ele aparecer no log.
 :::
 
-:::warning
-**Segredo ausente não dá erro:** vira texto vazio. Por isso a etapa testa o valor e falha com uma dica. No curso, o segredo é fictício: `somente-demonstracao`.
+:::warning Um segredo que não existe vira texto vazio
+O Actions não dá erro nesse caso. Por isso a etapa usa `test -n`, que confere se o valor não está vazio sem mostrar o valor, e falha com uma dica. No curso, o segredo é fictício e vale `somente-demonstracao`.
 :::
 
 <p class="eyebrow">Referência</p>
@@ -107,15 +103,12 @@ Ele não fica no YAML nem no histórico do Git. Só chega às etapas que o pedem
 | Comando | Para quê |
 | --- | --- |
 | `cp "$CURSO_DIR/docs/solucoes/04.yml" .github/workflows/ci.yml` | copia o workflow completo do exercício |
-| `check.sh 04` | confere o YAML e simula com TURMA e CURSO\_TOKEN de demonstração |
 | `gh variable set TURMA --body "<turma>"` | cadastra a variável do repositório |
 | `gh secret set CURSO_TOKEN --body "<valor>"` | cadastra o segredo do repositório |
 | `gh workflow run "<workflow>" -f receita="<receita>"` | inicia o workflow manual pelo terminal |
 | `gh run watch` | acompanha a execução no terminal |
 
 :::card Documentação
-Links para consultar depois. A documentação do GitHub tem versão em português.
-
 {.links}
 - [Contextos](https://docs.github.com/pt/actions/reference/workflows-and-actions/contexts)<small>github, env, inputs, vars, secrets, steps</small>
 - [Variáveis](https://docs.github.com/pt/actions/reference/workflows-and-actions/variables)<small>env no YAML e vars do repositório</small>
@@ -148,7 +141,7 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
            default: Brigadeiro
    ```
 
-   Salve e simule; o log mostra a cozinha, a receita e a turma local:
+   Salve e rode a verificação. O log mostra a cozinha, a receita e a turma local:
 
    ```console
    $ check.sh 04
@@ -170,7 +163,7 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
    $ gh secret set CURSO_TOKEN --body "somente-demonstracao"
    ```
 
-5. Em **Actions → Variáveis e contextos → Run workflow**, digite uma receita e execute na `main`. No log, confira cozinha, receita, autor e turma, e a mensagem do segredo, sem o valor.
+5. Em **Actions → Variáveis e contextos → Run workflow**, digite uma receita e rode na `main`. No log, confira a cozinha, a receita, o autor e a turma. A mensagem do segredo aparece sem o valor.
 :::
 
 :::card Verificação
@@ -178,7 +171,7 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
 $ check.sh 04
 ```
 
-Aprova com o input `receita`, `env.COZINHA` e as referências a `inputs`, `github`, `vars` e `secrets` passadas por `env`. A simulação usa valores locais de demonstração.
+Aprova quando o workflow tem o input `receita`, `env.COZINHA` e as referências a `inputs`, `github`, `vars` e `secrets` passadas por `env`. A simulação usa valores locais de demonstração.
 :::
 
 :::note A última etapa falhou no GitHub?
@@ -191,5 +184,5 @@ $ gh workflow run "Variáveis e contextos" -f receita="Bolo de cenoura"
 $ gh run watch
 ```
 
-O mesmo Run workflow, pelo terminal. `-f` preenche o input do formulário.
+É o mesmo Run workflow, feito pelo terminal. O `-f` preenche o input do formulário.
 :::

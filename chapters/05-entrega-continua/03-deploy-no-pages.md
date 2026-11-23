@@ -5,26 +5,24 @@ duration: 30
 # Deploy no Pages
 
 {.lead}
-Publicar o livro de receitas no **GitHub Pages** com um workflow que testa, gera e publica, e que só publica a partir da main.
+Publicar o livro de receitas no **GitHub Pages** com um workflow que testa, gera e publica. Cada mudança na main que passa nos testes gera uma nova versão do site.
 
 `actions/configure-pages` `actions/upload-pages-artifact` `actions/deploy-pages` `environment: github-pages`
 
 ::::columns
 :::card Onde fazer
-No terminal do Codespace, na pasta do laboratório:
-
 ```console
 $ cd ~/labs/07-deploy-no-pages
 ```
 
-Ponto de partida: o workflow com o artefato do build. O workflow guiado vem pronto em `$CURSO_DIR/docs/solucoes/07.yml`.
+O laboratório começa com o workflow do artefato do build. O workflow guiado vem pronto em `$CURSO_DIR/docs/solucoes/07.yml`.
 :::
 :::card Para este exercício
 `⏱ tempo`
 : 30 min
 
 `módulo`
-: Módulo 4 · Entrega contínua
+: Entrega contínua
 
 `verificação`
 : `check.sh 07`
@@ -36,7 +34,7 @@ Ponto de partida: o workflow com o artefato do build. O workflow guiado vem pron
 
 <p class="eyebrow">Conceito</p>
 
-## Do build ao site
+## Como o site chega ao Pages
 
 <div class="flow"><div class="node ok"><b>testar</b><small>os três testes</small></div><div class="arr"><span class="a">→</span>needs</div><div class="node ok"><b>empacotar</b><small>build + configure-pages + upload-pages-artifact</small></div><div class="arr"><span class="a">→</span>needs</div><div class="node hi"><b>publicar</b><small>deploy-pages · URL do site</small></div></div>
 
@@ -48,15 +46,11 @@ Gera o site, prepara o Pages com `actions/configure-pages` e envia a pasta `dist
 `actions/deploy-pages` coloca esse artefato no ar e devolve a URL. Ela aparece no grafo da execução e na página do repositório.
 :::
 :::card Somente a main
-A condição `if` dos dois jobs deixa publicar só a partir da main, por push ou clique, e nunca em um pull request. Os PRs continuam rodando `testar`.
+A condição `if` dos dois jobs só permite publicar a partir da main, por push ou clique, e nunca em um pull request. Os PRs continuam rodando `testar`.
 
-Ela lê os **contextos** `github.ref` e `github.event_name`, os mesmos dados da execução usados no exercício 4.
+A condição lê os contextos `github.ref` e `github.event_name`, como no exercício 4.
 :::
 ::::
-
-:::note
-**Implantação contínua:** cada mudança na main aprovada nos testes gera uma nova versão do site, sem passos manuais.
-:::
 
 <p class="eyebrow">Conceito</p>
 
@@ -80,7 +74,7 @@ Ela lê os **contextos** `github.ref` e `github.event_name`, os mesmos dados da 
 ```
 
 ::::columns
-:::card Permissões só onde precisa
+:::card Permissões só no job publicar
 O workflow inteiro tem `contents: read`. Só o job `publicar` recebe `pages: write`, para publicar, e `id-token: write`, para provar ao Pages qual execução está publicando. Não é preciso cadastrar nenhum token.
 :::
 :::card O environment github-pages
@@ -88,8 +82,8 @@ Um **environment** representa o destino de uma publicação. Ele guarda o histó
 :::
 ::::
 
-:::note
-**concurrency**, no topo do arquivo, evita dois deploys ao mesmo tempo na mesma branch: o segundo espera o primeiro.
+:::note O bloco concurrency
+No topo do arquivo, ele evita dois deploys ao mesmo tempo na mesma branch. O segundo espera o primeiro terminar.
 :::
 
 <p class="eyebrow">Referência</p>
@@ -99,15 +93,12 @@ Um **environment** representa o destino de uma publicação. Ele guarda o histó
 | Comando | Para quê |
 | --- | --- |
 | `cp "$CURSO_DIR/docs/solucoes/07.yml" .github/workflows/ci.yml` | copia o workflow guiado de publicação |
-| `check.sh 07` | confere o YAML e simula um PR: o deploy precisa ficar de fora |
 | `gh api -X POST "repos/{owner}/{repo}/pages" -f build_type=workflow` | liga o Pages com a fonte GitHub Actions, sem abrir Settings |
 | `gh browse --settings` | abre as configurações do repositório |
 | `gh run watch` | acompanha os três jobs no terminal |
 | `gh pr merge --merge` | integra o PR na main e dispara o deploy (missão extra) |
 
 :::card Documentação
-Links para consultar depois. A documentação do GitHub tem versão em português.
-
 {.links}
 - [Workflows personalizados com o GitHub Pages](https://docs.github.com/pt/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)
 - [Implantação contínua](https://docs.github.com/pt/actions/get-started/continuous-deployment)<small>o que é CD e como publicar com workflows</small>
@@ -142,7 +133,7 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
    $ code livro.md
    ```
 
-4. Simule. Como é um pull request, só `testar` roda; `empacotar` e `publicar` ficam de fora:
+4. Rode a verificação. Ela simula um pull request, então só `testar` roda. `empacotar` e `publicar` ficam de fora:
 
    ```console
    $ check.sh 07
@@ -163,11 +154,11 @@ Links para consultar depois. A documentação do GitHub tem versão em portuguê
 $ check.sh 07
 ```
 
-Aprova com as permissões do Pages só no job `publicar`, o `environment` com a URL do deploy e a condição que exclui PRs. A simulação confirma que um PR não publica.
+Aprova quando as permissões do Pages estão só no job `publicar`, o `environment` tem a URL do deploy e a condição exclui PRs. A simulação confirma que um PR não publica.
 :::
 
-:::note
-**Se o site não abrir,** aguarde alguns minutos. Se o workflow falhou, confira *Settings → Pages* e compare o seu arquivo com o workflow guiado: `diff "$CURSO_DIR/docs/solucoes/07.yml" .github/workflows/ci.yml` mostra só as linhas diferentes. Depois de corrigir, use **Run workflow** na main.
+:::note O site não abriu?
+Aguarde alguns minutos. Se o workflow falhou, confira *Settings → Pages* e compare o seu arquivo com o guiado. O comando `diff "$CURSO_DIR/docs/solucoes/07.yml" .github/workflows/ci.yml` mostra só as linhas diferentes. Depois de corrigir, use **Run workflow** na main.
 :::
 
 :::card Missão extra · o fluxo completo
@@ -175,7 +166,7 @@ Aprova com as permissões do Pages só no job `publicar`, o `environment` com a 
 $ git switch -c nova-receita
 ```
 
-crie uma receita em receitas/ e faça o commit
+Crie uma receita em `receitas/` e faça o commit. Depois, envie a branch, abra o PR e faça o merge:
 
 ```console
 $ git push -u origin nova-receita
@@ -186,6 +177,6 @@ $ gh pr merge --merge
 No PR, só `testar` roda. Depois do merge, o workflow da main publica a receita nova.
 :::
 
-:::warning
-**Ao terminar a aula:** guarde os links das entregas e pare o Codespace em github.com/codespaces → ⋯ → *Stop codespace*. Os repositórios e o site continuam no GitHub. Para continuar praticando, os exercícios de 08 a 14 são opcionais.
+:::warning Ao terminar a aula
+Guarde os links das entregas e pare o Codespace em github.com/codespaces → ⋯ → *Stop codespace*. Os repositórios e o site continuam no GitHub. Para praticar mais, faça os exercícios opcionais, de 08 a 14.
 :::
